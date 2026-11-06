@@ -42,6 +42,7 @@ let transform = zoomIdentity
 let lastTransform = zoomIdentity
 let zoomBehavior: ZoomBehavior<HTMLCanvasElement, unknown> | null = null
 let userMovedGlobe = false
+let globeTurning = false
 let positions: { satellite: Satellite; x: number; y: number }[] = []
 let trackCache: { key: string; past: GeoPermissibleObjects; future: GeoPermissibleObjects } | null = null
 
@@ -230,11 +231,20 @@ function draw(): void {
 /** 지구본이 추적 위성을 향해 돌아갑니다. */
 function followTracked(animated: boolean): void {
   if (mode.value !== 'globe' || !trackedState.value) return
+  globeTurning = false
   const target = { lambda: -trackedState.value.longitude, phi: -trackedState.value.latitude * 0.7 }
   const delta = ((target.lambda - rotation.lambda + 540) % 360) - 180
   gsap.killTweensOf(rotation)
   if (animated && enabled.value) {
-    gsap.to(rotation, { lambda: rotation.lambda + delta, phi: target.phi, duration: 1.1, ease: 'expo.out', onUpdate: draw })
+    globeTurning = true
+    gsap.to(rotation, {
+      lambda: rotation.lambda + delta,
+      phi: target.phi,
+      duration: 1.1,
+      ease: 'expo.out',
+      onUpdate: draw,
+      onComplete: () => (globeTurning = false),
+    })
   } else {
     rotation.lambda += delta
     rotation.phi = target.phi
@@ -322,8 +332,8 @@ onMounted(() => {
 watch(
   () => clock.now,
   () => {
-    if (mode.value === 'globe' && !userMovedGlobe && clock.rate > 1) followTracked(false)
-    else draw()
+    if (mode.value === 'globe' && !userMovedGlobe && !globeTurning) followTracked(false)
+    else if (!globeTurning) draw()
   },
 )
 watch(() => props.tracked?.noradId, () => {

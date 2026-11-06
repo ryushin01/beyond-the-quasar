@@ -28,8 +28,9 @@ const WIDTH = 320
 const HEIGHT = 56
 
 /** 현재 위치부터 한 궤도의 고도 변화 */
+const profileMinute = computed(() => Math.floor(clock.now.getTime() / 60_000))
 const profile = computed(() => {
-  const start = Math.floor(clock.now.getTime() / 60_000) * 60_000
+  const start = profileMinute.value * 60_000
   const samples: { minute: number; altitude: number }[] = []
   for (let i = 0; i <= 60; i += 1) {
     const minute = (period.value * i) / 60

@@ -113,6 +113,31 @@ test.describe('화면 이동', () => {
     await expect(page.locator('main')).toBeFocused()
   })
 
+  test('전환 막이 걷혀 새 화면을 누를 수 있고, 뒤로 가면 이전 스크롤 위치로 돌아온다', async ({ page, isMobile }) => {
+    test.skip(isMobile, '모바일은 메뉴 시험에서 다룹니다')
+    await page.goto('/catalog')
+    await page.getByRole('button', { name: /AEHF-1 .* 상세 정보/ }).waitFor()
+    await page.evaluate(() => window.scrollTo(0, 900))
+    await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(800)
+    await page.getByRole('navigation', { name: '주요 메뉴' }).getByRole('link', { name: '위성 관제' }).click()
+    await expect(page).toHaveURL(/control/)
+    await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0)
+    // 초점은 막이 걷히기 직전에 옮겨지므로, 그 뒤 모든 기둥이 접혔는지 확인합니다.
+    await expect(page.locator('main')).toBeFocused()
+    await expect
+      .poll(
+        () =>
+          page.evaluate(() =>
+            Math.max(...[...document.querySelectorAll('.shutter__col')].map((column) => new DOMMatrix(getComputedStyle(column).transform).d)),
+          ),
+        { timeout: 8000 },
+      )
+      .toBeLessThan(0.01)
+    await page.goBack()
+    await expect(page).toHaveURL(/catalog/)
+    await expect.poll(() => page.evaluate(() => window.scrollY), { timeout: 8000 }).toBeGreaterThan(800)
+  })
+
   test('모바일 메뉴는 대화상자로 열리고 링크로 이동한다', async ({ page, isMobile }) => {
     test.skip(!isMobile, '모바일 전용')
     await page.goto('/catalog')

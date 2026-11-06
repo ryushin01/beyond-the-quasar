@@ -119,6 +119,12 @@ for (const family of FAMILIES) {
 }
 
 const satellites = [...byId.values()].sort((a, b) => a.noradId - b.noradId)
+const MIN_SATELLITES = 100
+const militaryCount = satellites.filter((item) => item.category === 'military').length
+if (satellites.length < MIN_SATELLITES || militaryCount === 0) {
+  console.error(`받은 위성이 너무 적어 기존 스냅샷을 유지합니다: 전체 ${satellites.length}기, 군사 ${militaryCount}기`)
+  process.exit(1)
+}
 await writeFile(
   new URL('../public/data/tle-snapshot.json', import.meta.url),
   `${JSON.stringify({ fetchedAt: new Date().toISOString(), source: 'CelesTrak', satellites })}\n`,
