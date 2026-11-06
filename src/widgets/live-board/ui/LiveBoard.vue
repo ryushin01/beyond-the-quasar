@@ -23,9 +23,12 @@ const iss = computed(() => {
   const satellite = props.satellites.find((item) => item.noradId === ISS_ID)
   return satellite ? stateAt(toSatrec(satellite.line1, satellite.line2), clock.now) : null
 })
-const above = computed(() =>
-  props.satellites.filter((item) => (lookAngleAt(toSatrec(item.line1, item.line2), clock.now, DAEJEON)?.elevation ?? -1) >= 5).length,
-)
+// 151기의 시선각은 시계 틱마다가 아니라 초 단위로 다시 계산합니다.
+const second = computed(() => Math.floor(clock.now.getTime() / 1000))
+const above = computed(() => {
+  const date = new Date(second.value * 1000)
+  return props.satellites.filter((item) => (lookAngleAt(toSatrec(item.line1, item.line2), date, DAEJEON)?.elevation ?? -1) >= 5).length
+})
 const moon = computed(() => moonInfo(clock.now))
 
 const tiles = computed(() => [

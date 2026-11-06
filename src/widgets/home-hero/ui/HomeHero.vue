@@ -88,7 +88,7 @@ onBeforeUnmount(() => context?.revert())
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  min-height: calc(100svh - var(--header-height) - var(--banner-height));
+  min-height: calc(100svh - var(--chrome-height));
   padding: var(--margin);
   overflow: hidden;
   background: #000;

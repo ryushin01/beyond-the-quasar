@@ -4,7 +4,7 @@
 
 앱은 `public/data/tle-snapshot.json`만 읽고 실행 중에 외부로 요청하지 않습니다. CelesTrak 이용 규칙(같은 데이터 반복 요청 제한)을 지키고, 백엔드 없이 배포할 수 있게 하려는 선택입니다.
 
-- 갱신: `bun run data:tle`. `scripts/fetch-tle.mjs`의 `FAMILIES`가 받을 위성과 분류를 정합니다.
+- 갱신: 매주 월요일 `.github/workflows/refresh-tle.yml`이 자동으로 받아 커밋합니다(Actions에서 수동 실행도 가능). 로컬에서는 `bun run data:tle`. `scripts/fetch-tle.mjs`의 `FAMILIES`가 받을 위성과 분류를 정합니다.
 - TLE는 시간이 지나면 오차가 커집니다. 원격 측정의 **TLE 기원**이 오래되면 다시 받습니다. 받을 때 기원이 45일 넘은 항목은 제외합니다.
 - 분류(`category`)와 임무(`mission`)는 위성 계열을 기준으로 직접 붙인 값이고, 운영 주체·발사일·원지점 등은 SATCAT 값입니다.
 - 정찰 임무는 "공개 자료 기준"으로 표시합니다. 비공개 위성의 궤도 추정치는 쓰지 않습니다.
@@ -42,7 +42,7 @@ axe는 E2E에서 전 페이지, 밝은·어두운 화면, 데스크톱·모바�
 
 ## 배포
 
-Vercel 프로젝트 `beyond-the-quasar`가 GitHub 저장소와 연결되어 있어 `main`에 푸시하면 자동으로 배포됩니다. 설정은 `vercel.json`에 있습니다. 궤도 스냅샷은 저장소에 함께 있으므로, 갱신하려면 `bun run data:tle` 후 커밋합니다.
+Vercel 프로젝트 `beyond-the-quasar`가 GitHub 저장소와 연결되어 있어 `main`에 푸시하면 자동으로 배포됩니다. 설정은 `vercel.json`에 있습니다. 궤도 스냅샷 자동 갱신 커밋도 같은 경로로 배포됩니다.
 
 ## 테스트
 

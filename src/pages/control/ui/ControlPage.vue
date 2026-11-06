@@ -112,7 +112,7 @@ watch(
 @media (min-width: 1100px) {
   .console {
     grid-template-columns: 19rem minmax(0, 1fr) 23rem;
-    height: calc(100dvh - var(--header-height) - var(--banner-height) - 2px);
+    height: calc(100dvh - var(--chrome-height));
     min-height: 40rem;
   }
   .console__roster,

@@ -39,6 +39,19 @@ test.describe('첫 화면', () => {
   })
 })
 
+test.describe('헤더', () => {
+  test.use({ reducedMotion: 'no-preference', locale: 'ko-KR' })
+
+  test('스크롤해도 문서 높이와 위치가 밀리지 않는다', async ({ page }) => {
+    await page.goto('/catalog')
+    await page.getByRole('button', { name: /AEHF-1 .* 상세 정보/ }).waitFor()
+    const height = await page.evaluate(() => document.documentElement.scrollHeight)
+    await page.evaluate(() => window.scrollTo(0, 900))
+    await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(900)
+    expect(await page.evaluate(() => document.documentElement.scrollHeight)).toBe(height)
+  })
+})
+
 test.describe('동작 줄이기', () => {
   test.use({ reducedMotion: 'reduce', locale: 'ko-KR' })
 

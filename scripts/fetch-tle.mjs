@@ -2,6 +2,8 @@
 // 사용: bun run data:tle  (CelesTrak 이용 규칙에 맞게 필요할 때만 실행합니다)
 import { writeFile } from 'node:fs/promises'
 
+import { findSnapshotProblem } from './snapshot-guard.mjs'
+
 const NOT_PAYLOAD = /\b(AKM|DEB|R\/B|ABM|PLATFORM|PKM)\b/
 const MAX_EPOCH_AGE_DAYS = 45
 
@@ -47,10 +49,19 @@ const FAMILIES = [
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 
+/** 요청 실패는 '결과 없음'과 다릅니다. 실패가 하나라도 있으면 스냅샷을 쓰지 않습니다. */
+const failures = []
+
 async function getText(url) {
-  const response = await fetch(url)
-  await sleep(500)
-  return response.ok ? response.text() : ''
+  try {
+    const response = await fetch(url)
+    await sleep(500)
+    if (response.ok) return response.text()
+    failures.push(`${response.status} ${url}`)
+  } catch (error) {
+    failures.push(`${error.message} ${url}`)
+  }
+  return ''
 }
 
 function parseTle(text) {
@@ -83,7 +94,8 @@ for (const family of FAMILIES) {
   try {
     records = JSON.parse(catalogText)
   } catch {
-    console.warn(`SATCAT 없음: ${query}`)
+    // 결과가 없는 이름은 CelesTrak이 안내 문구로 응답합니다. TLE가 있는데 SATCAT만 없으면 실패입니다.
+    if (parseTle(tleText).length > 0) failures.push(`SATCAT 응답 오류: ${query}`)
   }
   const recordById = new Map(records.map((record) => [record.NORAD_CAT_ID, record]))
 
@@ -119,6 +131,12 @@ for (const family of FAMILIES) {
 }
 
 const satellites = [...byId.values()].sort((a, b) => a.noradId - b.noradId)
+const problem = findSnapshotProblem(satellites, failures)
+if (problem) {
+  console.error(`기존 스냅샷을 유지합니다: ${problem}`)
+  process.exit(1)
+}
+
 await writeFile(
   new URL('../public/data/tle-snapshot.json', import.meta.url),
   `${JSON.stringify({ fetchedAt: new Date().toISOString(), source: 'CelesTrak', satellites })}\n`,

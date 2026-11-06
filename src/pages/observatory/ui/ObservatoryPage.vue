@@ -28,7 +28,9 @@ const offsetHours = ref(0)
 const showSatellites = ref(true)
 
 const selected = computed(() => TARGETS.find((target) => target.id === selectedId.value) ?? TARGETS[0]!)
-const skyDate = computed(() => new Date(clock.now.getTime() + offsetHours.value * 3_600_000))
+// 하늘 지도는 천체·위성 약 200개를 계산하므로 5초 단위로 갱신합니다.
+const skyStep = computed(() => Math.floor(clock.now.getTime() / 5000))
+const skyDate = computed(() => new Date(skyStep.value * 5000 + offsetHours.value * 3_600_000))
 const offsetLabel = computed(() => (offsetHours.value === 0 ? t('observatory.now') : t('observatory.skyTimeValue', { n: offsetHours.value })))
 
 let context: gsap.Context | undefined

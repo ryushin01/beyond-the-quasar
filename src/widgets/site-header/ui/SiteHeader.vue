@@ -107,8 +107,11 @@ function onMenuShow(): void {
 <style scoped>
 .header {
   --shrink: 0;
-  position: sticky;
+  /* 줄어드는 높이가 문서 높이와 스크롤 위치를 바꾸지 않도록 흐름에서 뺍니다. */
+  position: fixed;
   top: 0;
+  left: 0;
+  right: 0;
   z-index: 50;
   background: color-mix(in srgb, var(--paper) calc(70% + 30% * var(--shrink)), transparent);
   backdrop-filter: blur(10px);

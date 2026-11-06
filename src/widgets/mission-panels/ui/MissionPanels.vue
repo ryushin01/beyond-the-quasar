@@ -33,10 +33,14 @@ const contactRange = computed(() => {
   return look && look.elevation >= CONTACT_ELEVATION ? look.rangeKm : null
 })
 
+// 목록 계산은 시계 틱마다가 아니라 초 단위로 합니다.
+const secondKey = computed(() => Math.floor(clock.now.getTime() / 1000))
+
 const overhead = computed(() => {
   if (tab.value !== 'overflight') return []
+  const date = new Date(secondKey.value * 1000)
   return props.satellites
-    .map((satellite) => ({ satellite, look: lookAngleAt(toSatrec(satellite.line1, satellite.line2), clock.now, observer.site) }))
+    .map((satellite) => ({ satellite, look: lookAngleAt(toSatrec(satellite.line1, satellite.line2), date, observer.site) }))
     .filter((row) => row.look && row.look.elevation >= CONTACT_ELEVATION)
     .sort((a, b) => b.look!.elevation - a.look!.elevation)
 })
@@ -44,9 +48,10 @@ const overheadMilitary = computed(() => overhead.value.filter((row) => row.satel
 
 const nearest = computed(() => {
   if (tab.value !== 'proximity') return []
+  const date = new Date(secondKey.value * 1000)
   return props.satellites
     .filter((satellite) => satellite.noradId !== props.satellite.noradId)
-    .map((satellite) => ({ satellite, km: separationKm(satrec.value, toSatrec(satellite.line1, satellite.line2), clock.now) }))
+    .map((satellite) => ({ satellite, km: separationKm(satrec.value, toSatrec(satellite.line1, satellite.line2), date) }))
     .filter((row): row is { satellite: Satellite; km: number } => row.km !== null)
     .sort((a, b) => a.km - b.km)
     .slice(0, 8)

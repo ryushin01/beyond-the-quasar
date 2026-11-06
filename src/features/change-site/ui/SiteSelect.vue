@@ -4,7 +4,6 @@ import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { SITES, useObserver } from '@/entities/observer'
-import { formatLatitude, formatLongitude } from '@/shared/lib'
 
 defineProps<{ label: string }>()
 
@@ -14,7 +13,6 @@ const options = computed(() =>
   SITES.map((site) => ({
     value: site.id,
     label: t(`sites.${site.id}`),
-    caption: `${formatLatitude(site.latitude)} ${formatLongitude(site.longitude)}`,
   })),
 )
 </script>

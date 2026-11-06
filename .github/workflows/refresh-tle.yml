@@ -1,0 +1,33 @@
+name: Refresh TLE
+
+# TLE는 시간이 지나면 오차가 커지므로 매주 공개 카탈로그에서 다시 받습니다.
+on:
+  schedule:
+    - cron: '17 3 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install --frozen-lockfile
+      - run: bun run data:tle
+      # 푸시하면 바로 배포되므로, 새 스냅샷을 검사한 뒤에만 올립니다.
+      - run: bun run test:snapshot
+      - name: 변경 내용 커밋
+        run: |
+          git diff --quiet public/data/tle-snapshot.json && exit 0
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898583+github-actions[bot]@users.noreply.github.com'
+          git add public/data/tle-snapshot.json
+          git commit -m "궤도 스냅샷 갱신"
+          git pull --rebase origin main
+          git push

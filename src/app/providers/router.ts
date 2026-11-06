@@ -10,9 +10,23 @@ const routes: RouteRecordRaw[] = [
   { path: '/:pathMatch(.*)*', name: 'not-found', component: () => import('@/pages/not-found'), meta: { title: 'titles.notFound' } },
 ]
 
+let restoreTop = 0
+
+/** 새 화면이 그려진 뒤 옮겨 갈 스크롤 위치 */
+export const consumeRestoreTop = (): number => {
+  const top = restoreTop
+  restoreTop = 0
+  return top
+}
+
 export const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes,
-  // 스크롤은 화면 전환 막이 덮인 뒤 App.vue에서 처리합니다.
-  scrollBehavior: () => false,
+  // 스크롤은 화면 전환 막이 덮인 뒤 App.vue에서 처리합니다. 뒤로 가기면 이전 위치를 기억해 둡니다.
+  scrollBehavior: (to, from, savedPosition) => {
+    // 같은 화면 안의 이동은 전환이 없으므로 브라우저 위치를 바로 복원합니다.
+    if (to.path === from.path) return savedPosition ?? false
+    restoreTop = savedPosition?.top ?? 0
+    return false
+  },
 })

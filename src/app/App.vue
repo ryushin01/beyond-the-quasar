@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { useTitle } from '@vueuse/core'
-import { computed, ref } from 'vue'
+import { computed, nextTick, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute } from 'vue-router'
 
+import { consumeRestoreTop } from './providers/router'
 import { syncDocumentLanguage } from '@/shared/i18n'
 import { ScrollTrigger } from '@/shared/motion'
 import { Preloader } from '@/widgets/preloader'
@@ -28,8 +29,10 @@ async function onLeave(_element: Element, done: () => void): Promise<void> {
 }
 
 async function onEnter(_element: Element, done: () => void): Promise<void> {
-  window.scrollTo(0, 0)
+  // 고정 구역의 높이가 정해진 뒤에 이전 위치로 돌아갑니다.
+  await nextTick()
   ScrollTrigger.refresh()
+  window.scrollTo(0, consumeRestoreTop())
   done()
   if (firstRender.value) {
     firstRender.value = false
@@ -77,6 +80,7 @@ function skipToContent(): void {
   transform: translateY(0);
 }
 .main {
+  padding-top: var(--chrome-height);
   outline: none;
 }
 </style>
