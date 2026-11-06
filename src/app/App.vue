@@ -80,6 +80,7 @@ function skipToContent(): void {
   transform: translateY(0);
 }
 .main {
+  padding-top: var(--chrome-height);
   outline: none;
 }
 </style>

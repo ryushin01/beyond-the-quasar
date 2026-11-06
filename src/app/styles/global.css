@@ -5,6 +5,8 @@
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   --header-height: 4.75rem;
   --banner-height: 1.625rem;
+  /* 위 띠와 헤더, 각 테두리 1px */
+  --chrome-height: calc(var(--header-height) + var(--banner-height) + 2px);
 }
 
 /* 어두운 화면이 기본입니다 */
@@ -75,6 +77,8 @@
 
 html {
   background: var(--paper);
+  /* 키보드 초점이 고정 헤더에 가리지 않게 합니다 */
+  scroll-padding-top: 5rem;
 }
 
 body,
