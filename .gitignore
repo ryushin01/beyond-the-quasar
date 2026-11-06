@@ -1,0 +1,10 @@
+node_modules
+dist
+.histoire
+coverage
+test-results
+playwright-report
+*.local
+.DS_Store
+.idea
+.netlify

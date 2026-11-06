@@ -1,0 +1,123 @@
+import { expect, test } from '@playwright/test'
+
+test.use({ reducedMotion: 'reduce', locale: 'ko-KR' })
+
+test.describe('위성 관제', () => {
+  test('군사 필터로 좁히고 위성을 추적하면 원격 측정이 바뀐다', async ({ page }) => {
+    await page.goto('/control')
+    const roster = page.getByRole('region', { name: '위성 목록' })
+    await roster.getByRole('button', { name: /^군사/ }).click()
+    await roster.getByLabel('위성 검색').fill('AEHF-1')
+    // 입력 지연이 끝나 목록이 한 줄로 줄어든 뒤 누릅니다.
+    await expect(roster.locator('.roster__item')).toHaveCount(1)
+    const item = roster.getByRole('button', { name: /AEHF-1 \(USA 214\)/ })
+    await item.click()
+    await expect(item).toHaveAttribute('aria-pressed', 'true')
+    const telemetry = page.getByRole('region', { name: '원격 측정' })
+    await expect(telemetry).toContainText('AEHF-1 (USA 214)')
+    await expect(telemetry).toContainText('군 위성통신')
+  })
+
+  test('지도는 글 요약을 제공하고 지구본으로 바꿀 수 있다', async ({ page }) => {
+    await page.goto('/control')
+    await expect(page.getByRole('img', { name: /위성 \d+기를 표시/ })).toBeVisible()
+    const globe = page.getByRole('button', { name: '지구본' })
+    await globe.click()
+    await expect(globe).toHaveAttribute('aria-pressed', 'true')
+  })
+
+  test('명령을 두 번 눌러도 한 번만 기록하고 안전 모드는 확인을 거친다', async ({ page }) => {
+    await page.goto('/control')
+    await page.getByRole('tab', { name: '명령' }).click()
+    await expect(page.getByText('실제 위성으로 전송되지 않습니다')).toBeVisible()
+    const send = page.getByRole('button', { name: '명령 전송' })
+    await send.dblclick()
+    const log = page.locator('.uplink__entry')
+    await expect(log).toHaveCount(1, { timeout: 5000 })
+    await page.waitForTimeout(1500)
+    await expect(log).toHaveCount(1)
+
+    await page.getByRole('combobox', { name: '명령' }).click()
+    await page.getByRole('option', { name: '안전 모드' }).click()
+    await send.click()
+    await expect(page.getByRole('dialog', { name: '안전 모드 명령을 전송할까요?' })).toBeVisible()
+    await page.getByRole('button', { name: '취소' }).click()
+    await expect(log).toHaveCount(1)
+  })
+
+  test('배속을 올리면 가상 시각으로 표시되고 실시간으로 돌아온다', async ({ page }) => {
+    await page.goto('/control')
+    await page.getByRole('button', { name: '배속 600×' }).click()
+    await expect(page.getByText('가상 시각')).toBeVisible()
+    await page.getByRole('button', { name: '실시간으로 복귀' }).click()
+    await expect(page.getByText('실시간', { exact: true })).toBeVisible()
+  })
+})
+
+test.describe('위성 카탈로그', () => {
+  test('홈의 분류 링크로 들어오면 그 분류만 보이고 상세에서 관제로 이어진다', async ({ page }) => {
+    await page.goto('/catalog?category=military')
+    const count = page.getByRole('status').first()
+    await expect(count).toHaveText(/\d+기 표시/)
+    await page.getByRole('button', { name: /SBIRS GEO-1 .* 상세 정보/ }).click()
+    const dialog = page.getByRole('dialog', { name: '위성 정보' })
+    await expect(dialog).toContainText('미사일 조기경보')
+    await expect(dialog).toContainText('NORAD 번호')
+    await dialog.getByRole('button', { name: '관제 화면에서 추적' }).click()
+    await expect(page).toHaveURL(/\/control/)
+    await expect(page.getByRole('region', { name: '원격 측정' })).toContainText('SBIRS GEO-1')
+  })
+
+  test('조건에 맞는 위성이 없으면 안내하고 초기화할 수 있다', async ({ page }) => {
+    await page.goto('/catalog')
+    await page.getByLabel('위성 검색').fill('존재하지않는위성')
+    await expect(page.getByText('조건에 맞는 위성이 없습니다')).toBeVisible()
+    await page.getByRole('button', { name: '필터 초기화' }).click()
+    await expect(page.getByRole('status').first()).toHaveText(/1\d\d기 표시/)
+  })
+})
+
+test.describe('천체 관측', () => {
+  test('대상을 고르면 차트가 바뀌고 일지를 저장한다', async ({ page }) => {
+    await page.goto('/observatory')
+    await page.getByRole('button', { name: /M45 Pleiades/ }).click()
+    await expect(page.getByRole('heading', { name: /고도 곡선 · M45/ })).toBeVisible()
+
+    await page.getByRole('button', { name: '일지 저장' }).click()
+    await expect(page.getByText('기록을 입력해 주세요.')).toBeVisible()
+    await page.getByLabel('기록').fill('구름 없음')
+    await page.getByRole('button', { name: '일지 저장' }).click()
+    await expect(page.locator('.log__entry')).toContainText('구름 없음')
+    await page.reload()
+    await expect(page.locator('.log__entry')).toContainText('구름 없음')
+  })
+
+  test('관측지를 바꾸면 브리핑이 다시 계산된다', async ({ page }) => {
+    await page.goto('/observatory')
+    const before = await page.locator('.brief__time').first().textContent()
+    await page.getByRole('combobox', { name: '관측지' }).click()
+    await page.getByRole('option', { name: '아타카마' }).click()
+    await expect(page.locator('.brief__time').first()).not.toHaveText(before ?? '')
+  })
+})
+
+test.describe('화면 이동', () => {
+  test.use({ reducedMotion: 'no-preference' })
+
+  test('격자 전환을 지나 새 화면에 도착하면 본문으로 초점이 옮겨진다', async ({ page, isMobile }) => {
+    test.skip(isMobile, '모바일은 메뉴 시험에서 다룹니다')
+    await page.goto('/catalog')
+    await page.getByRole('navigation', { name: '주요 메뉴' }).getByRole('link', { name: '천체 관측' }).click()
+    await expect(page).toHaveURL(/observatory/)
+    await expect(page.getByRole('heading', { level: 1, name: '천체 관측' })).toBeVisible()
+    await expect(page.locator('main')).toBeFocused()
+  })
+
+  test('모바일 메뉴는 대화상자로 열리고 링크로 이동한다', async ({ page, isMobile }) => {
+    test.skip(!isMobile, '모바일 전용')
+    await page.goto('/catalog')
+    await page.getByRole('button', { name: '메뉴 열기' }).click()
+    await page.getByRole('dialog', { name: '주요 메뉴' }).getByRole('link', { name: '위성 관제' }).click()
+    await expect(page).toHaveURL(/control/)
+  })
+})

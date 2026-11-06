@@ -1,0 +1,169 @@
+:root {
+  --font-display: 'Archivo Variable', 'Pretendard Variable', system-ui, sans-serif;
+  --font-sans: 'Pretendard Variable', 'Archivo Variable', system-ui, sans-serif;
+  --font-mono: 'Geist Mono Variable', ui-monospace, 'SFMono-Regular', monospace;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --header-height: 4.75rem;
+  --banner-height: 1.625rem;
+}
+
+/* 어두운 화면이 기본입니다 */
+:root,
+[data-theme='dark'],
+.scope-dark {
+  --ink: #fff;
+  --paper: #000;
+  --raised: #0b0b0d;
+  --muted: #a3a3a3;
+  --line: rgb(255 255 255 / 0.14);
+  --line-strong: rgb(255 255 255 / 0.32);
+  --signal: #4a78ff;
+  --signal-text: #8aa8ff;
+  --on-signal: #000;
+  --alert: #ffb224;
+  --night: rgb(0 0 0 / 0.45);
+  color-scheme: dark;
+}
+
+[data-theme='light'],
+.scope-light {
+  --ink: #000;
+  --paper: #fff;
+  --raised: #f4f4f2;
+  --muted: #5a5a5a;
+  --line: rgb(0 0 0 / 0.14);
+  --line-strong: rgb(0 0 0 / 0.4);
+  --signal: #1a3fe0;
+  --signal-text: #1a3fe0;
+  --on-signal: #fff;
+  --alert: #8a5200;
+  --night: rgb(0 0 0 / 0.22);
+  color-scheme: light;
+}
+
+/* 현재 테마의 반대 색으로 뒤집는 구역 */
+[data-theme='dark'] .scope-invert {
+  --ink: #000;
+  --paper: #fff;
+  --raised: #f4f4f2;
+  --muted: #5a5a5a;
+  --line: rgb(0 0 0 / 0.14);
+  --line-strong: rgb(0 0 0 / 0.4);
+  --signal: #1a3fe0;
+  --signal-text: #1a3fe0;
+  --on-signal: #fff;
+  --alert: #8a5200;
+}
+[data-theme='light'] .scope-invert {
+  --ink: #fff;
+  --paper: #000;
+  --raised: #0b0b0d;
+  --muted: #a3a3a3;
+  --line: rgb(255 255 255 / 0.14);
+  --line-strong: rgb(255 255 255 / 0.32);
+  --signal: #4a78ff;
+  --signal-text: #8aa8ff;
+  --on-signal: #000;
+  --alert: #ffb224;
+}
+
+:root {
+  --q-primary: #1a3fe0;
+  --q-dark: #0b0b0d;
+  --q-dark-page: #000;
+}
+
+html {
+  background: var(--paper);
+}
+
+body,
+body.body--dark,
+body.body--light {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  line-height: 1.55;
+  letter-spacing: normal;
+  -webkit-font-smoothing: antialiased;
+  overflow-wrap: break-word;
+  word-break: keep-all;
+}
+
+h1,
+h2,
+h3 {
+  letter-spacing: normal;
+}
+
+a {
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 3px solid var(--signal);
+  outline-offset: 2px;
+}
+
+::selection {
+  background: var(--signal);
+  color: var(--on-signal);
+}
+
+/* 어두운 화면에서는 진한 파랑의 명도 대비가 부족해 밝은 파랑으로 올립니다 */
+[data-theme='dark'] .q-slider,
+[data-theme='dark'] .q-spinner {
+  --q-primary: #8aa8ff;
+}
+.q-btn.bg-primary {
+  box-shadow: 0 0 0 1px var(--signal-text);
+}
+
+.q-field--outlined .q-field__control::before {
+  border-color: var(--line-strong);
+}
+.q-field__label,
+.q-field__bottom {
+  color: var(--muted);
+}
+
+/* 고정폭 글꼴의 한글 띄어쓰기가 너무 넓어 줄입니다 */
+:lang(ko) .label-mono {
+  word-spacing: -0.3em;
+}
+
+.display {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-stretch: 125%;
+  line-height: 0.92;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+}
+
+.grid-12 {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--gutter);
+}
+
+:root {
+  --gutter: 1rem;
+  --margin: 1rem;
+}
+@media (min-width: 900px) {
+  :root {
+    --gutter: 1.5rem;
+    --margin: 2rem;
+  }
+}
+
+/* 모션을 끄면 CSS 전환과 애니메이션도 멈춥니다 */
+[data-motion='off'] *,
+[data-motion='off'] *::before,
+[data-motion='off'] *::after {
+  animation-duration: 0s !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0s !important;
+}
