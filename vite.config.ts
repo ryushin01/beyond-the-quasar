@@ -35,7 +35,7 @@ export default defineConfig({
   },
   test: {
     environment: 'jsdom',
-    include: ['src/**/*.test.ts'],
+    include: ['src/**/*.test.ts', 'scripts/**/*.test.mjs'],
     setupFiles: ['./src/shared/lib/test/setup.ts'],
     server: { deps: { inline: ['quasar'] } },
     css: false,

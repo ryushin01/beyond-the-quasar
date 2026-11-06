@@ -15,7 +15,8 @@
     "test:e2e": "playwright test",
     "story:dev": "histoire dev",
     "story:build": "histoire build",
-    "data:tle": "node scripts/fetch-tle.mjs"
+    "data:tle": "node scripts/fetch-tle.mjs",
+    "test:snapshot": "vitest run src/entities/satellite/model/snapshot.test.ts"
   },
   "dependencies": {
     "@fontsource-variable/archivo": "^5.3.0",

@@ -267,7 +267,12 @@ function setupZoom(): void {
         const k = event.transform.k
         rotation.lambda += ((event.transform.x - lastTransform.x) * 0.3) / k
         rotation.phi = Math.max(-85, Math.min(85, rotation.phi - ((event.transform.y - lastTransform.y) * 0.3) / k))
-        if (event.sourceEvent) userMovedGlobe = true
+        if (event.sourceEvent) {
+          userMovedGlobe = true
+          // 사용자가 잡으면 진행 중인 회전 연출을 멈춥니다.
+          gsap.killTweensOf(rotation)
+          globeTurning = false
+        }
       }
       lastTransform = event.transform
       transform = event.transform
@@ -332,8 +337,10 @@ onMounted(() => {
 watch(
   () => clock.now,
   () => {
-    if (mode.value === 'globe' && !userMovedGlobe && !globeTurning) followTracked(false)
-    else if (!globeTurning) draw()
+    if (globeTurning) return
+    // 궤도 계산에 실패한 순간에도 지도는 계속 다시 그립니다.
+    if (mode.value === 'globe' && !userMovedGlobe && trackedState.value) followTracked(false)
+    else draw()
   },
 )
 watch(() => props.tracked?.noradId, () => {

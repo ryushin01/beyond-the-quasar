@@ -119,6 +119,7 @@ test.describe('화면 이동', () => {
     await page.getByRole('button', { name: /AEHF-1 .* 상세 정보/ }).waitFor()
     await page.evaluate(() => window.scrollTo(0, 900))
     await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(800)
+    const savedTop = await page.evaluate(() => window.scrollY)
     await page.getByRole('navigation', { name: '주요 메뉴' }).getByRole('link', { name: '위성 관제' }).click()
     await expect(page).toHaveURL(/control/)
     await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0)
@@ -135,7 +136,7 @@ test.describe('화면 이동', () => {
       .toBeLessThan(0.01)
     await page.goBack()
     await expect(page).toHaveURL(/catalog/)
-    await expect.poll(() => page.evaluate(() => window.scrollY), { timeout: 8000 }).toBeGreaterThan(800)
+    await expect.poll(async () => Math.abs((await page.evaluate(() => window.scrollY)) - savedTop), { timeout: 8000 }).toBeLessThanOrEqual(5)
   })
 
   test('모바일 메뉴는 대화상자로 열리고 링크로 이동한다', async ({ page, isMobile }) => {

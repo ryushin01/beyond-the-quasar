@@ -17,7 +17,11 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version-file: .nvmrc
-      - run: node scripts/fetch-tle.mjs
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install --frozen-lockfile
+      - run: bun run data:tle
+      # 푸시하면 바로 배포되므로, 새 스냅샷을 검사한 뒤에만 올립니다.
+      - run: bun run test:snapshot
       - name: 변경 내용 커밋
         run: |
           git diff --quiet public/data/tle-snapshot.json && exit 0
@@ -25,4 +29,5 @@ jobs:
           git config user.email '41898583+github-actions[bot]@users.noreply.github.com'
           git add public/data/tle-snapshot.json
           git commit -m "궤도 스냅샷 갱신"
+          git pull --rebase origin main
           git push
