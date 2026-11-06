@@ -6,6 +6,8 @@
 
 군사·항법·기상·통신 위성을 추적하고 오늘 밤의 하늘을 관측하는 위성 관제·천체 관측 웹 앱입니다.
 
+**[데모 바로 보기](https://beyond-the-quasar.vercel.app/)**
+
 > **프로젝트 상태:** 공개 데이터로 동작하는 **포트폴리오용 시뮬레이션**입니다. 실제 위성과 연결되지 않고, 명령 전송은 거리로 계산한 지연을 흉내 낼 뿐입니다. 궤도 값은 공개 TLE로 계산한 참고 값입니다.
 
 ## 화면
@@ -54,7 +56,7 @@
 | 모션 | GSAP 3(ScrollTrigger), Lenis, WebGL 셰이더 |
 | 품질 | oxlint, vue-tsc, Vitest, Vue Test Utils, Playwright, axe |
 | 문서 | Histoire |
-| 패키지·배포 | Bun, GitHub Actions |
+| 패키지·배포 | Bun, GitHub Actions, Vercel |
 
 ## 시작하기
 
