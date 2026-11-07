@@ -1,6 +1,6 @@
 import { mount } from '@vue/test-utils'
 import { createPinia, setActivePinia } from 'pinia'
-import { beforeEach, describe, expect, it } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { useMissionClock } from '@/entities/clock'
 import { FIXTURES } from '@/entities/satellite'
@@ -18,6 +18,16 @@ describe('OrbitAxes', () => {
     expect(wrapper.get('h2').text()).toBe('관제와 관측, 두 개의 축')
     expect(wrapper.findAll('.axes__word').map((word) => word.text())).toEqual(['관제', '관측'])
     wrapper.unmount()
+  })
+
+  it('다른 위젯 없이도 임무 시계를 켜고, 사라지면 끈다', () => {
+    const clock = useMissionClock()
+    const start = vi.spyOn(clock, 'start')
+    const stop = vi.spyOn(clock, 'stop')
+    const wrapper = mount(OrbitAxes, { props: { satellites: FIXTURES } })
+    expect(start).toHaveBeenCalledOnce()
+    wrapper.unmount()
+    expect(stop).toHaveBeenCalledOnce()
   })
 
   it('지구본의 내용을 글로 요약하고 색이 아닌 범례 글자로도 구분한다', () => {

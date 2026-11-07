@@ -201,9 +201,11 @@ watch([second, visible, satrecs], requestDraw)
 watch(satrecs, () => (positionsAt = -1))
 
 onMounted(() => {
+  clock.start()
   watch(enabled, build, { immediate: true, flush: 'post' })
 })
 onBeforeUnmount(() => {
+  clock.stop()
   cancelAnimationFrame(frame)
   context?.revert()
 })
