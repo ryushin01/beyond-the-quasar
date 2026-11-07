@@ -1,6 +1,6 @@
 import { flushPromises, mount } from '@vue/test-utils'
 import { createPinia, setActivePinia } from 'pinia'
-import { beforeEach, describe, expect, it } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { FIXTURES } from '@/entities/satellite'
 import { useSatelliteFilter } from '@/features/filter-satellites'
@@ -32,8 +32,8 @@ describe('OrbitGlobe', () => {
 
   it('WebGL을 쓸 수 없으면 다른 보기로 안내하고 조작 버튼을 끈다', async () => {
     const wrapper = mount(OrbitGlobe, { props: { satellites: FIXTURES } })
-    await flushPromises()
-    await new Promise((resolve) => setTimeout(resolve, 50))
+    // 장면 파일을 늦게 불러오므로 그 불러오기가 끝날 때까지 기다린다.
+    await vi.dynamicImportSettled()
     await flushPromises()
     expect(wrapper.text()).toContain('3D 화면을 그릴 수 없습니다')
     const buttons = wrapper.findAll('button')

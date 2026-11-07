@@ -22,7 +22,6 @@ import type { ScenePoint } from '@/entities/satellite'
 export interface GlobeOrbit {
   id: number
   path: ScenePoint[]
-  position: ScenePoint | null
   military: boolean
 }
 
@@ -35,7 +34,10 @@ export interface GlobeColors {
 }
 
 export interface GlobeScene {
+  /** 궤도선과 표시를 새로 만듭니다. 표시하는 위성이 바뀔 때만 부릅니다. */
   setOrbits(orbits: GlobeOrbit[]): void
+  /** 이미 만든 표시만 옮깁니다. 위치를 모르면 숨깁니다. */
+  setPositions(positions: Map<number, ScenePoint | null>): void
   setColors(colors: GlobeColors): void
   setEarthRotation(radians: number): void
   rotate(radians: number): void
@@ -109,6 +111,7 @@ export function createGlobeScene(canvas: HTMLCanvasElement, colors: GlobeColors)
   let height = 1
   let frame = 0
   let running = true
+  const markers = new Map<number, Mesh>()
 
   function clearOrbits(): void {
     // 지우면서 돌면 목록이 줄어들므로 맨 앞부터 하나씩 뺍니다.
@@ -117,6 +120,7 @@ export function createGlobeScene(canvas: HTMLCanvasElement, colors: GlobeColors)
       orbitGroup.remove(child)
       if (child instanceof Line) child.geometry.dispose()
     }
+    markers.clear()
   }
 
   function render(): void {
@@ -135,14 +139,21 @@ export function createGlobeScene(canvas: HTMLCanvasElement, colors: GlobeColors)
           const geometry = new BufferGeometry().setFromPoints(orbit.path.map(([x, y, z]) => new Vector3(x, y, z)))
           orbitGroup.add(new Line(geometry, orbit.military ? militaryOrbitMaterial : orbitMaterial))
         }
-        if (orbit.position) {
-          const marker = new Mesh(
-            orbit.military ? militaryGeometry : markerGeometry,
-            orbit.military ? militaryMarkerMaterial : markerMaterial,
-          )
-          marker.position.set(...orbit.position)
-          orbitGroup.add(marker)
-        }
+        // 표시는 공용 도형과 재질을 쓰므로 만들고 지우는 비용이 작고, 위치는 setPositions가 옮깁니다.
+        const marker = new Mesh(
+          orbit.military ? militaryGeometry : markerGeometry,
+          orbit.military ? militaryMarkerMaterial : markerMaterial,
+        )
+        marker.visible = false
+        markers.set(orbit.id, marker)
+        orbitGroup.add(marker)
+      }
+    },
+    setPositions(positions) {
+      for (const [id, marker] of markers) {
+        const position = positions.get(id)
+        marker.visible = Boolean(position)
+        if (position) marker.position.set(...position)
       }
     },
     setColors(next) {

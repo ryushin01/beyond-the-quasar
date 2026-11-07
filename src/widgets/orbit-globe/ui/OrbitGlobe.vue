@@ -58,23 +58,31 @@ watch(
   },
 )
 
-function orbits(date: Date): GlobeOrbit[] {
+function orbits(): GlobeOrbit[] {
   return shown.value.map((satellite) => ({
     id: satellite.noradId,
     path: paths.value.get(satellite.noradId) ?? [],
-    position: scenePosition(toSatrec(satellite.line1, satellite.line2), date),
     military: satellite.category === 'military',
   }))
 }
 
-function draw(date = new Date()): void {
+// 매 초에는 위성 위치와 지구 자전만 바꾸고, 궤도선은 다시 만들지 않습니다.
+function move(date = new Date()): void {
   if (!scene.value) return
-  scene.value.setOrbits(orbits(date))
+  scene.value.setPositions(
+    new Map(shown.value.map((satellite) => [satellite.noradId, scenePosition(toSatrec(satellite.line1, satellite.line2), date)])),
+  )
   scene.value.setEarthRotation(earthRotation(date))
 }
 
+function draw(): void {
+  if (!scene.value) return
+  scene.value.setOrbits(orbits())
+  move()
+}
+
 // 동작 줄이기나 모션 정지 중에는 위성 위치를 움직이지 않습니다(KWCAG 6.2.2).
-const ticker = useIntervalFn(() => draw(), 1000, { immediate: false })
+const ticker = useIntervalFn(() => move(), 1000, { immediate: false })
 watch(
   [motion, scene],
   ([on, ready]) => {
@@ -94,18 +102,24 @@ useMutationObserver(
   { attributes: true, attributeFilter: ['data-theme'] },
 )
 
+// three.js를 받는 사이 화면을 떠나면, 받은 뒤에 장면을 만들지 않습니다.
+let unmounted = false
 onMounted(async () => {
   if (!canvas.value) return
   try {
     // three.js는 이 보기를 열 때만 내려받습니다.
     const { createGlobeScene } = await import('../lib/scene')
+    if (unmounted || !canvas.value) return
     scene.value = createGlobeScene(canvas.value, readColors())
   } catch {
     // WebGL을 쓸 수 없는 브라우저는 글 요약과 궤도 분포도로 같은 정보를 봅니다.
     unsupported.value = true
   }
 })
-onBeforeUnmount(() => scene.value?.dispose())
+onBeforeUnmount(() => {
+  unmounted = true
+  scene.value?.dispose()
+})
 </script>
 
 <template>
