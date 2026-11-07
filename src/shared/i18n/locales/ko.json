@@ -32,7 +32,23 @@
     "footerLead": "궤도로 진입합니다",
     "footerCta": "관제 시작",
     "credits": "궤도 데이터: CelesTrak 공개 카탈로그 · 천체 계산: Astronomy Engine · 지도: Natural Earth",
-    "disclaimer": "이 앱은 공개 데이터를 사용하는 시뮬레이션입니다. 비공개 위성은 공개 카탈로그에 없으며, 정찰 임무 표기는 공개 자료에 따른 분류입니다."
+    "disclaimer": "이 앱은 공개 데이터를 사용하는 시뮬레이션입니다. 비공개 위성은 공개 카탈로그에 없으며, 정찰 임무 표기는 공개 자료에 따른 분류입니다.",
+    "progressLabel": "홈 구역 진행",
+    "stopLight": "빛",
+    "stopAssets": "궤도 자산",
+    "stopAxes": "관제·관측",
+    "stopSystems": "시스템",
+    "stopBoard": "상황판",
+    "axesTitle": "관제와 관측, 두 개의 축",
+    "axesControl": "관제",
+    "axesControlSub": "궤도 위의 자산을 지휘합니다",
+    "axesObserve": "관측",
+    "axesObserveSub": "그 너머의 빛을 기록합니다",
+    "axesGlobe": "점으로 그린 지구본. 대전 지상국을 중심으로 위성 {total}기의 현재 직하점을 표시하며, 그중 군사 위성은 {military}기입니다.",
+    "axesMilitary": "군사 {n}기",
+    "axesOther": "기타 {n}기",
+    "axesStation": "대전 지상국",
+    "axesNote": "공개 TLE 기준 직하점"
   },
   "categories": { "military": "군사", "navigation": "항법", "earth-observation": "지구 관측", "weather": "기상", "communications": "통신", "science": "과학", "crewed": "유인" },
   "categoryCodes": { "military": "MIL", "navigation": "NAV", "earth-observation": "EO", "weather": "WX", "communications": "COM", "science": "SCI", "crewed": "CRW" },
@@ -140,7 +156,8 @@
     "orbit": "궤도",
     "category": "분류",
     "trackIt": "관제 화면에서 추적",
-    "close": "닫기"
+    "close": "닫기",
+    "schematic": "임무 유형 도식 · 실제 형상 아님"
   },
   "observatory": {
     "title": "천체 관측",

@@ -202,3 +202,58 @@ test.describe('임무 도구', () => {
     await expect(page.getByRole('dialog')).toBeVisible()
   })
 })
+
+test.describe('홈 진행 바', () => {
+  test.use({ reducedMotion: 'reduce', locale: 'ko-KR' })
+
+  test('첫 화면에서는 숨어 있고, 구역에 들어오면 현재 위치를 표시하며 링크로 이동한다', async ({ page }) => {
+    await page.goto('/')
+    const nav = page.getByRole('navigation', { name: '홈 구역 진행' })
+    await expect(nav).not.toHaveClass(/progress--shown/)
+
+    await page.locator('#stop-assets').scrollIntoViewIfNeeded()
+    await expect(nav).toHaveClass(/progress--shown/)
+    await expect(nav.locator('[aria-current="location"]')).toHaveCount(1)
+
+    await nav.getByRole('link', { name: '상황판' }).click()
+    await expect(page.locator('#stop-board')).toBeFocused()
+    await expect.poll(() => page.locator('#stop-board').evaluate((node) => Math.abs(node.getBoundingClientRect().top))).toBeLessThan(5)
+    await expect(nav.getByRole('link', { name: '상황판' })).toHaveAttribute('aria-current', 'location')
+  })
+
+  test('키보드로 들어오면 첫 화면에서도 보인다', async ({ page }) => {
+    await page.goto('/')
+    const link = page.getByRole('navigation', { name: '홈 구역 진행' }).getByRole('link').first()
+    await link.focus()
+    await expect(link).toBeVisible()
+    await expect.poll(() => page.locator('.progress').evaluate((node) => getComputedStyle(node).opacity)).toBe('1')
+  })
+})
+
+test.describe('홈 진행 바와 모션', () => {
+  test.use({ reducedMotion: 'no-preference', locale: 'ko-KR' })
+
+  test('화면을 붙잡는 구역으로도 정확히 이동한다', async ({ page }) => {
+    await page.goto('/')
+    const nav = page.getByRole('navigation', { name: '홈 구역 진행' })
+    await page.locator('#stop-systems').evaluate((node) => window.scrollTo(0, node.getBoundingClientRect().top + window.scrollY))
+    await expect(nav).toHaveClass(/progress--shown/)
+
+    await nav.getByRole('link', { name: '궤도 자산' }).click()
+    await expect(page.locator('#stop-assets')).toBeFocused()
+    await expect.poll(() => page.locator('#stop-assets').evaluate((node) => Math.abs(node.getBoundingClientRect().top)), { timeout: 5000 }).toBeLessThan(5)
+    await expect(nav.getByRole('link', { name: '궤도 자산' })).toHaveAttribute('aria-current', 'location')
+  })
+})
+
+test.describe('카탈로그 임무 도식', () => {
+  test.use({ reducedMotion: 'reduce', locale: 'ko-KR' })
+
+  test('상세에 도식과 설명이 나오고 대화상자 안에 들어온다', async ({ page }) => {
+    await page.goto('/catalog')
+    await page.getByRole('button', { name: /AEHF-1 .* 상세 정보/ }).click()
+    const dialog = page.getByRole('dialog')
+    await expect(dialog.getByText('실제 형상 아님')).toBeVisible()
+    await expect(dialog.locator('figure svg path')).toHaveAttribute('d', /^M/)
+  })
+})

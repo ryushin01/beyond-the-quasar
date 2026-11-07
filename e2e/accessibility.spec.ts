@@ -71,3 +71,24 @@ test('일정 탭 axe 검사', async ({ page }) => {
   const results = await new AxeBuilder({ page }).analyze()
   expect(results.violations.map((item) => `${item.id}: ${item.nodes[0]?.target}`)).toEqual([])
 })
+
+for (const theme of ['어두운', '밝은']) {
+  test(`홈 진행 바와 관제·관측 구역 ${theme} 화면 axe 검사`, async ({ page }) => {
+    await page.goto('/')
+    if (theme === '밝은') await page.getByRole('button', { name: '밝은 화면으로 전환' }).click()
+    await page.locator('#stop-axes').scrollIntoViewIfNeeded()
+    await page.locator('#stop-axes').evaluate((node) => window.scrollTo(0, node.getBoundingClientRect().top + window.scrollY))
+    await expect(page.locator('.progress')).toHaveClass(/progress--shown/)
+    await expect.poll(() => page.locator('.progress').evaluate((node) => getComputedStyle(node).opacity)).toBe('1')
+    const results = await new AxeBuilder({ page }).include('.progress').include('#stop-axes').analyze()
+    expect(results.violations.map((item) => `${item.id}: ${item.nodes[0]?.target}`)).toEqual([])
+  })
+}
+
+test('위성 상세의 임무 도식 axe 검사', async ({ page }) => {
+  await page.goto('/catalog')
+  await page.getByRole('button', { name: /AEHF-1 .* 상세 정보/ }).click()
+  await page.getByRole('dialog').getByText('실제 형상 아님').waitFor()
+  const results = await new AxeBuilder({ page }).include('[role="dialog"]').analyze()
+  expect(results.violations.map((item) => `${item.id}: ${item.nodes[0]?.target}`)).toEqual([])
+})

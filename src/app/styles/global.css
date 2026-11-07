@@ -79,6 +79,8 @@ html {
   background: var(--paper);
   /* 키보드 초점이 고정 헤더에 가리지 않게 합니다 */
   scroll-padding-top: 5rem;
+  /* 홈 하단의 진행 바에도 가리지 않게 합니다 */
+  scroll-padding-bottom: 4rem;
 }
 
 body,
