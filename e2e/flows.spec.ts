@@ -10,7 +10,7 @@ test.describe('위성 관제', () => {
     await roster.getByLabel('위성 검색').fill('AEHF-1')
     // 입력 지연이 끝나 목록이 한 줄로 줄어든 뒤 누릅니다.
     await expect(roster.locator('.roster__item')).toHaveCount(1)
-    const item = roster.getByRole('button', { name: /AEHF-1 \(USA 214\)/ })
+    const item = roster.locator('.roster__item')
     await item.click()
     await expect(item).toHaveAttribute('aria-pressed', 'true')
     const telemetry = page.getByRole('region', { name: '원격 측정' })
@@ -145,5 +145,60 @@ test.describe('화면 이동', () => {
     await page.getByRole('button', { name: '메뉴 열기' }).click()
     await page.getByRole('dialog', { name: '주요 메뉴' }).getByRole('link', { name: '위성 관제' }).click()
     await expect(page).toHaveURL(/control/)
+  })
+})
+
+test.describe('임무 도구', () => {
+  test('검색 팔레트를 단축키로 열어 위성을 찾으면 추적하고 주소에 남는다', async ({ page }) => {
+    await page.goto('/')
+    await page.keyboard.press('Control+k')
+    const input = page.getByRole('combobox', { name: '위성과 화면 검색' })
+    await expect(input).toBeFocused()
+    await input.fill('AEHF-1')
+    await expect(page.getByRole('option', { name: /AEHF-1/ })).toHaveAttribute('aria-selected', 'true')
+    await input.press('Enter')
+    await expect(page).toHaveURL(/\/control\?sat=36868/)
+    await expect(page.getByRole('region', { name: '원격 측정' })).toContainText('AEHF-1 (USA 214)')
+  })
+
+  test('관제 주소의 위성 번호로 바로 추적하고 없는 번호는 고친다', async ({ page }) => {
+    await page.goto('/control?sat=36868')
+    await expect(page.getByRole('region', { name: '원격 측정' })).toContainText('AEHF-1 (USA 214)')
+    await page.goto('/control?sat=1')
+    await expect(page).toHaveURL(/sat=36868/)
+  })
+
+  test('카탈로그 필터가 주소에 남고 새로고침해도 유지되며 상세도 링크로 열린다', async ({ page }) => {
+    await page.goto('/catalog')
+    await page.getByRole('button', { name: /^군사/ }).first().click()
+    await expect(page).toHaveURL(/category=military/)
+    const count = await page.locator('.gallery__item').count()
+    await page.reload()
+    await expect(page.getByRole('button', { name: /^군사/ }).first()).toHaveAttribute('aria-pressed', 'true')
+    await expect(page.locator('.gallery__item')).toHaveCount(count)
+    await page.goto('/catalog?sat=25544')
+    await expect(page.getByRole('dialog').getByRole('heading', { name: /ISS/ })).toBeVisible()
+    await page.keyboard.press('Escape')
+    await expect(page).not.toHaveURL(/sat=/)
+  })
+
+  test('관심 위성은 새로고침 뒤에도 남고 일정 탭에 함께 나온다', async ({ page }) => {
+    await page.goto('/control?sat=25544')
+    await page.getByRole('button', { name: 'AEHF-1 (USA 214) 관심 위성 표시' }).click()
+    await page.reload()
+    await expect(page.getByRole('button', { name: 'AEHF-1 (USA 214) 관심 위성 표시' })).toHaveAttribute('aria-pressed', 'true')
+    await page.getByRole('tab', { name: '일정' }).click()
+    await expect(page.locator('.schedule__row')).toHaveCount(2)
+  })
+
+  test('궤도 분포도는 글 요약을 제공하고 점을 누르면 상세를 연다', async ({ page }) => {
+    await page.goto('/catalog?view=orbit')
+    const chart = page.getByRole('img', { name: /궤도 분포도/ })
+    await expect(chart).toBeVisible()
+    await expect(page.locator('.gallery')).toHaveCount(0)
+    const mark = page.locator('.scatter__mark').first()
+    await mark.click({ force: true })
+    await expect(page).toHaveURL(/sat=\d+/)
+    await expect(page.getByRole('dialog')).toBeVisible()
   })
 })

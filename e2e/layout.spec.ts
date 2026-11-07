@@ -63,3 +63,27 @@ test.describe('동작 줄이기', () => {
     expect(opacity).toBe('1')
   })
 })
+
+test.describe('헤더와 패널', () => {
+  test.use({ reducedMotion: 'reduce', locale: 'ko-KR' })
+
+  test('320px에서도 헤더의 메뉴와 검색 버튼이 화면 안에 있다', async ({ page }) => {
+    await page.setViewportSize({ width: 320, height: 640 })
+    await page.goto('/catalog')
+    for (const button of [page.getByRole('button', { name: '메뉴 열기' }), page.getByRole('button', { name: '검색', exact: true })]) {
+      await expect(button).toBeVisible()
+      const box = (await button.boundingBox())!
+      expect(box.x + box.width).toBeLessThanOrEqual(320)
+    }
+  })
+
+  test('관제 패널의 탭 다섯 개가 스크롤 없이 모두 보인다', async ({ page }) => {
+    test.skip(page.viewportSize()!.width < 1100, '데스크톱 패널 기준')
+    await page.goto('/control')
+    const tabs = page.getByRole('tab')
+    await expect(tabs).toHaveCount(5)
+    const panel = (await page.locator('.panels__tabs').boundingBox())!
+    const last = (await tabs.last().boundingBox())!
+    expect(last.x + last.width).toBeLessThanOrEqual(panel.x + panel.width)
+  })
+})

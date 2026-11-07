@@ -41,7 +41,10 @@ function onLeave(): void {
       <div class="plate__sheen" aria-hidden="true" />
       <p class="plate__top">
         <span class="plate__code">{{ t(`categoryCodes.${satellite.category}`) }}</span>
-        <span class="plate__id">#{{ satellite.noradId }}</span>
+        <span class="plate__meta">
+          <span class="plate__id">#{{ satellite.noradId }}</span>
+          <span class="plate__actions"><slot name="actions" /></span>
+        </span>
       </p>
       <p class="plate__mission" aria-hidden="true">{{ t(`missionCodes.${satellite.mission}`) }}</p>
       <div class="plate__bottom">
@@ -103,6 +106,18 @@ function onLeave(): void {
 }
 .plate:hover .plate__sheen {
   opacity: 1;
+}
+.plate__meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+/* 카드 전체를 덮는 버튼보다 위에 둡니다 */
+.plate__actions {
+  position: relative;
+  z-index: 2;
+  display: inline-flex;
+  margin: -0.5rem -0.5rem -0.5rem 0;
 }
 .plate__top {
   position: relative;

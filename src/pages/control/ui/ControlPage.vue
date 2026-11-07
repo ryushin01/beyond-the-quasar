@@ -3,7 +3,7 @@ import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { useMissionClock } from '@/entities/clock'
-import { filterSatellites, useSatelliteCatalog, useTracking } from '@/entities/satellite'
+import { useSatelliteCatalog, useTracking } from '@/entities/satellite'
 import { SiteSelect } from '@/features/change-site'
 import { SatelliteFilterPanel, useSatelliteFilter } from '@/features/filter-satellites'
 import { TimeControls } from '@/features/time-warp'
@@ -14,6 +14,8 @@ import { MissionPanels } from '@/widgets/mission-panels'
 import { SatelliteRoster } from '@/widgets/satellite-roster'
 import { TelemetryPanel } from '@/widgets/telemetry-panel'
 
+import { useTrackedUrl } from '../lib/useTrackedUrl'
+
 const { t } = useI18n()
 const clock = useMissionClock()
 const tracking = useTracking()
@@ -22,8 +24,10 @@ const { enabled } = useMotionPreference()
 const { satellites, isPending, isError, refetch } = useSatelliteCatalog()
 
 const root = ref<HTMLElement>()
-const filtered = computed(() => filterSatellites(satellites.value, filterStore.filter))
+const filtered = computed(() => filterStore.apply(satellites.value))
 const tracked = computed(() => satellites.value.find((item) => item.noradId === tracking.trackedId) ?? satellites.value[0] ?? null)
+
+useTrackedUrl(satellites, computed(() => tracked.value?.noradId ?? null))
 
 onMounted(() => clock.start())
 onBeforeUnmount(() => clock.stop())

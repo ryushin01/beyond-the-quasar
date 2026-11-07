@@ -7,6 +7,7 @@ export interface SatelliteFilter {
   orbits: OrbitClass[]
   owners: string[]
   dualUseOnly: boolean
+  watchedOnly: boolean
 }
 
 export const EMPTY_FILTER: SatelliteFilter = {
@@ -16,11 +17,12 @@ export const EMPTY_FILTER: SatelliteFilter = {
   orbits: [],
   owners: [],
   dualUseOnly: false,
+  watchedOnly: false,
 }
 
 const includesOrEmpty = <T>(selected: T[], value: T): boolean => selected.length === 0 || selected.includes(value)
 
-export function filterSatellites(satellites: Satellite[], filter: SatelliteFilter): Satellite[] {
+export function filterSatellites(satellites: Satellite[], filter: SatelliteFilter, watched: readonly number[] = []): Satellite[] {
   const query = filter.query.trim().toLowerCase()
   return satellites.filter(
     (satellite) =>
@@ -29,6 +31,7 @@ export function filterSatellites(satellites: Satellite[], filter: SatelliteFilte
       includesOrEmpty(filter.orbits, satellite.orbit) &&
       includesOrEmpty(filter.owners, satellite.owner ?? '') &&
       (!filter.dualUseOnly || satellite.dualUse) &&
+      (!filter.watchedOnly || watched.includes(satellite.noradId)) &&
       (query === '' ||
         satellite.name.toLowerCase().includes(query) ||
         String(satellite.noradId).includes(query) ||

@@ -3,7 +3,8 @@ import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { useSatelliteFilter } from '@/features/filter-satellites'
-import { filterSatellites, SatelliteTags, useTracking, type Satellite } from '@/entities/satellite'
+import { SatelliteTags, useTracking, type Satellite } from '@/entities/satellite'
+import { WatchToggle } from '@/features/watch-satellite'
 
 const props = defineProps<{ satellites: Satellite[] }>()
 
@@ -11,7 +12,7 @@ const { t } = useI18n()
 const store = useSatelliteFilter()
 const tracking = useTracking()
 
-const visible = computed(() => filterSatellites(props.satellites, store.filter))
+const visible = computed(() => store.apply(props.satellites))
 </script>
 
 <template>
@@ -19,7 +20,7 @@ const visible = computed(() => filterSatellites(props.satellites, store.filter))
     <p class="roster__count" role="status">{{ t('filter.result', { n: visible.length }) }}</p>
     <p v-if="!visible.length" class="roster__empty">{{ t('filter.empty') }}</p>
     <ul v-else class="roster__list">
-      <li v-for="satellite in visible" :key="satellite.noradId">
+      <li v-for="satellite in visible" :key="satellite.noradId" class="roster__row">
         <button
           type="button"
           class="roster__item"
@@ -30,6 +31,7 @@ const visible = computed(() => filterSatellites(props.satellites, store.filter))
           <span class="roster__id">{{ satellite.noradId }}</span>
           <SatelliteTags :satellite="satellite" compact inline class="roster__tags" />
         </button>
+        <WatchToggle class="roster__watch" :satellite="satellite" />
       </li>
     </ul>
   </div>
@@ -62,13 +64,21 @@ const visible = computed(() => filterSatellites(props.satellites, store.filter))
   overflow-y: auto;
   list-style: none;
 }
+.roster__row {
+  position: relative;
+}
+.roster__watch {
+  position: absolute;
+  right: 0.5rem;
+  bottom: 0.375rem;
+}
 .roster__item {
   position: relative;
   display: grid;
   grid-template-columns: 1fr auto;
   gap: 0.25rem 0.5rem;
   width: 100%;
-  padding: 0.625rem 1rem;
+  padding: 0.625rem 2.75rem 0.625rem 1rem;
   background: transparent;
   border: 0;
   border-bottom: 1px solid var(--line);

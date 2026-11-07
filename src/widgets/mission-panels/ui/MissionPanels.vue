@@ -8,16 +8,18 @@ import { useObserver } from '@/entities/observer'
 import { lookAngleAt, predictPasses, separationKm, toSatrec, type Satellite } from '@/entities/satellite'
 import { formatDuration, formatNumber, formatUtc } from '@/shared/lib'
 
+import PassTimeline from './PassTimeline.vue'
+
 const props = defineProps<{ satellite: Satellite; satellites: Satellite[] }>()
 
 const { t } = useI18n()
 const clock = useMissionClock()
 const observer = useObserver()
 
-const tab = ref<'passes' | 'uplink' | 'overflight' | 'proximity'>('passes')
+const tab = ref<'passes' | 'schedule' | 'uplink' | 'overflight' | 'proximity'>('passes')
 
 const tabLabel = computed(() =>
-  ({ passes: t('control.tabPasses'), uplink: t('control.tabUplink'), overflight: t('control.tabOverflight'), proximity: t('control.tabProximity') })[tab.value],
+  ({ passes: t('control.tabPasses'), schedule: t('control.tabSchedule'), uplink: t('control.tabUplink'), overflight: t('control.tabOverflight'), proximity: t('control.tabProximity') })[tab.value],
 )
 
 const satrec = computed(() => toSatrec(props.satellite.line1, props.satellite.line2))
@@ -62,6 +64,7 @@ const nearest = computed(() => {
   <div class="panels">
     <q-tabs v-model="tab" dense no-caps align="justify" indicator-color="transparent" class="panels__tabs" :aria-label="t('control.tabs')">
       <q-tab name="passes" :label="t('control.tabPasses')" />
+      <q-tab name="schedule" :label="t('control.tabSchedule')" />
       <q-tab name="uplink" :label="t('control.tabUplink')" />
       <q-tab name="overflight" :label="t('control.tabOverflight')" />
       <q-tab name="proximity" :label="t('control.tabProximity')" />
@@ -91,6 +94,8 @@ const nearest = computed(() => {
           </tbody>
         </table>
       </template>
+
+      <PassTimeline v-else-if="tab === 'schedule'" :satellite="satellite" :satellites="satellites" />
 
       <UplinkForm
         v-else-if="tab === 'uplink'"
@@ -145,6 +150,11 @@ const nearest = computed(() => {
 </template>
 
 <style scoped>
+/* 탭 다섯 개가 좁은 패널에서 잘리지 않게 합니다. */
+.panels__tabs :deep(.q-tab) {
+  min-width: 0;
+  padding: 0 0.375rem;
+}
 .panels {
   display: flex;
   flex-direction: column;

@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { computed, reactive } from 'vue'
 
-import { EMPTY_FILTER, type Category, type Mission, type OrbitClass, type SatelliteFilter } from '@/entities/satellite'
+import { EMPTY_FILTER, filterSatellites, useWatchlist, type Category, type Mission, type OrbitClass, type Satellite, type SatelliteFilter } from '@/entities/satellite'
 
 function toggled<T>(list: T[], value: T): T[] {
   return list.includes(value) ? list.filter((item) => item !== value) : [...list, value]
@@ -9,11 +9,13 @@ function toggled<T>(list: T[], value: T): T[] {
 
 export const useSatelliteFilter = defineStore('satellite-filter', () => {
   const filter = reactive<SatelliteFilter>({ ...EMPTY_FILTER })
+  const watchlist = useWatchlist()
 
   const isActive = computed(
     () =>
       filter.query !== '' ||
       filter.dualUseOnly ||
+      filter.watchedOnly ||
       filter.categories.length + filter.missions.length + filter.orbits.length + filter.owners.length > 0,
   )
 
@@ -33,5 +35,8 @@ export const useSatelliteFilter = defineStore('satellite-filter', () => {
     Object.assign(filter, EMPTY_FILTER)
   }
 
-  return { filter, isActive, toggleCategory, toggleMission, toggleOrbit, toggleOwner, reset }
+  /** 현재 조건과 관심 위성을 적용한 목록 */
+  const apply = (satellites: Satellite[]): Satellite[] => filterSatellites(satellites, filter, watchlist.ids)
+
+  return { filter, isActive, apply, toggleCategory, toggleMission, toggleOrbit, toggleOwner, reset }
 })
