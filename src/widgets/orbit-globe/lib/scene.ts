@@ -73,6 +73,16 @@ function graticule(): BufferGeometry {
  */
 export function createGlobeScene(canvas: HTMLCanvasElement, colors: GlobeColors): GlobeScene {
   const renderer = new WebGLRenderer({ canvas, antialias: true, alpha: true })
+  try {
+    return buildScene(renderer, canvas, colors)
+  } catch (error) {
+    // 렌더러는 만들었는데 나머지 준비가 실패하면, 보기를 여닫을 때마다 WebGL 맥락이 쌓이지 않게 바로 정리합니다.
+    renderer.dispose()
+    throw error
+  }
+}
+
+function buildScene(renderer: WebGLRenderer, canvas: HTMLCanvasElement, colors: GlobeColors): GlobeScene {
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 
   const scene = new Scene()
