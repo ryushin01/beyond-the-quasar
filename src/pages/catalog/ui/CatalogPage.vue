@@ -7,6 +7,7 @@ import { useSatelliteCatalog, type Satellite } from '@/entities/satellite'
 import { SatelliteFilterPanel, useFilterUrlSync } from '@/features/filter-satellites'
 import { EASE, gsap, useMotionPreference, useSmoothScroll } from '@/shared/motion'
 import { ToggleChip } from '@/shared/ui'
+import { OrbitGlobe } from '@/widgets/orbit-globe'
 import { OrbitScatter } from '@/widgets/orbit-scatter'
 import { SatelliteGallery } from '@/widgets/satellite-gallery'
 
@@ -25,10 +26,13 @@ let context: gsap.Context | undefined
 // 홈의 플레이트에서 `?category=`로 들어오면 그 분류만 고른 상태로 시작합니다.
 useFilterUrlSync()
 
-const showOrbitMap = computed(() => route.query.view === 'orbit')
-function setView(orbit: boolean): void {
+// 주소의 보기 값은 허용 목록으로만 받습니다. 플레이트가 기본이라 주소에 쓰지 않습니다.
+const VIEWS = ['plates', 'orbit', 'globe'] as const
+type View = (typeof VIEWS)[number]
+const view = computed<View>(() => (VIEWS as readonly unknown[]).includes(route.query.view) ? (route.query.view as View) : 'plates')
+function setView(next: View): void {
   const { view: _view, ...query } = route.query
-  void router.replace({ query: orbit ? { ...query, view: 'orbit' } : query })
+  void router.replace({ query: next === 'plates' ? query : { ...query, view: next } })
 }
 function openSatellite(satellite: Satellite): void {
   void router.replace({ query: { ...route.query, sat: String(satellite.noradId) } })
@@ -65,11 +69,13 @@ onBeforeUnmount(() => context?.revert())
       </aside>
       <div class="catalog__gallery">
         <div class="catalog__views" role="group" :aria-label="t('catalog.view')">
-          <ToggleChip :label="t('catalog.viewPlates')" :pressed="!showOrbitMap" @toggle="setView(false)" />
-          <ToggleChip :label="t('catalog.viewOrbit')" :pressed="showOrbitMap" @toggle="setView(true)" />
+          <ToggleChip :label="t('catalog.viewPlates')" :pressed="view === 'plates'" @toggle="setView('plates')" />
+          <ToggleChip :label="t('catalog.viewOrbit')" :pressed="view === 'orbit'" @toggle="setView('orbit')" />
+          <ToggleChip :label="t('catalog.viewGlobe')" :pressed="view === 'globe'" @toggle="setView('globe')" />
         </div>
-        <SatelliteGallery :satellites="satellites" :hide-list="showOrbitMap" />
-        <OrbitScatter v-if="showOrbitMap" :satellites="satellites" @open="openSatellite" />
+        <SatelliteGallery :satellites="satellites" :hide-list="view !== 'plates'" />
+        <OrbitScatter v-if="view === 'orbit'" :satellites="satellites" @open="openSatellite" />
+        <OrbitGlobe v-else-if="view === 'globe'" :satellites="satellites" />
       </div>
     </div>
   </div>

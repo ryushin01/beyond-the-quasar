@@ -61,6 +61,7 @@
   "share": { "copy": "링크 복사", "copied": "링크를 복사했습니다", "failed": "복사하지 못했습니다. 주소창의 주소를 복사해 주세요." },
   "palette": { "open": "검색", "label": "위성과 화면 검색", "placeholder": "위성 이름, NORAD 번호, 화면, 지상국", "results": "검색 결과", "count": "결과 {n}개 · 위아래 화살표로 이동, Enter로 실행", "empty": "결과가 없습니다.", "siteChanged": "지상국을 {site}(으)로 바꿨습니다", "kind": { "page": "화면", "site": "지상국" }},
   "orbitMap": { "summary": "궤도 분포도. 표시 중인 위성 {n}기, 궤도별로 {list}.", "axisInclination": "경사각", "axisAltitude": "평균 고도(km, 로그 눈금)", "geoBelt": "정지궤도 35,786km", "leoLimit": "저궤도 상한 2,000km", "hint": "점을 누르면 상세가 열립니다. 키보드로는 플레이트 보기에서 같은 정보를 열 수 있습니다." },
+  "orbitGlobe": { "summary": "3D 궤도. 표시 중인 위성 {n}기(군사 {mil}기), 궤도별로 {list}. 지구 반지름을 1로 둔 관성 좌표로 한 바퀴씩 그립니다.", "unsupported": "이 브라우저에서는 3D 화면을 그릴 수 없습니다. 궤도 분포 보기에서 같은 위성을 볼 수 있습니다.", "tools": "3D 궤도 조작", "rotateLeft": "왼쪽으로 돌리기", "rotateRight": "오른쪽으로 돌리기", "zoomIn": "가까이", "zoomOut": "멀리", "hint": "끌어서 돌리고 휠이나 두 손가락으로 확대합니다. 버튼으로도 같은 조작을 할 수 있고, 위성 상세는 플레이트 보기에서 엽니다." },
   "schedule": { "caption": "{site} 기준 24시간 통과 일정 (최저 고도각 10°)", "next": "다음 {time}", "inProgress": "통과 중", "none": "통과 없음", "count": "{n}회", "hint": "별을 누른 관심 위성이 여기에 함께 표시됩니다." },
   "filter": { "search": "위성 검색", "searchHint": "이름, NORAD 번호, 국제 식별 번호", "category": "분류", "mission": "임무", "orbit": "궤도", "owner": "운영 주체", "dualUse": "군·민 겸용만", "dualUseTag": "겸용", "watched": "관심 위성만", "reset": "필터 초기화", "result": "{n}기 표시", "empty": "조건에 맞는 위성이 없습니다. 필터를 줄여 보세요." },
   "control": {
@@ -135,6 +136,7 @@
     "view": "보기 방식",
     "viewPlates": "플레이트",
     "viewOrbit": "궤도 분포",
+    "viewGlobe": "3D 궤도",
     "title": "위성 카탈로그",
     "lead": "공개 궤도 카탈로그에서 고른 궤도 자산입니다. 임무, 궤도, 운영 주체로 좁혀 보세요.",
     "filters": "필터",
