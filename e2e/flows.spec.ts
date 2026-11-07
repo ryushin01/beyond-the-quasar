@@ -201,6 +201,24 @@ test.describe('임무 도구', () => {
     await expect(page).toHaveURL(/sat=\d+/)
     await expect(page.getByRole('dialog')).toBeVisible()
   })
+
+  test('3D 궤도는 WebGL로 지구와 궤도를 그리고, 버튼으로 돌리고 확대한다', async ({ page }) => {
+    await page.goto('/catalog?view=globe')
+    const canvas = page.getByRole('img', { name: /3D 궤도/ })
+    await expect(canvas).toBeVisible()
+    await expect(page.locator('.gallery')).toHaveCount(0)
+    const zoomIn = page.getByRole('button', { name: '가까이' })
+    await expect(zoomIn).toBeEnabled()
+    // 그려진 화면에 바탕색이 아닌 화소(눈금선과 궤도)가 있는지 확인합니다.
+    const before = await canvas.screenshot()
+    await zoomIn.click()
+    await page.getByRole('button', { name: '오른쪽으로 돌리기' }).click()
+    // 큰 WebGL 화면은 한 장을 찍는 데 몇 초가 걸릴 수 있어 넉넉히 기다린다.
+    await expect.poll(async () => Buffer.compare(before, await canvas.screenshot()), { timeout: 20_000 }).not.toBe(0)
+    // 플레이트 보기로 돌아가면 주소에서 view가 빠진다.
+    await page.getByRole('button', { name: '플레이트' }).click()
+    await expect(page).not.toHaveURL(/view=/)
+  })
 })
 
 test.describe('홈 진행 바', () => {

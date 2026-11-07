@@ -30,20 +30,24 @@
 |---|---|
 | ![임무, 운영 주체, 궤도 필터와 군사 위성 플레이트 목록](docs/images/catalog.jpg) | ![SBIRS GEO-1의 임무 유형 도식과 임무, 운영 주체, 발사일, 궤도 값을 보여 주는 대화상자](docs/images/catalog-detail.jpg) |
 
-| 궤도 분포도 | 검색 팔레트 |
+| 궤도 분포도 | 3D 궤도 |
 |---|---|
-| ![경사각과 평균 고도로 위성을 찍은 분포도에서 군사 위성만 진하게 표시하고 말풍선으로 위성 정보를 보여 주는 화면](docs/images/orbit-map.jpg) | ![GPS를 검색해 위성 목록이 나온 검색 대화상자](docs/images/palette.jpg) |
+| ![경사각과 평균 고도로 위성을 찍은 분포도에서 군사 위성만 진하게 표시하고 말풍선으로 위성 정보를 보여 주는 화면](docs/images/orbit-map.jpg) | ![군사 위성 66기의 궤도를 눈금선 지구 둘레에 그린 3D 화면. 정지궤도 고리 위에 위성이 마름모로 표시되고 오른쪽 위에 돌리기·확대 버튼이 있다](docs/images/orbit-globe.jpg) |
 
-| 천체 관측 | 모바일 |
+| 검색 팔레트 | 천체 관측 |
 |---|---|
-| ![별, 위성, 관측 대상을 표시한 하늘 지도와 현재 고도가 있는 대상 목록](docs/images/observatory.jpg) | <img src="docs/images/mobile-home.jpg" alt="모바일 첫 화면" width="200"> <img src="docs/images/mobile-control.jpg" alt="모바일 관제 지도와 임무 시계" width="200"> |
+| ![GPS를 검색해 위성 목록이 나온 검색 대화상자](docs/images/palette.jpg) | ![별, 위성, 관측 대상을 표시한 하늘 지도와 현재 고도가 있는 대상 목록](docs/images/observatory.jpg) |
+
+| 모바일 | |
+|---|---|
+| <img src="docs/images/mobile-home.jpg" alt="모바일 첫 화면" width="200"> <img src="docs/images/mobile-control.jpg" alt="모바일 관제 지도와 임무 시계" width="200"> | |
 
 ## 주요 기능
 
 | 메뉴 | 내용 |
 |---|---|
 | 위성 관제 | 위성 151기 실시간 전파, 지상 궤적·가시 범위·낮밤 경계 지도(평면·지구본), 원격 측정, 통과 예측, 관심 위성 24시간 통과 일정, 지상국 상공 현황, 근접 위성, 임무 시계 배속, 시뮬레이션 명령 전송 |
-| 위성 카탈로그 | 분류·임무·궤도·운영 주체·겸용 여부 필터와 검색, 플레이트 목록, 경사각·고도 궤도 분포도, 위성 상세(임무 유형 도식, NORAD 번호, 발사일, 원지점, 근지점 등) |
+| 위성 카탈로그 | 분류·임무·궤도·운영 주체·겸용 여부 필터와 검색, 플레이트 목록, 경사각·고도 궤도 분포도, 3D 궤도(three.js), 위성 상세(임무 유형 도식, NORAD 번호, 발사일, 원지점, 근지점 등) |
 | 천체 관측 | 관측지별 일몰·박명·월출, 달 위상, 하늘 지도, 시각 조절, 퀘이사·은하·성운·성단 고도 곡선, 관측 일지 |
 | 공통 | `Ctrl/⌘ K` 검색 팔레트, 관심 위성, 필터·위성이 담긴 공유 링크, 한국어·영어, 밝은·어두운 화면, 모션 정지 버튼과 동작 줄이기 대응 |
 
@@ -53,13 +57,13 @@
 
 ## 기술 스택
 
-![Vue.js, Quasar, TypeScript, Vite, Pinia, Bun, D3, Vitest, GitHub Actions](docs/images/tech-stack.svg)
+![Vue.js, Quasar, TypeScript, Vite, Pinia, Bun, D3, three.js, Vitest, GitHub Actions](docs/images/tech-stack.svg)
 
 | 구분 | 사용 기술 |
 |---|---|
 | 프레임워크 | Vue 3.5, Quasar 2, TypeScript 5.9, Vite 7, Vue Router 5 |
 | 상태·데이터 | Pinia 4, TanStack Query 5, VueUse |
-| 궤도·천체 | satellite.js 6(SGP4), Astronomy Engine, d3-geo, world-atlas |
+| 궤도·천체 | satellite.js 6(SGP4), Astronomy Engine, d3-geo, world-atlas, three.js(3D 궤도) |
 | 스타일·다국어 | UnoCSS, vue-i18n 11, Archivo·Pretendard·Geist Mono |
 | 모션 | GSAP 3(ScrollTrigger), Lenis, WebGL 셰이더 |
 | 품질 | oxlint, vue-tsc, Vitest, Vue Test Utils, Playwright, axe |

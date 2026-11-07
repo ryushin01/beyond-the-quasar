@@ -141,3 +141,36 @@ export function predictPasses(
   if (current && passes.length < limit) passes.push(current)
   return passes
 }
+
+/** 지구 반지름을 1로 둔 3D 좌표. three.js처럼 y가 북극 방향이고, x는 춘분점 방향입니다. */
+export type ScenePoint = [x: number, y: number, z: number]
+
+/** 관성 좌표(ECI, km)를 화면 좌표로 옮깁니다. 축을 바꿔도 오른손 좌표계가 유지되게 z(북)를 y로, y를 -z로 둡니다. */
+function toScene({ x, y, z }: { x: number; y: number; z: number }): ScenePoint {
+  return [x / EARTH_RADIUS_KM, z / EARTH_RADIUS_KM, -y / EARTH_RADIUS_KM]
+}
+
+export function scenePosition(satrec: SatRec, date: Date): ScenePoint | null {
+  const result = propagate(satrec, date)
+  if (!result || typeof result.position === 'boolean') return null
+  return toScene(result.position)
+}
+
+/**
+ * 지금부터 한 바퀴 동안의 궤도를 점으로 나눕니다. 관성 좌표라 지구 자전과 무관하게 닫힌 고리가 됩니다.
+ * 주기는 TLE의 평균 운동(satrec.no, 라디안/분)으로 구합니다.
+ */
+export function orbitPath(satrec: SatRec, date: Date, steps = 120): ScenePoint[] {
+  const periodMs = ((2 * Math.PI) / satrec.no) * 60_000
+  const points: ScenePoint[] = []
+  for (let step = 0; step <= steps; step++) {
+    const point = scenePosition(satrec, new Date(date.getTime() + (periodMs * step) / steps))
+    if (point) points.push(point)
+  }
+  return points
+}
+
+/** 그리니치 항성시(라디안). 지구본을 실제 자전 각도만큼 돌려 대륙 위치를 맞출 때 씁니다. */
+export function earthRotation(date: Date): number {
+  return gstime(date)
+}

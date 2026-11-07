@@ -55,6 +55,13 @@ test('/catalog?view=orbit: 궤도 분포도 axe 검사', async ({ page }) => {
   expect(results.violations.map((item) => `${item.id}: ${item.nodes[0]?.target}`)).toEqual([])
 })
 
+test('/catalog?view=globe: 3D 궤도 axe 검사', async ({ page }) => {
+  await page.goto('/catalog?view=globe')
+  await expect(page.getByRole('button', { name: '가까이' })).toBeEnabled()
+  const results = await new AxeBuilder({ page }).analyze()
+  expect(results.violations.map((item) => `${item.id}: ${item.nodes[0]?.target}`)).toEqual([])
+})
+
 test('검색 팔레트 axe 검사', async ({ page }) => {
   await page.goto('/control')
   await page.waitForLoadState('networkidle')

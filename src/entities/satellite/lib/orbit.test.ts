@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { classifyOrbit, footprintRadiusDeg, groundTrack, lookAngleAt, orbitalPeriodMin, predictPasses, stateAt, tleEpoch, toSatrec } from './orbit'
+import { classifyOrbit, footprintRadiusDeg, groundTrack, lookAngleAt, orbitalPeriodMin, orbitPath, predictPasses, scenePosition, stateAt, tleEpoch, toSatrec } from './orbit'
 
 // ISS, 고정된 예시 TLE
 const LINE1 = '1 25544U 98067A   26309.50000000  .00016717  00000+0  10270-3 0  9990'
@@ -72,5 +72,30 @@ describe('통과 예측', () => {
 
   it('기준 고도를 넘지 못하면 비어 있다', () => {
     expect(predictPasses(satrec, DAEJEON, EPOCH, { hours: 3, minElevation: 89.9 })).toEqual([])
+  })
+})
+
+describe('3D 궤도', () => {
+  const satrec = toSatrec(LINE1, LINE2)
+  const radius = ([x, y, z]: number[]) => Math.hypot(x as number, y as number, z as number)
+
+  it('지구 반지름을 1로 두어 ISS는 약 1.06 거리에 있다', () => {
+    const point = scenePosition(satrec, EPOCH)
+    expect(point).not.toBeNull()
+    expect(radius(point!)).toBeGreaterThan(1.05)
+    expect(radius(point!)).toBeLessThan(1.08)
+  })
+
+  it('한 바퀴를 나눈 점은 처음과 끝이 거의 같은 닫힌 고리다', () => {
+    const path = orbitPath(satrec, EPOCH, 60)
+    expect(path).toHaveLength(61)
+    const [first, last] = [path[0]!, path.at(-1)!]
+    expect(Math.hypot(first[0] - last[0], first[1] - last[1], first[2] - last[2])).toBeLessThan(0.02)
+  })
+
+  it('y축이 북극이라 경사각 51.6°이면 y 최댓값이 반지름의 sin(51.6°) 근처다', () => {
+    const path = orbitPath(satrec, EPOCH, 240)
+    const top = Math.max(...path.map((point) => point[1]))
+    expect(top / radius(path[0]!)).toBeCloseTo(Math.sin((51.64 * Math.PI) / 180), 1)
   })
 })

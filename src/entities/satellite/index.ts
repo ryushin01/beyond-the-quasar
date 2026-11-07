@@ -5,8 +5,12 @@ export { CATEGORIES, MISSIONS, ORBITS } from './model/types'
 export type { Category, LookAngle, Mission, OrbitClass, Pass, Satellite, SatelliteState, Snapshot } from './model/types'
 export { countBy, EMPTY_FILTER, filterSatellites, type SatelliteFilter } from './lib/filter'
 export {
+  earthRotation,
   footprintRadiusDeg,
   groundTrack,
+  orbitPath,
+  scenePosition,
+  type ScenePoint,
   lookAngleAt,
   orbitalPeriodMin,
   predictPasses,

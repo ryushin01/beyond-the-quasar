@@ -61,6 +61,7 @@
   "share": { "copy": "Copy link", "copied": "Link copied", "failed": "Could not copy. Please copy the address bar URL." },
   "palette": { "open": "Search", "label": "Search satellites and screens", "placeholder": "Satellite name, NORAD ID, screen, site", "results": "Search results", "count": "{n} results · Up/Down to move, Enter to run", "empty": "No results.", "siteChanged": "Ground site changed to {site}", "kind": { "page": "Screen", "site": "Site" }},
   "orbitMap": { "summary": "Orbit distribution chart. Showing {n} satellites; by orbit: {list}.", "axisInclination": "Inclination", "axisAltitude": "Mean altitude (km, log scale)", "geoBelt": "Geostationary 35,786 km", "leoLimit": "LEO limit 2,000 km", "hint": "Select a point to open details. With a keyboard, the plate view offers the same information." },
+  "orbitGlobe": { "summary": "3D orbits. {n} satellites shown ({mil} military), by orbit {list}. Each orbit is drawn once around in inertial coordinates with Earth radius 1.", "unsupported": "This browser cannot draw the 3D view. The orbit map view shows the same satellites.", "tools": "3D orbit controls", "rotateLeft": "Rotate left", "rotateRight": "Rotate right", "zoomIn": "Zoom in", "zoomOut": "Zoom out", "hint": "Drag to rotate, scroll or pinch to zoom. The buttons do the same; open satellite details from the plates view." },
   "schedule": { "caption": "24-hour passes over {site} (min elevation 10°)", "next": "Next {time}", "inProgress": "Passing now", "none": "No passes", "count": "{n} passes", "hint": "Starred satellites appear here together." },
   "filter": { "search": "Search satellites", "searchHint": "Name, NORAD ID, international designator", "category": "Class", "mission": "Mission", "orbit": "Orbit", "owner": "Operator", "dualUse": "Dual-use only", "dualUseTag": "Dual-use", "watched": "Watchlist only", "reset": "Reset filters", "result": "{n} shown", "empty": "No satellites match. Try fewer filters." },
   "control": {
@@ -135,6 +136,7 @@
     "view": "View",
     "viewPlates": "Plates",
     "viewOrbit": "Orbit map",
+    "viewGlobe": "3D orbits",
     "title": "Satellite catalog",
     "lead": "Orbital assets selected from the public catalog. Narrow them by mission, orbit and operator.",
     "filters": "Filters",
