@@ -3,7 +3,7 @@ import { symSharpClose, symSharpSearch } from '@quasar/extras/material-symbols-s
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import { CATEGORIES, countBy, MISSIONS, ORBITS, type Satellite } from '@/entities/satellite'
+import { CATEGORIES, countBy, MISSIONS, ORBITS, useWatchlist, type Satellite } from '@/entities/satellite'
 import { ToggleChip } from '@/shared/ui'
 
 import { useSatelliteFilter } from '../model/filter'
@@ -12,6 +12,7 @@ const props = defineProps<{ satellites: Satellite[]; dense?: boolean }>()
 
 const { t, te } = useI18n()
 const store = useSatelliteFilter()
+const watchlist = useWatchlist()
 
 const categoryCounts = computed(() => countBy(props.satellites, (item) => item.category))
 const missionCounts = computed(() => countBy(props.satellites, (item) => item.mission))
@@ -97,6 +98,7 @@ const ownerLabel = (code: string): string => (te(`owners.${code}`) ? t(`owners.$
     </fieldset>
 
     <div class="foot">
+      <ToggleChip :label="t('filter.watched')" :count="watchlist.ids.length" :pressed="store.filter.watchedOnly" @toggle="store.filter.watchedOnly = !store.filter.watchedOnly" />
       <ToggleChip :label="t('filter.dualUse')" :pressed="store.filter.dualUseOnly" @toggle="store.filter.dualUseOnly = !store.filter.dualUseOnly" />
       <button v-if="store.isActive" type="button" class="reset" @click="store.reset()">{{ t('filter.reset') }}</button>
     </div>

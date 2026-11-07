@@ -26,7 +26,7 @@ describe('SatelliteRoster', () => {
     const wrapper = mount(SatelliteRoster, { props: { satellites: FIXTURES } })
     useSatelliteFilter().toggleCategory('military')
     await wrapper.vm.$nextTick()
-    expect(wrapper.findAll('li button')).toHaveLength(1)
+    expect(wrapper.findAll('.roster__item')).toHaveLength(1)
     useSatelliteFilter().filter.query = 'nothing'
     await wrapper.vm.$nextTick()
     expect(wrapper.text()).toContain('조건에 맞는 위성이 없습니다')

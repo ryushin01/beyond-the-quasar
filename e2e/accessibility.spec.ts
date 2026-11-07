@@ -48,3 +48,26 @@ test('언어를 바꾸면 lang과 제목이 함께 바뀐다', async ({ page }) 
   await expect(page).toHaveTitle(/Control/)
 })
 
+test('/catalog?view=orbit: 궤도 분포도 axe 검사', async ({ page }) => {
+  await page.goto('/catalog?view=orbit')
+  await page.waitForLoadState('networkidle')
+  const results = await new AxeBuilder({ page }).analyze()
+  expect(results.violations.map((item) => `${item.id}: ${item.nodes[0]?.target}`)).toEqual([])
+})
+
+test('검색 팔레트 axe 검사', async ({ page }) => {
+  await page.goto('/control')
+  await page.waitForLoadState('networkidle')
+  await page.getByRole('button', { name: '검색', exact: true }).click()
+  await expect(page.getByRole('combobox', { name: '위성과 화면 검색' })).toBeFocused()
+  const results = await new AxeBuilder({ page }).analyze()
+  expect(results.violations.map((item) => `${item.id}: ${item.nodes[0]?.target}`)).toEqual([])
+})
+
+test('일정 탭 axe 검사', async ({ page }) => {
+  await page.goto('/control')
+  await page.getByRole('tab', { name: '일정' }).click()
+  await expect(page.locator('.schedule__row').first()).toBeVisible()
+  const results = await new AxeBuilder({ page }).analyze()
+  expect(results.violations.map((item) => `${item.id}: ${item.nodes[0]?.target}`)).toEqual([])
+})

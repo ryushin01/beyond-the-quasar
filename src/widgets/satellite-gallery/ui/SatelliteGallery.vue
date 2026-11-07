@@ -1,37 +1,52 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 
-import { filterSatellites, SatellitePlate, SatelliteTags, useTracking, type Satellite } from '@/entities/satellite'
+import { SatellitePlate, SatelliteTags, useTracking, type Satellite } from '@/entities/satellite'
 import { useSatelliteFilter } from '@/features/filter-satellites'
+import { CopyLinkButton } from '@/features/share-link'
+import { WatchToggle } from '@/features/watch-satellite'
 import { ROUTES } from '@/shared/config'
 import { formatNumber } from '@/shared/lib'
 import { DataRow } from '@/shared/ui'
 
-const props = defineProps<{ satellites: Satellite[] }>()
+const props = defineProps<{ satellites: Satellite[]; hideList?: boolean }>()
 
 const { t, te } = useI18n()
+const route = useRoute()
 const router = useRouter()
 const store = useSatelliteFilter()
 const tracking = useTracking()
 
-const visible = computed(() => filterSatellites(props.satellites, store.filter))
-const opened = ref<Satellite | null>(null)
+const visible = computed(() => store.apply(props.satellites))
+
+/** 상세는 주소(`?sat=NORAD`)를 따르므로 링크로 바로 열 수 있습니다. */
+const opened = computed(() => {
+  const id = Number(route.query.sat)
+  return (Number.isInteger(id) && props.satellites.find((satellite) => satellite.noradId === id)) || null
+})
 const isOpen = computed({
   get: () => opened.value !== null,
   set: (value) => {
-    if (!value) opened.value = null
+    if (!value) closeDetail()
   },
 })
+
+function openDetail(satellite: Satellite): void {
+  void router.replace({ query: { ...route.query, sat: String(satellite.noradId) } })
+}
+function closeDetail(): void {
+  const { sat: _sat, ...query } = route.query
+  void router.replace({ query })
+}
 
 const statusLabel = (code: string | null): string => (code && te(`status.${code}`) ? t(`status.${code}`) : t('status.unknown'))
 const ownerLabel = (code: string | null): string | null => (code && te(`owners.${code}`) ? t(`owners.${code}`) : code)
 
 function trackIt(satellite: Satellite): void {
   tracking.trackedId = satellite.noradId
-  opened.value = null
-  void router.push(ROUTES.control)
+  void router.push({ path: ROUTES.control, query: { sat: String(satellite.noradId) } })
 }
 </script>
 
@@ -40,16 +55,21 @@ function trackIt(satellite: Satellite): void {
     <h2 class="sr-only">{{ t('control.roster') }}</h2>
     <p class="gallery__count" role="status">{{ t('filter.result', { n: visible.length }) }}</p>
     <p v-if="!visible.length" class="gallery__empty">{{ t('filter.empty') }}</p>
-    <TransitionGroup v-else name="plate" tag="ul" class="gallery">
+    <TransitionGroup v-else-if="!hideList" name="plate" tag="ul" class="gallery">
       <li v-for="satellite in visible" :key="satellite.noradId" class="gallery__item">
-        <SatellitePlate :satellite="satellite" @open="opened = satellite" />
+        <SatellitePlate :satellite="satellite" @open="openDetail(satellite)">
+          <template #actions><WatchToggle :satellite="satellite" /></template>
+        </SatellitePlate>
       </li>
     </TransitionGroup>
 
     <q-dialog v-model="isOpen" :aria-label="t('catalog.detail')">
       <q-card v-if="opened" square class="detail">
         <header class="detail__head">
-          <p class="label-mono">{{ t('catalog.detail') }} · #{{ opened.noradId }}</p>
+          <div class="detail__top">
+            <p class="label-mono">{{ t('catalog.detail') }} · #{{ opened.noradId }}</p>
+            <WatchToggle :satellite="opened" />
+          </div>
           <h2 class="detail__title">{{ opened.name }}</h2>
           <SatelliteTags :satellite="opened" />
         </header>
@@ -70,6 +90,7 @@ function trackIt(satellite: Satellite): void {
           <DataRow :label="t('catalog.rcs')" :value="opened.rcsM2 === null ? null : `${formatNumber(opened.rcsM2, 2)} m²`" />
         </dl>
         <q-card-actions align="right" class="detail__actions">
+          <CopyLinkButton class="detail__share" />
           <q-btn v-close-popup flat no-caps :label="t('catalog.close')" />
           <q-btn unelevated square no-caps color="primary" :label="t('catalog.trackIt')" @click="trackIt(opened)" />
         </q-card-actions>
@@ -120,6 +141,14 @@ function trackIt(satellite: Satellite): void {
 .detail__head {
   padding: 1.25rem 1rem 1rem;
   border-bottom: 1px solid var(--line);
+}
+.detail__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.detail__share {
+  margin-right: auto;
 }
 .detail__head .label-mono {
   margin: 0;

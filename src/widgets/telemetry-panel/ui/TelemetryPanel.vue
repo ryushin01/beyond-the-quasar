@@ -8,6 +8,8 @@ import { useI18n } from 'vue-i18n'
 import { useMissionClock } from '@/entities/clock'
 import { useObserver } from '@/entities/observer'
 import { lookAngleAt, orbitalPeriodMin, SatelliteTags, stateAt, toSatrec, type Satellite } from '@/entities/satellite'
+import { CopyLinkButton } from '@/features/share-link'
+import { WatchToggle } from '@/features/watch-satellite'
 import { formatDms, formatNumber } from '@/shared/lib'
 import { DataRow } from '@/shared/ui'
 
@@ -52,9 +54,13 @@ const profile = computed(() => {
 <template>
   <div class="telemetry">
     <div class="telemetry__head">
-      <p class="telemetry__name">{{ satellite.name }}</p>
+      <div class="telemetry__title">
+        <p class="telemetry__name">{{ satellite.name }}</p>
+        <WatchToggle :satellite="satellite" />
+      </div>
       <SatelliteTags :satellite="satellite" />
       <p class="telemetry__mission">{{ t(`missions.${satellite.mission}`) }}</p>
+      <CopyLinkButton />
     </div>
     <dl class="telemetry__rows">
       <DataRow :label="t('control.latitude')" :value="state ? formatDms(state.latitude, 'N', 'S') : null" />
@@ -80,6 +86,12 @@ const profile = computed(() => {
 </template>
 
 <style scoped>
+.telemetry__title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
 .telemetry__head {
   display: flex;
   flex-direction: column;

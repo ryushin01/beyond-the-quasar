@@ -1,18 +1,20 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 
-import { CATEGORIES, useSatelliteCatalog, type Category } from '@/entities/satellite'
-import { SatelliteFilterPanel, useSatelliteFilter } from '@/features/filter-satellites'
+import { useSatelliteCatalog, type Satellite } from '@/entities/satellite'
+import { SatelliteFilterPanel, useFilterUrlSync } from '@/features/filter-satellites'
 import { EASE, gsap, useMotionPreference, useSmoothScroll } from '@/shared/motion'
+import { ToggleChip } from '@/shared/ui'
+import { OrbitScatter } from '@/widgets/orbit-scatter'
 import { SatelliteGallery } from '@/widgets/satellite-gallery'
 
 useSmoothScroll()
 
 const { t } = useI18n()
 const route = useRoute()
-const store = useSatelliteFilter()
+const router = useRouter()
 const { enabled } = useMotionPreference()
 const { satellites, fetchedAt, isPending, isError, refetch } = useSatelliteCatalog()
 
@@ -20,17 +22,17 @@ const root = ref<HTMLElement>()
 const snapshotDate = computed(() => fetchedAt.value?.toISOString().slice(0, 10) ?? '—')
 let context: gsap.Context | undefined
 
-/** 홈의 플레이트에서 들어오면 해당 분류만 고른 상태로 시작합니다. */
-watch(
-  () => route.query.category,
-  (category) => {
-    if (typeof category === 'string' && (CATEGORIES as readonly string[]).includes(category)) {
-      store.reset()
-      store.toggleCategory(category as Category)
-    }
-  },
-  { immediate: true },
-)
+// 홈의 플레이트에서 `?category=`로 들어오면 그 분류만 고른 상태로 시작합니다.
+useFilterUrlSync()
+
+const showOrbitMap = computed(() => route.query.view === 'orbit')
+function setView(orbit: boolean): void {
+  const { view: _view, ...query } = route.query
+  void router.replace({ query: orbit ? { ...query, view: 'orbit' } : query })
+}
+function openSatellite(satellite: Satellite): void {
+  void router.replace({ query: { ...route.query, sat: String(satellite.noradId) } })
+}
 
 onMounted(() => {
   if (!enabled.value) return
@@ -61,12 +63,24 @@ onBeforeUnmount(() => context?.revert())
       <aside class="catalog__side" :aria-label="t('catalog.filters')">
         <SatelliteFilterPanel :satellites="satellites" />
       </aside>
-      <SatelliteGallery :satellites="satellites" class="catalog__gallery" />
+      <div class="catalog__gallery">
+        <div class="catalog__views" role="group" :aria-label="t('catalog.view')">
+          <ToggleChip :label="t('catalog.viewPlates')" :pressed="!showOrbitMap" @toggle="setView(false)" />
+          <ToggleChip :label="t('catalog.viewOrbit')" :pressed="showOrbitMap" @toggle="setView(true)" />
+        </div>
+        <SatelliteGallery :satellites="satellites" :hide-list="showOrbitMap" />
+        <OrbitScatter v-if="showOrbitMap" :satellites="satellites" @open="openSatellite" />
+      </div>
     </div>
   </div>
 </template>
 
 <style scoped>
+.catalog__views {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
 .catalog {
   padding: clamp(2rem, 5vw, 4.5rem) var(--margin) clamp(4rem, 8vw, 7rem);
 }

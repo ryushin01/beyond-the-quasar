@@ -3,6 +3,7 @@ import { symSharpClose, symSharpMenu } from '@quasar/extras/material-symbols-sha
 import { onBeforeUnmount, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
+import { CommandPalette } from '@/features/command-palette'
 import { SitePreferences } from '@/features/site-preferences'
 import { ROUTES } from '@/shared/config'
 import { formatUtc } from '@/shared/lib'
@@ -71,6 +72,7 @@ function onMenuShow(): void {
       </nav>
 
       <div class="bar__end">
+        <CommandPalette />
         <SitePreferences />
         <button
           type="button"
@@ -281,5 +283,11 @@ function onMenuShow(): void {
 }
 .menu__link-inner {
   display: inline-block;
+}
+@media (max-width: 480px) {
+  /* 검색 버튼이 늘어 좁은 화면에서는 로고 글자를 숨깁니다. 링크 이름은 aria-label에 있습니다. */
+  .logo__text {
+    display: none;
+  }
 }
 </style>
