@@ -16,8 +16,12 @@ jobs:
       - uses: oven-sh/setup-bun@v2
       - run: bun install --frozen-lockfile
       - run: bun run lint
+      - run: bun run typecheck
       - run: bun run test
       - run: bun run build
       - run: bun run story:build
       - run: bunx playwright install --with-deps chromium
       - run: bun run test:e2e
+      # 캔버스·WebGL 컴포넌트를 실제 브라우저에서 확인합니다. bun은 설치 스크립트를 돌리지 않으므로 실행 파일을 따로 받습니다.
+      - run: bunx cypress install
+      - run: bun run test:component

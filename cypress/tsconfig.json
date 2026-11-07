@@ -1,0 +1,8 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "types": ["cypress", "vite/client", "quasar", "@intlify/unplugin-vue-i18n/messages"],
+    "isolatedModules": false
+  },
+  "include": ["../src/**/*.cy.ts", "./**/*.ts", "../src/**/*.vue", "../src/**/*.d.ts"]
+}

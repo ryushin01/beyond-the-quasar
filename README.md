@@ -57,7 +57,7 @@
 
 ## 기술 스택
 
-![Vue.js, Quasar, TypeScript, Vite, Pinia, Bun, D3, three.js, Vitest, GitHub Actions](docs/images/tech-stack.svg)
+![Vue.js, Quasar, TypeScript, Vite, Pinia, Bun, D3, three.js, Vitest, Cypress, GitHub Actions](docs/images/tech-stack.svg)
 
 | 구분 | 사용 기술 |
 |---|---|
@@ -66,7 +66,7 @@
 | 궤도·천체 | satellite.js 6(SGP4), Astronomy Engine, d3-geo, world-atlas, three.js(3D 궤도) |
 | 스타일·다국어 | UnoCSS, vue-i18n 11, Archivo·Pretendard·Geist Mono |
 | 모션 | GSAP 3(ScrollTrigger), Lenis, WebGL 셰이더 |
-| 품질 | oxlint, vue-tsc, Vitest, Vue Test Utils, Playwright, axe |
+| 품질 | oxlint, vue-tsc, Vitest, Vue Test Utils, Cypress(컴포넌트), Playwright, axe |
 | 문서 | Histoire |
 | 패키지·배포 | Bun, GitHub Actions, Vercel |
 

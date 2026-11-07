@@ -12,7 +12,7 @@
 
 ## Vite 버전
 
-Histoire 1.0 beta가 Vite 7만 지원해 `vite`를 7.3으로 고정하고 `overrides`로 하나로 맞췄습니다. 같은 이유로 `@quasar/vite-plugin`은 1.x, `vitest`는 4를 씁니다. `satellite.js`는 7의 WASM 빌드가 Vite 빌드와 충돌해 6을 씁니다.
+Histoire 1.0 beta가 Vite 7만 지원해 `vite`를 7.3으로 고정하고 `overrides`로 하나로 맞췄습니다. 같은 이유로 `@quasar/vite-plugin`은 1.x, `vitest`는 4, Cypress는 15를 씁니다(Cypress 16의 컴포넌트 테스트는 Vite 8만 지원). `satellite.js`는 7의 WASM 빌드가 Vite 빌드와 충돌해 6을 씁니다.
 
 ## 3D 궤도
 
@@ -63,6 +63,7 @@ Vercel 프로젝트 `beyond-the-quasar`가 GitHub 저장소와 연결되어 있�
 | 범위 | 위치 | 내용 |
 |---|---|---|
 | 단위·컴포넌트 | `src/**/*.test.ts` | 궤도·천체 계산, 필터, 명령 지연, 각 컴포넌트 |
+| 컴포넌트(실제 브라우저) | `src/**/*.cy.ts` | Cypress 컴포넌트 테스트. jsdom이 그리지 못하는 지상 궤적 지도(2D 캔버스)와 3D 궤도(WebGL)가 실제로 그려지는지, 확대·전환 버튼이 그림을 바꾸는지, 닫으면 그리기를 멈추는지 확인합니다. `bun run test:component` |
 | 스토리 | `src/**/*.story.vue` | 컴포넌트별 상태 (`bun run story:build`로 CI에서 빌드 확인) |
 | E2E | `e2e/` | 넘침, 프리로더, 모션 정지, 관제·카탈로그·관측 흐름, axe |
 
