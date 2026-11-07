@@ -1,7 +1,7 @@
 # 🔵 Beyond the Quasar
 
 [![CI](https://github.com/ryushin01/beyond-the-quasar/actions/workflows/ci.yml/badge.svg)](https://github.com/ryushin01/beyond-the-quasar/actions/workflows/ci.yml)
-![version](https://img.shields.io/badge/version-0.2.0-1a3fe0)
+![version](https://img.shields.io/badge/version-0.4.1-1a3fe0)
 ![Histoire](https://img.shields.io/badge/Histoire-1.0_beta-34D399)
 
 군사·항법·기상·통신 위성을 추적하고 오늘 밤의 하늘을 관측하는 위성 관제·천체 관측 웹 앱입니다.
@@ -57,7 +57,7 @@
 
 ## 기술 스택
 
-![Vue.js, Quasar, TypeScript, Vite, Pinia, Bun, D3, three.js, Vitest, GitHub Actions](docs/images/tech-stack.svg)
+![Vue.js, Quasar, TypeScript, Vite, Pinia, Bun, D3, three.js, Vitest, Cypress, GitHub Actions](docs/images/tech-stack.svg)
 
 | 구분 | 사용 기술 |
 |---|---|
@@ -66,7 +66,7 @@
 | 궤도·천체 | satellite.js 6(SGP4), Astronomy Engine, d3-geo, world-atlas, three.js(3D 궤도) |
 | 스타일·다국어 | UnoCSS, vue-i18n 11, Archivo·Pretendard·Geist Mono |
 | 모션 | GSAP 3(ScrollTrigger), Lenis, WebGL 셰이더 |
-| 품질 | oxlint, vue-tsc, Vitest, Vue Test Utils, Playwright, axe |
+| 품질 | oxlint, vue-tsc, Vitest, Vue Test Utils, Cypress(컴포넌트), Playwright, axe |
 | 문서 | Histoire |
 | 패키지·배포 | Bun, GitHub Actions, Vercel |
 
