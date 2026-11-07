@@ -32,7 +32,23 @@
     "footerLead": "Entering orbit",
     "footerCta": "Start control",
     "credits": "Orbital data: CelesTrak public catalog · Astronomy: Astronomy Engine · Map: Natural Earth",
-    "disclaimer": "This app is a simulation on public data. Undisclosed satellites are not in the public catalog, and reconnaissance labels reflect public sources."
+    "disclaimer": "This app is a simulation on public data. Undisclosed satellites are not in the public catalog, and reconnaissance labels reflect public sources.",
+    "progressLabel": "Home section progress",
+    "stopLight": "Light",
+    "stopAssets": "Assets",
+    "stopAxes": "Control·Observe",
+    "stopSystems": "Systems",
+    "stopBoard": "Live board",
+    "axesTitle": "Control and observation, two axes",
+    "axesControl": "Control",
+    "axesControlSub": "Command the assets in orbit",
+    "axesObserve": "Observe",
+    "axesObserveSub": "Record the light beyond them",
+    "axesGlobe": "Dot-matrix globe centred on the Daejeon ground station, showing the current sub-satellite points of {total} satellites, {military} of them military.",
+    "axesMilitary": "Military {n}",
+    "axesOther": "Other {n}",
+    "axesStation": "Daejeon station",
+    "axesNote": "Sub-satellite points from public TLEs"
   },
   "categories": { "military": "Military", "navigation": "Navigation", "earth-observation": "Earth observation", "weather": "Weather", "communications": "Communications", "science": "Science", "crewed": "Crewed" },
   "categoryCodes": { "military": "MIL", "navigation": "NAV", "earth-observation": "EO", "weather": "WX", "communications": "COM", "science": "SCI", "crewed": "CRW" },
@@ -140,7 +156,8 @@
     "orbit": "Orbit",
     "category": "Class",
     "trackIt": "Track in control",
-    "close": "Close"
+    "close": "Close",
+    "schematic": "Mission-type schematic · not the actual shape"
   },
   "observatory": {
     "title": "Observatory",

@@ -17,4 +17,5 @@ export {
 export { buildPassSchedule, type PassScheduleRow } from './lib/schedule'
 export { default as SatelliteTags } from './ui/SatelliteTags.vue'
 export { default as SatellitePlate } from './ui/SatellitePlate.vue'
+export { default as SatelliteWireframe } from './ui/SatelliteWireframe.vue'
 export { AEHF_FIXTURE, FIXTURES, ISS_FIXTURE } from './model/fixtures'

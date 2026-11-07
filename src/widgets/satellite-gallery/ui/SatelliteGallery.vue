@@ -3,7 +3,7 @@ import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 
-import { SatellitePlate, SatelliteTags, useTracking, type Satellite } from '@/entities/satellite'
+import { SatellitePlate, SatelliteTags, SatelliteWireframe, useTracking, type Satellite } from '@/entities/satellite'
 import { useSatelliteFilter } from '@/features/filter-satellites'
 import { CopyLinkButton } from '@/features/share-link'
 import { WatchToggle } from '@/features/watch-satellite'
@@ -65,30 +65,34 @@ function trackIt(satellite: Satellite): void {
 
     <q-dialog v-model="isOpen" :aria-label="t('catalog.detail')">
       <q-card v-if="opened" square class="detail">
-        <header class="detail__head">
+        <div class="detail__head">
           <div class="detail__top">
             <p class="label-mono">{{ t('catalog.detail') }} · #{{ opened.noradId }}</p>
             <WatchToggle :satellite="opened" />
           </div>
           <h2 class="detail__title">{{ opened.name }}</h2>
           <SatelliteTags :satellite="opened" />
-        </header>
-        <dl class="detail__rows">
-          <DataRow :label="t('catalog.category')" :value="t(`categories.${opened.category}`)" />
-          <DataRow :label="t('catalog.mission')" :value="t(`missions.${opened.mission}`)" />
-          <DataRow :label="t('catalog.orbit')" :value="`${opened.orbit} · ${t(`orbits.${opened.orbit}`)}`" />
-          <DataRow :label="t('catalog.owner')" :value="ownerLabel(opened.owner)" />
-          <DataRow :label="t('catalog.status')" :value="statusLabel(opened.opsStatus)" />
-          <DataRow :label="t('catalog.noradId')" :value="opened.noradId" />
-          <DataRow :label="t('catalog.objectId')" :value="opened.objectId" />
-          <DataRow :label="t('catalog.launch')" :value="opened.launchDate" />
-          <DataRow :label="t('catalog.launchSite')" :value="opened.launchSite" />
-          <DataRow :label="t('catalog.apogee')" :value="opened.apogeeKm === null ? null : `${formatNumber(opened.apogeeKm)} km`" />
-          <DataRow :label="t('catalog.perigee')" :value="opened.perigeeKm === null ? null : `${formatNumber(opened.perigeeKm)} km`" />
-          <DataRow :label="t('catalog.period')" :value="opened.periodMin === null ? null : `${formatNumber(opened.periodMin, 1)} min`" />
-          <DataRow :label="t('catalog.inclination')" :value="opened.inclinationDeg === null ? null : `${formatNumber(opened.inclinationDeg, 2)}°`" />
-          <DataRow :label="t('catalog.rcs')" :value="opened.rcsM2 === null ? null : `${formatNumber(opened.rcsM2, 2)} m²`" />
-        </dl>
+          <SatelliteWireframe :satellite="opened" class="detail__wire" />
+        </div>
+        <!-- 값이 많으면 이 영역만 스크롤되므로 키보드로도 스크롤할 수 있게 합니다 -->
+        <div class="detail__rows" role="group" tabindex="0" :aria-label="t('catalog.detail')">
+          <dl class="detail__list">
+            <DataRow :label="t('catalog.category')" :value="t(`categories.${opened.category}`)" />
+            <DataRow :label="t('catalog.mission')" :value="t(`missions.${opened.mission}`)" />
+            <DataRow :label="t('catalog.orbit')" :value="`${opened.orbit} · ${t(`orbits.${opened.orbit}`)}`" />
+            <DataRow :label="t('catalog.owner')" :value="ownerLabel(opened.owner)" />
+            <DataRow :label="t('catalog.status')" :value="statusLabel(opened.opsStatus)" />
+            <DataRow :label="t('catalog.noradId')" :value="opened.noradId" />
+            <DataRow :label="t('catalog.objectId')" :value="opened.objectId" />
+            <DataRow :label="t('catalog.launch')" :value="opened.launchDate" />
+            <DataRow :label="t('catalog.launchSite')" :value="opened.launchSite" />
+            <DataRow :label="t('catalog.apogee')" :value="opened.apogeeKm === null ? null : `${formatNumber(opened.apogeeKm)} km`" />
+            <DataRow :label="t('catalog.perigee')" :value="opened.perigeeKm === null ? null : `${formatNumber(opened.perigeeKm)} km`" />
+            <DataRow :label="t('catalog.period')" :value="opened.periodMin === null ? null : `${formatNumber(opened.periodMin, 1)} min`" />
+            <DataRow :label="t('catalog.inclination')" :value="opened.inclinationDeg === null ? null : `${formatNumber(opened.inclinationDeg, 2)}°`" />
+            <DataRow :label="t('catalog.rcs')" :value="opened.rcsM2 === null ? null : `${formatNumber(opened.rcsM2, 2)} m²`" />
+          </dl>
+        </div>
         <q-card-actions align="right" class="detail__actions">
           <CopyLinkButton class="detail__share" />
           <q-btn v-close-popup flat no-caps :label="t('catalog.close')" />
@@ -157,10 +161,18 @@ function trackIt(satellite: Satellite): void {
   margin: 0.25rem 0 0.625rem;
   font: 800 1.75rem/1.1 var(--font-display);
 }
+.detail__wire {
+  margin-top: 0.875rem;
+}
 .detail__rows {
   flex: 1;
-  margin: 0;
   overflow-y: auto;
+}
+.detail__rows:focus-visible {
+  outline-offset: -3px;
+}
+.detail__list {
+  margin: 0;
 }
 .detail__actions {
   border-top: 1px solid var(--line);
