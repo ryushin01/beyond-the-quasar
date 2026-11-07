@@ -45,7 +45,7 @@
 
 ## 기술 스택
 
-![Vue.js, Quasar, TypeScript, Vite, Pinia, Bun, D3, Vitest, GitHub Actions](https://skillicons.dev/icons?i=vue,quasar,ts,vite,pinia,bun,d3,vitest,githubactions)
+![Vue.js, Quasar, TypeScript, Vite, Pinia, Bun, D3, Vitest, GitHub Actions](docs/images/tech-stack.svg)
 
 | 구분 | 사용 기술 |
 |---|---|
