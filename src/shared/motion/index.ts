@@ -1,4 +1,5 @@
 export { EASE, gsap, ScrollTrigger } from './gsap'
 export { introDone, useMotionPreference } from './preference'
 export { scrollToElement, useSmoothScroll } from './smooth-scroll'
+export { useRefreshOnDocumentWidth } from './refresh-on-width'
 export { scramble } from './scramble'

@@ -17,6 +17,7 @@ const links = [
   { to: ROUTES.control, key: 'nav.control', code: '01' },
   { to: ROUTES.catalog, key: 'nav.catalog', code: '02' },
   { to: ROUTES.observatory, key: 'nav.observatory', code: '03' },
+  { to: ROUTES.event, key: 'nav.event', code: '04' },
 ]
 
 const utc = ref(formatUtc(new Date()))

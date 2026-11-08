@@ -19,6 +19,6 @@ describe('HomeHero', () => {
   })
 
   it('다음 구역으로 가는 링크가 있다', () => {
-    expect(mount(HomeHero).get('a').attributes('href')).toBe('#manifesto')
+    expect(mount(HomeHero).get('a').attributes('href')).toBe('#stop-sky')
   })
 })

@@ -6,6 +6,7 @@ const PAGES = [
   { path: '/control', title: /위성 관제/ },
   { path: '/catalog', title: /위성 카탈로그/ },
   { path: '/observatory', title: /천체 관측/ },
+  { path: '/event', title: /사건의 지평선/ },
   { path: '/missing', title: /찾을 수 없음/ },
 ]
 
