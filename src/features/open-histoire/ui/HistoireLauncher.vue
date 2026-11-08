@@ -62,7 +62,13 @@ async function onClick(event: MouseEvent): Promise<void> {
   warping.value = true
   const box = launcher.value?.getBoundingClientRect()
   await nextTick()
-  timeline = buildTimeline({ x: (box?.left ?? 0) + (box?.width ?? 0) / 2, y: (box?.top ?? 0) + (box?.height ?? 0) / 2 })
+  try {
+    timeline = buildTimeline({ x: (box?.left ?? 0) + (box?.width ?? 0) / 2, y: (box?.top ?? 0) + (box?.height ?? 0) / 2 })
+  } catch {
+    // 연출을 만들지 못해도 전환 화면에 갇히지 않고 문서로 이동합니다.
+    reset()
+    props.navigate(props.href)
+  }
 }
 
 function reset(): void {
