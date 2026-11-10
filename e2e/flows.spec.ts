@@ -339,3 +339,26 @@ test.describe('Histoire 바로가기', () => {
     await context.close()
   })
 })
+
+test.describe('일식·월식 망원경 시야', () => {
+  test.use({ reducedMotion: 'reduce', locale: 'ko-KR' })
+
+  test('이벤트 일정의 일식에서 관측 화면의 망원경 시야로 이어진다', async ({ page }) => {
+    await page.goto('/event')
+    const tile = page.locator('.tile').filter({ hasText: '일식' })
+    await tile.getByRole('link', { name: /그날 하늘 보기/ }).click()
+    await expect(page).toHaveURL(/\/observatory\?at=.*&event=solarEclipse/)
+    const panel = page.locator('.observatory__eclipse')
+    await expect(panel.getByRole('img', { name: /해 앞을 지나는 달/ })).toBeVisible()
+    await expect(panel.locator('.eclipse__badge')).toContainText('이 관측지에서')
+  })
+
+  test('시각 막대를 움직이면 절정 기준 시각이 바뀐다', async ({ page }) => {
+    await page.goto('/observatory?at=2028-12-31T16:52:00.000Z&event=lunarEclipse')
+    const slider = page.locator('.observatory__eclipse').getByRole('slider')
+    await expect(slider).toHaveAttribute('aria-valuetext', '절정')
+    await slider.focus()
+    await page.keyboard.press('ArrowRight')
+    await expect(slider).toHaveAttribute('aria-valuetext', /절정 0:\d\d 후/)
+  })
+})

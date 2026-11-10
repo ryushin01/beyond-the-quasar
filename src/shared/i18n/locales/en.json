@@ -178,7 +178,7 @@
     "sky": "Sky map",
     "skyTime": "Observing time",
     "skyTimeValue": "{n} h from now",
-    "now": "Now", "pinnedStart": "Chosen time", "pinnedValue": "{n} h after the chosen time", "pinnedNotice": "Showing the sky at {time}.", "pinnedReset": "Back to the sky now",
+    "now": "Now", "pinnedStart": "Chosen time", "pinnedValue": "{n} h after the chosen time", "pinnedNotice": "Showing the sky at {time}.", "pinnedReset": "Back to the sky now", "eclipse": {"title": "Eclipse", "eyepieceSolar": "Telescope view: the Moon crossing the Sun", "eyepieceLunar": "Telescope view: Earth's shadow on the Moon", "fov": "Field {n}°", "altitude": "Altitude", "belowHorizon": "Below the horizon", "visibility": {"visible": "Visible from this site", "partlyVisible": "Partly visible from this site", "notVisible": "Not visible from this site"}, "start": "Begins", "peak": "Peak", "end": "Ends", "peakAltitude": "Altitude at peak", "obscuration": "Obscuration", "slider": "Time around peak", "atPeak": "Peak", "beforePeak": "{span} before peak", "afterPeak": "{span} after peak"},
     "targets": "Targets",
     "kindAll": "All",
     "altitudeNow": "Altitude now {n}°",

@@ -178,7 +178,7 @@
     "sky": "하늘 지도",
     "skyTime": "관측 시각",
     "skyTimeValue": "지금부터 {n}시간 뒤",
-    "now": "지금", "pinnedStart": "지정 시각", "pinnedValue": "지정 시각부터 {n}시간 뒤", "pinnedNotice": "{time} 기준 하늘을 보고 있습니다.", "pinnedReset": "지금 하늘로 돌아가기",
+    "now": "지금", "pinnedStart": "지정 시각", "pinnedValue": "지정 시각부터 {n}시간 뒤", "pinnedNotice": "{time} 기준 하늘을 보고 있습니다.", "pinnedReset": "지금 하늘로 돌아가기", "eclipse": {"title": "일식·월식", "eyepieceSolar": "망원경 시야: 해 앞을 지나는 달", "eyepieceLunar": "망원경 시야: 달에 드리운 지구 그림자", "fov": "시야 {n}°", "altitude": "고도", "belowHorizon": "지평선 아래", "visibility": {"visible": "이 관측지에서 보임", "partlyVisible": "이 관측지에서 일부만 보임", "notVisible": "이 관측지에서 보이지 않음"}, "start": "시작", "peak": "절정", "end": "끝", "peakAltitude": "절정 고도", "obscuration": "가림 비율", "slider": "절정 기준 시각", "atPeak": "절정", "beforePeak": "절정 {span} 전", "afterPeak": "절정 {span} 후"},
     "targets": "관측 대상",
     "kindAll": "전체",
     "altitudeNow": "현재 고도 {n}°",

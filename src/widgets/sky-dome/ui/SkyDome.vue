@@ -7,7 +7,7 @@ import { lookAngleAt, toSatrec, type Satellite } from '@/entities/satellite'
 import { bodyPosition, BRIGHT_STARS, equatorialToHorizontal, PLANETS, projectHorizontal, TARGETS, type SkyBodyName } from '@/entities/sky'
 import { formatUtc } from '@/shared/lib'
 
-const props = defineProps<{ date: Date; selectedId: string; satellites: Satellite[] }>()
+const props = withDefaults(defineProps<{ date: Date; selectedId: string; satellites: Satellite[]; highlight?: SkyBodyName[] }>(), { highlight: () => [] })
 defineEmits<{ select: [id: string] }>()
 
 const { t } = useI18n()
@@ -96,6 +96,10 @@ const summary = computed(() =>
       <g v-for="body in bodies" :key="body.name" :transform="`translate(${body.x} ${body.y})`">
         <circle :r="body.name === 'Sun' || body.name === 'Moon' ? 0.028 : 0.014" :fill="body.name === 'Sun' ? 'var(--alert)' : 'var(--ink)'" stroke="var(--paper)" stroke-width="0.004" />
         <text x="0.036" y="0.012" class="dome__body-label">{{ body.name }}</text>
+        <template v-if="highlight.includes(body.name)">
+          <circle class="dome__mark" r="0.045" />
+          <circle class="dome__ping dome__ping--body" r="0.05" />
+        </template>
       </g>
     </g>
 
@@ -153,6 +157,14 @@ const summary = computed(() =>
   fill: var(--ink);
   font: 700 0.038px var(--font-mono);
   text-anchor: middle;
+}
+.dome__mark {
+  fill: none;
+  stroke: var(--alert);
+  stroke-width: 0.005;
+}
+.dome__ping--body {
+  stroke: var(--alert);
 }
 .dome__ping {
   fill: none;

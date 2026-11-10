@@ -27,6 +27,7 @@ Histoire 1.0 beta가 Vite 7만 지원해 `vite`를 7.3으로 고정하고 `overr
 
 - 홈 별자리(`pages/home`): 별자리선과 밝은 별은 공개 좌표를 근사식(`sky-view.ts`)으로 30초마다 다시 계산하고, 달과 행성은 Astronomy Engine을 씁니다. 어두운 배경 별은 장식이며 화면의 설명 패널에도 그렇게 적습니다.
 - 이벤트 일정(`entities/sky`의 `upcomingSkyEvents`): 실제 행사가 아니라 계산된 천문 현상입니다.
+- 일식·월식(`entities/sky`의 `eclipseWindow`, `eyepieceScene`): 일식은 관측지 기준(`SearchLocalSolarEclipse`), 월식은 반영식 시작~끝입니다. 망원경 시야는 작은 각도라 평면으로 근사하고, 지구 그림자는 지구 중심 벡터(`GeoVector`)로 구해 대기 효과로 2% 키웁니다. `Observer(0, 0, 0)`은 지구 중심이 아니라 적도 위 지점이므로 쓰지 않습니다.
 - 블랙홀(`pages/event/lib/shader.ts`): 슈바르츠실트 반지름을 1로 둔 광선 적분 근사입니다. 원반의 색과 무늬는 연출이고, 프레임이 밀리면 내부 해상도를 낮춥니다. 셰이더 컴파일이 첫 글자 표시를 늦추지 않게 한가할 때(`requestIdleCallback`) 켜고, GPU 가속이 없는 기기(`failIfMajorPerformanceCaveat`)에서는 정적 대체 화면을 씁니다. Cypress는 CI에 GPU가 없어 `allowSoftware`로 컴파일만 확인합니다. 참고 사이트의 이미지나 코드는 쓰지 않았습니다.
 
 ## Histoire 배포와 바로가기
@@ -65,7 +66,7 @@ axe는 E2E에서 전 페이지, 밝은·어두운 화면, 데스크톱·모바�
 
 ## 주소 상태
 
-`?sat=NORAD`(관제의 추적 위성, 카탈로그의 상세), `?category=&mission=&orbit=&owner=&q=&dualUse=1`(카탈로그 필터), `?view=orbit`(궤도 분포도), `?view=globe`(3D 궤도), `?at=ISO 시각`(관측 화면의 기준 시각, 이벤트 일정에서 연결)을 씁니다. 주소 값은 허용 목록으로 걸러 받고, `router.replace`로 써서 뒤로 가기 기록을 늘리지 않습니다. 관심 위성은 개인 설정이라 주소에 넣지 않습니다.
+`?sat=NORAD`(관제의 추적 위성, 카탈로그의 상세), `?category=&mission=&orbit=&owner=&q=&dualUse=1`(카탈로그 필터), `?view=orbit`(궤도 분포도), `?view=globe`(3D 궤도), `?at=ISO 시각`(관측 화면의 기준 시각, 이벤트 일정에서 연결), `?event=solarEclipse|lunarEclipse`(일식·월식 패널과 절정 기준 시각 이동)를 씁니다. 주소 값은 허용 목록으로 걸러 받고, `router.replace`로 써서 뒤로 가기 기록을 늘리지 않습니다. 관심 위성은 개인 설정이라 주소에 넣지 않습니다.
 
 ## 배포
 
