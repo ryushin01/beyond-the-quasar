@@ -9,5 +9,7 @@ export function parsePinnedTime(value: unknown): Date | null {
   if (typeof raw !== 'string' || !ISO_PATTERN.test(raw)) return null
   const time = Date.parse(raw)
   if (Number.isNaN(time) || time < MIN_TIME || time >= MAX_TIME) return null
-  return new Date(time)
+  const date = new Date(time)
+  // 2월 30일처럼 없는 날짜는 다음 달로 넘어가므로, 적은 값과 해석한 값이 같은지 확인합니다.
+  return date.toISOString().slice(0, 16) === raw.slice(0, 16) ? date : null
 }

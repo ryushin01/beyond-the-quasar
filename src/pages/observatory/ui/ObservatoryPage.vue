@@ -106,7 +106,7 @@ onBeforeUnmount(() => {
     </div>
 
     <PanelFrame :title="`${t('observatory.chart')} · ${selected.name}`" code="ALT" class="observatory__chart">
-      <div class="observatory__pad"><AltitudeChart :target="selected" :from="clock.now" /></div>
+      <div class="observatory__pad"><AltitudeChart :target="selected" :from="pinned ?? clock.now" /></div>
     </PanelFrame>
 
     <PanelFrame :title="t('log.title')" code="LOG" class="observatory__log">

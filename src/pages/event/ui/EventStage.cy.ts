@@ -18,6 +18,10 @@ describe('EventStage (실제 브라우저)', () => {
   for (const [title, props] of [['입구 장면', { mix: 0 }], ['블랙홀 장면', { mix: 1 }], ['낙하 장면', { mix: 1, fall: 0.6 }]] as const) {
     it(`${title}을 대체 화면 없이 WebGL로 그린다`, () => {
       cy.mount(Framed, { props })
+      // 무대는 한가할 때 켜지므로, 크기가 틀(480px)에 맞춰질 때까지 기다린 뒤 판정합니다.
+      cy.get('.stage__canvas').should(($canvas) => {
+        expect(($canvas[0] as HTMLCanvasElement).height, '셰이더 준비 후 크기 맞춤').to.be.greaterThan(300)
+      })
       cy.get('.stage__fallback').should('not.exist')
       cy.get('.stage__canvas').should(($canvas) => {
         const gl = ($canvas[0] as HTMLCanvasElement).getContext('webgl')
