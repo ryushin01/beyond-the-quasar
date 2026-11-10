@@ -34,13 +34,6 @@ describe('ConstellationSky', () => {
     wrapper.unmount()
   })
 
-  it('끌지 않아도 버튼으로 방향을 돌릴 수 있다', async () => {
-    const wrapper = render()
-    await flushPromises()
-    expect(wrapper.findAll('.sky__turn-button')).toHaveLength(2)
-    expect(wrapper.get('.sky__turn-button').attributes('aria-label')).toBe('왼쪽으로 돌리기')
-    wrapper.unmount()
-  })
 
   it('다음 천문 현상을 이벤트 화면으로 연결한다', async () => {
     const wrapper = render()

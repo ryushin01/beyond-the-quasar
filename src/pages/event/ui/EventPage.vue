@@ -140,6 +140,9 @@ onBeforeUnmount(() => {
             <p class="tile__kind">{{ t(`event.names.${tile.id}`) }} · {{ t(`event.kinds.${tile.kind}`) }}</p>
             <p class="tile__count">{{ tile.count }}</p>
             <p class="tile__date"><time :datetime="tile.date.toISOString()">{{ tile.when }}</time></p>
+            <RouterLink :to="{ path: ROUTES.observatory, query: { at: tile.date.toISOString() } }" class="tile__link">
+              <span class="sr-only">{{ t(`event.names.${tile.id}`) }}, </span>{{ t('event.calendar.viewSky') }}
+            </RouterLink>
           </li>
         </ul>
         <p class="calendar__note" data-reveal>{{ t('event.calendar.note') }}</p>
@@ -191,7 +194,8 @@ onBeforeUnmount(() => {
 .event {
   --cut: 1.125rem;
   --hud-text: #d9e2ff;
-  --hud-dim: #aab8e6;
+  --hud-dim: #5d6a96;
+  --hud-body: #8f9abf;
   --hud-line: rgb(170 190 255 / 0.3);
   --frame-inset: 1rem;
   position: relative;
@@ -328,14 +332,6 @@ onBeforeUnmount(() => {
   max-width: 44rem;
   padding-bottom: 1rem;
 }
-/* 물에 비친 빛 위에서도 글을 읽을 수 있게 뒤를 어둡게 합니다 */
-.signal::before {
-  content: '';
-  position: absolute;
-  inset: -2.5rem -6rem -1rem;
-  z-index: -1;
-  background: radial-gradient(closest-side, rgb(0 3 12 / 0.84) 55%, transparent);
-}
 .signal__title span,
 .headline span,
 .horizon__title span {
@@ -346,14 +342,12 @@ onBeforeUnmount(() => {
   color: #eef2ff;
   font: 700 clamp(2rem, 4.2vw, 3.5rem) / 1.12 var(--font-display);
   font-stretch: 105%;
-  text-shadow: 0 0 1.5rem #00030c;
 }
 .signal__body {
   max-width: 34rem;
   margin: 1rem auto 1.5rem;
-  color: var(--hud-text);
+  color: var(--hud-body);
   font-size: 1.0625rem;
-  text-shadow: 0 0 1rem #00030c, 0 0 0.25rem #00030c;
 }
 
 /* 깎인 모서리는 장식 층에만 적용해 초점 표시가 잘리지 않게 합니다 */
@@ -454,6 +448,18 @@ onBeforeUnmount(() => {
   font: 700 clamp(2.25rem, 4.2vw, 3.75rem) / 1 var(--font-display);
   font-variant-numeric: tabular-nums;
 }
+.tile__link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  margin-top: 0.5rem;
+  color: #fff;
+  font: 600 0.8125rem var(--font-mono);
+  text-underline-offset: 0.25em;
+}
+.tile__link:hover {
+  color: #8aa8ff;
+}
 .tile__date {
   color: var(--hud-dim);
   font: 400 0.8125rem var(--font-mono);
@@ -461,15 +467,12 @@ onBeforeUnmount(() => {
 .calendar__note {
   max-width: 44rem;
   margin: 1.5rem 0 0;
-  color: var(--hud-text);
+  color: var(--hud-body);
   font-size: 0.9375rem;
-  text-shadow: 0 0 0.5rem #00030c;
 }
 
-/* 원반 위의 글을 읽을 수 있도록 아래쪽을 어둡게 합니다 */
 .chapter--horizon {
   align-items: end;
-  background: linear-gradient(to top, rgb(0 0 0 / 0.88), transparent 58%);
 }
 .horizon {
   display: grid;
@@ -480,9 +483,8 @@ onBeforeUnmount(() => {
 }
 .horizon__kicker {
   margin: 0 0 0.5rem;
-  color: #f1f1f7;
+  color: #b9bbc8;
   font-size: 1rem;
-  text-shadow: 0 0 0.75rem #000;
 }
 .horizon__title {
   margin: 0;
@@ -490,14 +492,13 @@ onBeforeUnmount(() => {
   font: 200 clamp(2.125rem, 5.4vw, 4.75rem) / 1.14 var(--font-display);
   font-stretch: 118%;
   letter-spacing: 0.06em;
-  text-shadow: 0 0 1.25rem #000;
 }
 .facts {
   padding: 1.25rem;
-  background: rgb(7 7 13 / 0.82);
+  background: rgb(10 10 16 / 0.5);
   border: 1px solid rgb(255 255 255 / 0.22);
   backdrop-filter: blur(10px);
-  color: #eceef6;
+  color: #b9bbc8;
 }
 .facts__list {
   margin: 0;
@@ -508,7 +509,7 @@ onBeforeUnmount(() => {
 }
 .facts dt {
   font: 500 0.75rem var(--font-mono);
-  color: #c9cbd8;
+  color: #8b8d9c;
 }
 .facts dd {
   display: grid;
@@ -524,7 +525,7 @@ onBeforeUnmount(() => {
   margin: 0.5rem 0 0;
   padding-top: 0.625rem;
   border-top: 1px solid rgb(255 255 255 / 0.16);
-  color: #c9cbd8;
+  color: #8b8d9c;
   font-size: 0.8125rem;
   line-height: 1.45;
 }

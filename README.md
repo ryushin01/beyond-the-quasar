@@ -1,7 +1,7 @@
 # 🔵 Beyond the Quasar
 
 [![CI](https://github.com/ryushin01/beyond-the-quasar/actions/workflows/ci.yml/badge.svg)](https://github.com/ryushin01/beyond-the-quasar/actions/workflows/ci.yml)
-![version](https://img.shields.io/badge/version-0.5.0-1a3fe0)
+![version](https://img.shields.io/badge/version-0.6.0-1a3fe0)
 ![Histoire](https://img.shields.io/badge/Histoire-1.0_beta-34D399)
 
 군사·항법·기상·통신 위성을 추적하고 오늘 밤의 하늘을 관측하는 위성 관제·천체 관측 웹 앱입니다.
@@ -48,7 +48,7 @@
 
 | 모바일 | |
 |---|---|
-| <img src="docs/images/mobile-home.jpg" alt="모바일 첫 화면" width="200"> <img src="docs/images/mobile-control.jpg" alt="모바일 관제 지도와 임무 시계" width="200"> | |
+| <img src="docs/images/mobile-home.jpg" alt="모바일 첫 화면" width="200"> <img src="docs/images/mobile-control.jpg" alt="모바일 관제 지도와 임무 시계" width="200"> | <img src="docs/images/mobile-sky.jpg" alt="모바일 실시간 별자리" width="200"> <img src="docs/images/mobile-event.jpg" alt="모바일 이벤트 화면의 블랙홀과 제목" width="200"> |
 
 ## 주요 기능
 
@@ -57,8 +57,8 @@
 | 위성 관제 | 위성 151기 실시간 전파, 지상 궤적·가시 범위·낮밤 경계 지도(평면·지구본), 원격 측정, 통과 예측, 관심 위성 24시간 통과 일정, 지상국 상공 현황, 근접 위성, 임무 시계 배속, 시뮬레이션 명령 전송 |
 | 위성 카탈로그 | 분류·임무·궤도·운영 주체·겸용 여부 필터와 검색, 플레이트 목록, 경사각·고도 궤도 분포도, 3D 궤도(three.js), 위성 상세(임무 유형 도식, NORAD 번호, 발사일, 원지점, 근지점 등) |
 | 천체 관측 | 관측지별 일몰·박명·월출, 달 위상, 하늘 지도, 시각 조절, 퀘이사·은하·성운·성단 고도 곡선, 관측 일지 |
-| 홈 별자리 | 선택한 지상국의 현재 하늘을 계산한 별자리선·밝은 별·달·행성, 끌거나 버튼으로 방향 전환, 다음 천문 현상 안내 |
-| 이벤트 | 다음 보름달·절기·월식·일식 계산 일정, 광선 적분으로 그린 WebGL 블랙홀, 스크롤로 이어지는 네 구역 |
+| 홈 별자리 | 선택한 지상국의 현재 하늘을 계산한 별자리선·밝은 별·달·행성, 끌어서 방향 전환, 다음 천문 현상 안내 |
+| 이벤트 | 다음 보름달·절기·월식·일식 계산 일정과 그날 하늘 보기(관측 화면 `?at=`), 광선 적분으로 그린 WebGL 블랙홀, 스크롤로 이어지는 네 구역 |
 | 공통 | Histoire 문서로 가는 워프 전환 버튼, `Ctrl/⌘ K` 검색 팔레트, 관심 위성, 필터·위성이 담긴 공유 링크, 한국어·영어, 밝은·어두운 화면, 모션 정지 버튼과 동작 줄이기 대응 |
 
 **위성 분류:** 군사(군 위성통신, 미사일 조기경보, 정찰·감시, 우주 상황 인식 등), 항법, 지구 관측, 기상, 통신, 과학, 유인. 비공개 위성은 공개 카탈로그에 없으므로 나오지 않습니다.

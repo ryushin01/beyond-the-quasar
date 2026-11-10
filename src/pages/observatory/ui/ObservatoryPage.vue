@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { useRoute } from 'vue-router'
 
 import { useMissionClock } from '@/entities/clock'
 import { useSatelliteCatalog } from '@/entities/satellite'
@@ -15,12 +16,15 @@ import { NightBrief } from '@/widgets/night-brief'
 import { SkyDome } from '@/widgets/sky-dome'
 import { TargetList } from '@/widgets/target-list'
 
+import { parsePinnedTime } from '../lib/pinned-time'
+
 useSmoothScroll()
 
 const { t } = useI18n()
 const clock = useMissionClock()
 const { enabled } = useMotionPreference()
 const { satellites } = useSatelliteCatalog()
+const route = useRoute()
 
 const root = ref<HTMLElement>()
 const selectedId = ref(TARGETS[0]!.id)
@@ -30,8 +34,12 @@ const showSatellites = ref(true)
 const selected = computed(() => TARGETS.find((target) => target.id === selectedId.value) ?? TARGETS[0]!)
 // 하늘 지도는 천체·위성 약 200개를 계산하므로 5초 단위로 갱신합니다.
 const skyStep = computed(() => Math.floor(clock.now.getTime() / 5000))
-const skyDate = computed(() => new Date(skyStep.value * 5000 + offsetHours.value * 3_600_000))
-const offsetLabel = computed(() => (offsetHours.value === 0 ? t('observatory.now') : t('observatory.skyTimeValue', { n: offsetHours.value })))
+// 이벤트 화면에서 `?at=`으로 넘어오면 지금 대신 그 시각을 기준으로 봅니다.
+const pinned = computed(() => parsePinnedTime(route.query.at))
+const baseTime = computed(() => pinned.value?.getTime() ?? skyStep.value * 5000)
+const skyDate = computed(() => new Date(baseTime.value + offsetHours.value * 3_600_000))
+const startLabel = computed(() => (pinned.value ? t('observatory.pinnedStart') : t('observatory.now')))
+const offsetLabel = computed(() => (offsetHours.value === 0 ? startLabel.value : t(pinned.value ? 'observatory.pinnedValue' : 'observatory.skyTimeValue', { n: offsetHours.value })))
 
 let context: gsap.Context | undefined
 
@@ -57,11 +65,15 @@ onBeforeUnmount(() => {
       <div class="observatory__intro">
         <p>{{ t('observatory.lead') }}</p>
         <SiteSelect :label="t('observatory.site')" />
+        <p v-if="pinned" class="observatory__pinned" role="status">
+          {{ t('observatory.pinnedNotice', { time: formatUtc(pinned, true) }) }}
+          <RouterLink :to="{ query: {} }" class="observatory__pinned-reset">{{ t('observatory.pinnedReset') }}</RouterLink>
+        </p>
       </div>
     </header>
 
     <PanelFrame :title="t('observatory.brief')" code="BRF" class="observatory__brief">
-      <NightBrief :date="clock.now" />
+      <NightBrief :date="pinned ?? clock.now" />
     </PanelFrame>
 
     <div class="observatory__sky">
@@ -132,6 +144,18 @@ onBeforeUnmount(() => {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
+}
+.observatory__pinned {
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--signal-text);
+  font: 500 0.8125rem/1.6 var(--font-mono);
+}
+.observatory__pinned-reset {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  color: var(--signal-text);
+  font-weight: 700;
 }
 .observatory__intro p {
   margin: 0;
