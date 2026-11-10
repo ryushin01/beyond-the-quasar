@@ -5,8 +5,9 @@ import { useI18n } from 'vue-i18n'
 import { useRoute } from 'vue-router'
 
 import { consumeRestoreTop } from './providers/router'
+import { HistoireLauncher } from '@/features/open-histoire'
 import { syncDocumentLanguage } from '@/shared/i18n'
-import { ScrollTrigger } from '@/shared/motion'
+import { ScrollTrigger, useRefreshOnDocumentWidth } from '@/shared/motion'
 import { Preloader } from '@/widgets/preloader'
 import { RouteShutter } from '@/widgets/route-shutter'
 import { SiteFooter } from '@/widgets/site-footer'
@@ -16,6 +17,7 @@ import { TargetCursor } from '@/widgets/target-cursor'
 const { t } = useI18n()
 const route = useRoute()
 syncDocumentLanguage()
+useRefreshOnDocumentWidth()
 
 useTitle(computed(() => t(String(route.meta.title ?? 'brand.name'))))
 
@@ -59,6 +61,7 @@ function skipToContent(): void {
     </RouterView>
   </main>
   <SiteFooter v-if="!route.meta.console" />
+  <HistoireLauncher :beside-panel="Boolean(route.meta.console)" />
   <RouteShutter ref="shutter" />
   <Preloader />
   <TargetCursor />

@@ -1,1 +1,1 @@
-export { ROUTES } from './routes'
+export { HISTOIRE_URL, ROUTES } from './routes'

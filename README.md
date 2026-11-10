@@ -1,7 +1,7 @@
 # 🔵 Beyond the Quasar
 
 [![CI](https://github.com/ryushin01/beyond-the-quasar/actions/workflows/ci.yml/badge.svg)](https://github.com/ryushin01/beyond-the-quasar/actions/workflows/ci.yml)
-![version](https://img.shields.io/badge/version-0.4.1-1a3fe0)
+![version](https://img.shields.io/badge/version-0.5.0-1a3fe0)
 ![Histoire](https://img.shields.io/badge/Histoire-1.0_beta-34D399)
 
 군사·항법·기상·통신 위성을 추적하고 오늘 밤의 하늘을 관측하는 위성 관제·천체 관측 웹 앱입니다.
@@ -21,6 +21,14 @@
 | 관제·관측과 진행 바 |
 |---|
 | ![점으로 그린 지구본에 위성 직하점과 대전 지상국을 표시하고 양옆에 관제와 관측을 크게 적은 화면, 아래에 구역 진행 바](docs/images/home-axes.jpg) |
+
+| 실시간 별자리 | Histoire 워프 전환 |
+|---|---|
+| ![검은 하늘에 대전 상공의 별자리선과 별 이름을 그리고 왼쪽 아래에 UTC 시계, 오른쪽 아래에 다음 천문 현상과 방향 조절 버튼을 둔 화면](docs/images/home-sky.jpg) | ![파란 빛줄기가 사방으로 뻗는 가운데 HISTOIRE 글자가 크게 나타나는 화면 전환](docs/images/histoire-warp.jpg) |
+
+| 이벤트: 입구 | 이벤트: 사건의 지평선 |
+|---|---|
+| ![어두운 산 사이 수면 위에 푸른 빛의 고리가 뜬 장면과 모서리를 깎은 관제 화면 테두리](docs/images/event-entrance.jpg) | ![중력 렌즈로 휘어 보이는 강착원반과 검은 그림자, 얇은 글자의 제목과 블랙홀 정보 패널](docs/images/event-horizon.jpg) |
 
 | 위성 관제: 지도 | 위성 관제: 지구본 |
 |---|---|
@@ -49,7 +57,9 @@
 | 위성 관제 | 위성 151기 실시간 전파, 지상 궤적·가시 범위·낮밤 경계 지도(평면·지구본), 원격 측정, 통과 예측, 관심 위성 24시간 통과 일정, 지상국 상공 현황, 근접 위성, 임무 시계 배속, 시뮬레이션 명령 전송 |
 | 위성 카탈로그 | 분류·임무·궤도·운영 주체·겸용 여부 필터와 검색, 플레이트 목록, 경사각·고도 궤도 분포도, 3D 궤도(three.js), 위성 상세(임무 유형 도식, NORAD 번호, 발사일, 원지점, 근지점 등) |
 | 천체 관측 | 관측지별 일몰·박명·월출, 달 위상, 하늘 지도, 시각 조절, 퀘이사·은하·성운·성단 고도 곡선, 관측 일지 |
-| 공통 | `Ctrl/⌘ K` 검색 팔레트, 관심 위성, 필터·위성이 담긴 공유 링크, 한국어·영어, 밝은·어두운 화면, 모션 정지 버튼과 동작 줄이기 대응 |
+| 홈 별자리 | 선택한 지상국의 현재 하늘을 계산한 별자리선·밝은 별·달·행성, 끌거나 버튼으로 방향 전환, 다음 천문 현상 안내 |
+| 이벤트 | 다음 보름달·절기·월식·일식 계산 일정, 광선 적분으로 그린 WebGL 블랙홀, 스크롤로 이어지는 네 구역 |
+| 공통 | Histoire 문서로 가는 워프 전환 버튼, `Ctrl/⌘ K` 검색 팔레트, 관심 위성, 필터·위성이 담긴 공유 링크, 한국어·영어, 밝은·어두운 화면, 모션 정지 버튼과 동작 줄이기 대응 |
 
 **위성 분류:** 군사(군 위성통신, 미사일 조기경보, 정찰·감시, 우주 상황 인식 등), 항법, 지구 관측, 기상, 통신, 과학, 유인. 비공개 위성은 공개 카탈로그에 없으므로 나오지 않습니다.
 
@@ -82,6 +92,7 @@ bun run dev    # http://localhost:5173
 | 명령 | 설명 |
 |---|---|
 | `bun run build` / `preview` | 타입 검사 후 프로덕션 빌드 / 빌드 결과 실행 (`:4173`) |
+| `bun run build:site` | 프로덕션 빌드에 Histoire를 `/histoire/`로 합치기 (Vercel 배포용) |
 | `bun run story:dev` / `story:build` | Histoire 개발 서버 / 빌드 |
 | `bun run lint` / `typecheck` | oxlint / vue-tsc |
 | `bun run test` | 단위·컴포넌트 테스트 |
@@ -98,9 +109,9 @@ scripts/         스냅샷 생성 스크립트
 e2e/             E2E 테스트
 src/
 ├─ app/          진입점, 라우터, 전역 스타일, Histoire 설정
-├─ pages/        홈, 관제, 카탈로그, 관측, 404
+├─ pages/        홈, 관제, 카탈로그, 관측, 이벤트, 404
 ├─ widgets/      지도, 하늘 지도, 원격 측정, 퀘이사 셰이더, 플레이트 덱 등
-├─ features/     위성 필터, 명령 전송, 관측지 변경, 임무 시계, 관측 일지, 환경 설정
+├─ features/     Histoire 바로가기, 위성 필터, 명령 전송, 관측지 변경, 임무 시계, 관측 일지, 환경 설정
 ├─ entities/     satellite, sky, observer, clock
 └─ shared/       UI, 모션, 다국어, 유틸리티
 ```

@@ -2,9 +2,9 @@
   "brand": { "name": "Beyond the Quasar", "short": "BTQ" },
   "a11y": { "skip": "본문 바로가기", "mapSummary": "{name} 위치: {lat}, {lon}. 고도 {alt}km. 위성 {count}기를 표시 중입니다. 위성은 왼쪽 목록에서 선택할 수 있습니다.", "skySummary": "{site} 하늘 지도. {time} 기준 지평선 위 위성 {sats}기, 관측 대상 {targets}개가 보입니다. 같은 정보는 관측 대상 목록에서 확인할 수 있습니다.", "chartSummary": "{name}의 고도 변화. 최고 고도 {max}도, 시각 {time}." },
   "banner": { "classification": "UNCLASSIFIED // OPEN SOURCE", "notice": "공개 궤도 데이터 기반 시뮬레이션 · 실제 위성과 연결되지 않습니다" },
-  "nav": { "main": "주요 메뉴", "home": "홈", "control": "위성 관제", "catalog": "위성 카탈로그", "observatory": "천체 관측", "open": "메뉴 열기", "close": "메뉴 닫기" },
+  "nav": { "main": "주요 메뉴", "home": "홈", "control": "위성 관제", "catalog": "위성 카탈로그", "observatory": "천체 관측", "event": "이벤트", "open": "메뉴 열기", "close": "메뉴 닫기" },
   "prefs": { "language": "언어", "toEnglish": "EN, Switch to English", "toKorean": "KO, 한국어로 전환", "themeLight": "밝은 화면으로 전환", "themeDark": "어두운 화면으로 전환", "motionPause": "모션 정지", "motionPlay": "모션 재생" },
-  "titles": { "home": "Beyond the Quasar — 위성 관제와 천체 관측", "control": "위성 관제 · Beyond the Quasar", "catalog": "위성 카탈로그 · Beyond the Quasar", "observatory": "천체 관측 · Beyond the Quasar", "notFound": "페이지를 찾을 수 없음 · Beyond the Quasar" },
+  "titles": { "home": "Beyond the Quasar — 위성 관제와 천체 관측", "control": "위성 관제 · Beyond the Quasar", "catalog": "위성 카탈로그 · Beyond the Quasar", "observatory": "천체 관측 · Beyond the Quasar", "event": "사건의 지평선 · Beyond the Quasar", "notFound": "페이지를 찾을 수 없음 · Beyond the Quasar" },
   "home": {
     "tagline": "궤도 위의 자산을 지휘하고, 그 너머의 빛을 관측합니다.",
     "scroll": "아래로 스크롤",
@@ -34,6 +34,7 @@
     "credits": "궤도 데이터: CelesTrak 공개 카탈로그 · 천체 계산: Astronomy Engine · 지도: Natural Earth",
     "disclaimer": "이 앱은 공개 데이터를 사용하는 시뮬레이션입니다. 비공개 위성은 공개 카탈로그에 없으며, 정찰 임무 표기는 공개 자료에 따른 분류입니다.",
     "progressLabel": "홈 구역 진행",
+    "stopSky": "별자리",
     "stopLight": "빛",
     "stopAssets": "궤도 자산",
     "stopAxes": "관제·관측",
@@ -204,5 +205,8 @@
     "saved": "일지를 저장했습니다."
   },
   "sites": { "daejeon": "대전", "seoul": "서울", "bohyeonsan": "보현산", "svalbard": "스발바르", "maunakea": "마우나케아", "atacama": "아타카마" },
-  "notFound": { "code": "404", "title": "궤도를 벗어난 페이지입니다", "back": "홈으로 돌아가기" }
+  "notFound": { "code": "404", "title": "궤도를 벗어난 페이지입니다", "back": "홈으로 돌아가기" },
+  "sky": {"eyebrow": "실시간 별자리", "title": "지금, 머리 위의 하늘", "hint": "좌우로 끌어 둘러보세요.", "summary": "{site} 상공의 별자리 지도. {time} 기준 지평선 위 별자리 {count}개: {names}.", "explain": "무엇이 보이나요?", "panelBody": "선택한 지상국에서 지금 이 순간 보이는 하늘을 계산해 그렸습니다. 낮이어도 별의 자리를 보여 줍니다. 별자리선과 이름이 붙은 별, 달과 행성은 계산값이고, 어두운 배경 별은 분위기를 위한 장식입니다.", "panelCount": "지평선 위 별자리 {count}개", "nextEvent": "다음 천문 현상", "turnGroup": "바라보는 방향", "turnLeft": "왼쪽으로 돌리기", "turnRight": "오른쪽으로 돌리기"},
+  "event": {"chaptersLabel": "이벤트 구역", "chapters": {"signal": "신호", "calendar": "일정", "horizon": "지평선", "return": "귀환"}, "signal": {"eyebrow": "Event 01 — 사건의 지평선", "titleA": "사건의 지평선으로", "titleB": "내려가는 밤", "body": "다가오는 하늘의 사건을 계산으로 짚고, 빛이 돌아오지 못하는 경계까지 내려갑니다.", "cta": "일정 보기"}, "calendar": {"eyebrow": "일정", "titleA": "다음 네 번의", "titleB": "하늘", "note": "실제 행사가 아니라 astronomy-engine으로 계산한 천문 현상입니다. 시각은 절정 기준 UTC이며, 월식과 일식은 관측지에 따라 보이지 않을 수 있습니다.", "today": "오늘"}, "names": {"fullMoon": "보름달", "season": "절기", "lunarEclipse": "월식", "solarEclipse": "일식"}, "kinds": {"fullMoon": "다음 보름", "marchEquinox": "춘분", "juneSolstice": "하지", "septemberEquinox": "추분", "decemberSolstice": "동지", "penumbral": "반영월식", "partial": "부분식", "total": "개기식", "annular": "금환식"}, "horizon": {"eyebrow": "지평선", "kicker": "탈출 속도가 광속에 닿는 곳", "titleA": "빛이 돌아오지", "titleB": "않는 경계", "factsLabel": "알려진 블랙홀", "facts": [{"name": "궁수자리 A*", "value": "태양 질량의 약 400만 배", "detail": "우리 은하의 중심, 약 2만 7천 광년"}, {"name": "M87*", "value": "태양 질량의 약 65억 배", "detail": "2019년 사건의 지평선 망원경이 그림자를 처음 공개, 약 5,500만 광년"}, {"name": "가이아 BH1", "value": "태양 질량의 약 10배", "detail": "확인된 블랙홀 중 가까운 편, 약 1,560광년"}], "render": "이 그림은 슈바르츠실트 블랙홀 주변의 빛 경로를 근사해 실시간으로 그린 것입니다. 원반의 색과 무늬는 연출입니다."}, "return": {"eyebrow": "귀환", "titleA": "빛을 따라", "titleB": "다시 궤도로", "toObservatory": "천체 관측으로", "toControl": "위성 관제로"}, "scroll": "아래로 스크롤", "simulation": "계산 기반 시뮬레이션"},
+  "histoire": {"landmark": "개발 문서", "open": "Histoire 컴포넌트 문서로 이동", "label": "Histoire"}
 }

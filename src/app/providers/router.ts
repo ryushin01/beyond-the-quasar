@@ -7,6 +7,7 @@ const routes: RouteRecordRaw[] = [
   { path: ROUTES.control, name: 'control', component: () => import('@/pages/control'), meta: { title: 'titles.control', console: true } },
   { path: ROUTES.catalog, name: 'catalog', component: () => import('@/pages/catalog'), meta: { title: 'titles.catalog' } },
   { path: ROUTES.observatory, name: 'observatory', component: () => import('@/pages/observatory'), meta: { title: 'titles.observatory' } },
+  { path: ROUTES.event, name: 'event', component: () => import('@/pages/event'), meta: { title: 'titles.event' } },
   { path: '/:pathMatch(.*)*', name: 'not-found', component: () => import('@/pages/not-found'), meta: { title: 'titles.notFound' } },
 ]
 

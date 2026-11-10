@@ -38,6 +38,11 @@ export function bodyPosition(body: SkyBodyName, date: Date, site: SiteLike): Hor
   return equatorialToHorizontal(equator.ra, equator.dec, date, site)
 }
 
+/** 지방 항성시(시). 많은 별을 한꺼번에 계산할 때 씁니다. */
+export function localSiderealHours(date: Date, longitude: number): number {
+  return (((SiderealTime(date) + longitude / 15) % 24) + 24) % 24
+}
+
 /** 태양 직하점(위도·경도). 낮밤 경계를 그리는 데 씁니다. */
 export function subsolarPoint(date: Date): { latitude: number; longitude: number } {
   const equator = Equator(Body.Sun, date, new Observer(0, 0, 0), true, false)

@@ -275,3 +275,71 @@ test.describe('카탈로그 임무 도식', () => {
     await expect(dialog.locator('figure svg path')).toHaveAttribute('d', /^M/)
   })
 })
+
+test.describe('실시간 별자리', () => {
+  test.use({ reducedMotion: 'reduce', locale: 'ko-KR' })
+
+  test('버튼으로 방향을 돌리고 설명을 연다', async ({ page }) => {
+    await page.goto('/')
+    const sky = page.locator('#stop-sky')
+    await sky.scrollIntoViewIfNeeded()
+    const heading = sky.locator('.sky__heading')
+    const before = await heading.textContent()
+    await sky.getByRole('button', { name: '오른쪽으로 돌리기' }).click()
+    await expect(heading).not.toHaveText(before ?? '')
+    await sky.getByRole('button', { name: '무엇이 보이나요?' }).click()
+    await expect(sky.locator('#sky-panel')).toBeVisible()
+    await expect(sky.locator('#sky-panel li').first()).toBeVisible()
+  })
+
+  test('다음 천문 현상에서 이벤트 화면으로 이동한다', async ({ page }) => {
+    await page.goto('/')
+    await page.locator('#stop-sky').getByRole('link', { name: /다음 천문 현상/ }).click()
+    await expect(page).toHaveURL(/\/event$/)
+    await expect(page.getByRole('heading', { level: 1 })).toContainText('사건의 지평선')
+  })
+})
+
+test.describe('이벤트 화면', () => {
+  test.use({ reducedMotion: 'reduce', locale: 'ko-KR' })
+
+  test('일정 네 칸을 보여 주고 목차로 구역을 옮긴다', async ({ page, isMobile }) => {
+    await page.goto('/event')
+    await expect(page.locator('.tile')).toHaveCount(4)
+    test.skip(isMobile, '좁은 화면에서는 목차를 숨깁니다')
+    await page.getByRole('navigation', { name: '이벤트 구역' }).getByRole('link', { name: '지평선' }).click()
+    await expect(page.locator('#event-horizon')).toBeFocused()
+    await expect(page.getByRole('link', { name: '지평선' })).toHaveAttribute('aria-current', 'location')
+  })
+
+  test('가로로 넘치지 않는다', async ({ page }) => {
+    await page.goto('/event')
+    expect(await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)).toBeLessThanOrEqual(0)
+  })
+})
+
+test.describe('Histoire 바로가기', () => {
+  test.use({ reducedMotion: 'no-preference', locale: 'ko-KR' })
+
+  const stubDocs = async (page: import('@playwright/test').Page): Promise<void> => {
+    await page.route('**/histoire/index.html', (route) => route.fulfill({ contentType: 'text/html', body: '<title>docs</title>' }))
+  }
+
+  test('누르면 전환 연출을 보여 준 뒤 문서로 이동한다', async ({ page }) => {
+    await stubDocs(page)
+    await page.goto('/catalog')
+    await page.getByRole('link', { name: 'Histoire 컴포넌트 문서로 이동' }).click()
+    await expect(page.locator('.warp')).toBeVisible()
+    await page.waitForURL('**/histoire/index.html')
+  })
+
+  test('동작 줄이기에서는 연출 없이 바로 이동한다', async ({ browser }) => {
+    const context = await browser.newContext({ reducedMotion: 'reduce', locale: 'ko-KR', baseURL: 'http://localhost:4173' })
+    const page = await context.newPage()
+    await stubDocs(page)
+    await page.goto('/catalog')
+    await page.getByRole('link', { name: 'Histoire 컴포넌트 문서로 이동' }).click()
+    await page.waitForURL('**/histoire/index.html')
+    await context.close()
+  })
+})

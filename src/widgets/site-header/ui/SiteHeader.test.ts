@@ -6,9 +6,9 @@ import SiteHeader from './SiteHeader.vue'
 describe('SiteHeader', () => {
   const wrapper = mount(SiteHeader, { global: { stubs: { RouterLink: RouterLinkStub } } })
 
-  it('주요 메뉴 세 개와 로고 링크가 있다', () => {
+  it('주요 메뉴 네 개와 로고 링크가 있다', () => {
     expect(wrapper.get('nav').attributes('aria-label')).toBe('주요 메뉴')
-    expect(wrapper.findAll('nav li')).toHaveLength(3)
+    expect(wrapper.findAll('nav li')).toHaveLength(4)
     expect(wrapper.text()).toContain('위성 관제')
   })
 

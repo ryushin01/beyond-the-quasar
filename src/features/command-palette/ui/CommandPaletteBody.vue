@@ -31,6 +31,7 @@ const results = computed(() =>
       { to: ROUTES.control, label: t('nav.control') },
       { to: ROUTES.catalog, label: t('nav.catalog') },
       { to: ROUTES.observatory, label: t('nav.observatory') },
+      { to: ROUTES.event, label: t('nav.event') },
     ],
     sites: SITES.map((site) => ({ id: site.id, label: t(`sites.${site.id}`) })),
     satellites: satellites.value,

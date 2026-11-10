@@ -76,6 +76,8 @@
 }
 
 html {
+  /* 몇 픽셀의 넘침이 가로 스크롤바로 드러나지 않게 합니다. E2E는 scrollWidth로 실제 넘침을 계속 검사합니다 */
+  overflow-x: clip;
   background: var(--paper);
   /* 키보드 초점이 고정 헤더에 가리지 않게 합니다 */
   scroll-padding-top: 5rem;

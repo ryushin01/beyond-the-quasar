@@ -12,11 +12,14 @@ import { OrbitAxes } from '@/widgets/orbit-axes'
 import { PlateDeck } from '@/widgets/plate-deck'
 import { SystemsIndex } from '@/widgets/systems-index'
 
+import ConstellationSky from './ConstellationSky.vue'
+
 useSmoothScroll()
 const { t } = useI18n()
 const { satellites } = useSatelliteCatalog()
 
 const stops = computed(() => [
+  { id: 'stop-sky', label: t('home.stopSky') },
   { id: 'stop-light', label: t('home.stopLight') },
   { id: 'stop-assets', label: t('home.stopAssets') },
   { id: 'stop-axes', label: t('home.stopAxes') },
@@ -29,6 +32,7 @@ const stops = computed(() => [
   <div>
     <HomeProgress :stops="stops" />
     <HomeHero />
+    <div id="stop-sky" class="home__stop" tabindex="-1"><ConstellationSky /></div>
     <!-- 화면을 붙잡는 구역도 전체 길이를 잴 수 있도록 바깥 요소를 기준으로 삼습니다 -->
     <div id="stop-light" class="home__stop" tabindex="-1"><HomeManifesto /></div>
     <div id="stop-assets" class="home__stop" tabindex="-1"><PlateDeck :satellites="satellites" /></div>

@@ -74,7 +74,7 @@ onBeforeUnmount(() => context?.revert())
     <div class="hero__meta">
       <p class="hero__tagline">{{ t('home.tagline') }}</p>
       <p class="hero__target">{{ t('home.heroMeta') }}</p>
-      <a href="#manifesto" class="hero__scroll">
+      <a href="#stop-sky" class="hero__scroll">
         <span>{{ t('home.scroll') }}</span>
         <span class="hero__scroll-bar" aria-hidden="true" />
       </a>
