@@ -17,8 +17,9 @@ const { t } = useI18n()
 const observer = useObserver()
 
 const scene = computed(() => eyepieceScene(props.eclipse.id, props.date, observer.site))
-const minMinutes = computed(() => Math.floor((props.eclipse.start.getTime() - props.eclipse.peak.getTime()) / 60_000 / STEP_MINUTES) * STEP_MINUTES)
-const maxMinutes = computed(() => Math.ceil((props.eclipse.end.getTime() - props.eclipse.peak.getTime()) / 60_000 / STEP_MINUTES) * STEP_MINUTES)
+// 막대 끝이 시작·끝 시각 밖으로 나가지 않도록 5분 단위로 안쪽에 맞춥니다.
+const minMinutes = computed(() => Math.ceil((props.eclipse.start.getTime() - props.eclipse.peak.getTime()) / 60_000 / STEP_MINUTES) * STEP_MINUTES)
+const maxMinutes = computed(() => Math.floor((props.eclipse.end.getTime() - props.eclipse.peak.getTime()) / 60_000 / STEP_MINUTES) * STEP_MINUTES)
 const rows = computed(() => [
   { key: 'start', value: formatUtc(props.eclipse.start, true) },
   { key: 'peak', value: formatUtc(props.eclipse.peak, true) },
