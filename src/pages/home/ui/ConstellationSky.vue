@@ -161,7 +161,7 @@ function drawConstellations(ctx: CanvasRenderingContext2D, view: ViewFrame): Nam
 }
 
 function drawConstellationNames(ctx: CanvasRenderingContext2D, names: NameAnchor[], taken: DOMRectLike[]): void {
-  ctx.font = '500 11px "Geist Mono Variable", monospace'
+  ctx.font = '500 11px "Roboto Mono Variable", "Nanum Gothic Coding", monospace'
   ctx.textAlign = 'left'
   ctx.fillStyle = 'rgb(200 212 255 / 0.74)'
   for (const name of names) {
@@ -195,7 +195,7 @@ function drawHorizon(ctx: CanvasRenderingContext2D, view: ViewFrame): void {
 
 function drawCompass(ctx: CanvasRenderingContext2D, view: ViewFrame, taken: DOMRectLike[]): void {
   ctx.fillStyle = '#fff'
-  ctx.font = '500 12px "Geist Mono Variable", monospace'
+  ctx.font = '500 12px "Roboto Mono Variable", "Nanum Gothic Coding", monospace'
   ctx.textAlign = 'left'
   for (const [azimuth, key] of [[0, 'north'], [90, 'east'], [180, 'south'], [270, 'west']] as const) {
     const point = projectToView({ altitude: 0, azimuth }, view)
@@ -229,7 +229,7 @@ function placeLabel(taken: DOMRectLike[], x: number, y: number, labelWidth: numb
 
 function drawStars(ctx: CanvasRenderingContext2D, view: ViewFrame, taken: DOMRectLike[]): void {
   ctx.textAlign = 'left'
-  ctx.font = '600 15px "Archivo Variable", system-ui, sans-serif'
+  ctx.font = '600 15px "Oswald Variable", "Orbit", system-ui, sans-serif'
   const ordered = [...stars].sort((a, b) => a.magnitude - b.magnitude)
   for (const star of ordered) {
     if (star.altitude < 0) continue
@@ -246,7 +246,7 @@ function drawStars(ctx: CanvasRenderingContext2D, view: ViewFrame, taken: DOMRec
 }
 
 function drawBodies(ctx: CanvasRenderingContext2D, view: ViewFrame, taken: DOMRectLike[]): void {
-  ctx.font = '600 15px "Archivo Variable", system-ui, sans-serif'
+  ctx.font = '600 15px "Oswald Variable", "Orbit", system-ui, sans-serif'
   for (const body of bodies) {
     if (body.altitude < 0) continue
     const point = projectToView(body, view)
