@@ -3,7 +3,7 @@ import { useEventListener } from '@vueuse/core'
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import { daysUntil, upcomingSkyEvents, type SkyEvent } from '@/entities/sky'
+import { daysUntil, isEclipseId, upcomingSkyEvents, type SkyEvent } from '@/entities/sky'
 import { ROUTES } from '@/shared/config'
 import { formatUtc } from '@/shared/lib'
 import { EASE, gsap, introDone, scrollToElement, useMotionPreference, useSmoothScroll } from '@/shared/motion'
@@ -140,7 +140,7 @@ onBeforeUnmount(() => {
             <p class="tile__kind">{{ t(`event.names.${tile.id}`) }} · {{ t(`event.kinds.${tile.kind}`) }}</p>
             <p class="tile__count">{{ tile.count }}</p>
             <p class="tile__date"><time :datetime="tile.date.toISOString()">{{ tile.when }}</time></p>
-            <RouterLink :to="{ path: ROUTES.observatory, query: { at: tile.date.toISOString() } }" class="tile__link">
+            <RouterLink :to="{ path: ROUTES.observatory, query: { at: tile.date.toISOString(), ...(isEclipseId(tile.id) ? { event: tile.id } : {}) } }" class="tile__link">
               <span class="sr-only">{{ t(`event.names.${tile.id}`) }}, </span>{{ t('event.calendar.viewSky') }}
             </RouterLink>
           </li>
