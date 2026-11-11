@@ -1,5 +1,9 @@
 # 버전 기록
 
+## 0.7.2 (2026-11-11)
+
+- 대체 글꼴: 웹 글꼴을 받지 못해도 관제 화면 분위기가 남도록 제목은 좁은 대문자(Avenir Next Condensed, Arial Narrow), 좌표·시각은 SF Mono·Menlo·Consolas로 이었습니다.
+
 ## 0.7.1 (2026-11-11)
 
 - 글꼴: 제목은 좁고 높은 Oswald(영문)와 계기판 글씨 같은 오르빗(Orbit, 한글), 본문은 Gothic A1, 좌표·시각은 Roboto Mono(영문·숫자)와 나눔고딕코딩(한글)으로 바꿨습니다. Archivo·Geist Mono·Pretendard는 뺐습니다. 홈 글꼴 전송량 151KB → 91KB.

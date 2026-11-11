@@ -1,8 +1,15 @@
 :root {
-  /* 글꼴을 받기 전이나 받지 못하면 운영체제의 한글 고딕과 고정폭 글꼴로 */
-  --font-display: 'Oswald Variable', 'Orbit', 'Apple SD Gothic Neo', 'Malgun Gothic', 'Noto Sans KR', sans-serif;
-  --font-sans: 'Gothic A1', 'Apple SD Gothic Neo', 'Malgun Gothic', 'Noto Sans KR', system-ui, sans-serif;
-  --font-mono: 'Roboto Mono Variable', 'Nanum Gothic Coding', ui-monospace, 'SFMono-Regular', 'D2Coding', monospace;
+  /*
+   * 대체 글꼴: 웹 글꼴을 받기 전이나 받지 못해도 관제 화면 분위기가 남도록 고릅니다.
+   * 제목은 좁은 대문자(맥 Avenir Next Condensed, 윈도 Arial Narrow), 본문은 운영체제 한글 고딕,
+   * 좌표·시각은 고정폭(맥 SF Mono·Menlo, 윈도 Consolas, 설치돼 있으면 D2Coding)입니다.
+   */
+  --font-display:
+    'Oswald Variable', 'Orbit', 'Avenir Next Condensed', 'Arial Narrow', 'Apple SD Gothic Neo', 'Malgun Gothic',
+    'Noto Sans CJK KR', sans-serif;
+  --font-sans: 'Gothic A1', 'Apple SD Gothic Neo', 'Malgun Gothic', 'Noto Sans CJK KR', system-ui, sans-serif;
+  --font-mono:
+    'Roboto Mono Variable', 'Nanum Gothic Coding', ui-monospace, 'SF Mono', Menlo, Consolas, 'D2Coding', monospace;
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   --header-height: 4.75rem;
   --banner-height: 1.625rem;
