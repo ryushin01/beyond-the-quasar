@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { symSharpChevronLeft, symSharpChevronRight } from '@quasar/extras/material-symbols-sharp'
 import { useIntersectionObserver, useResizeObserver } from '@vueuse/core'
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
@@ -8,9 +7,9 @@ import { useObserver } from '@/entities/observer'
 import { bodyPosition, BRIGHT_STARS, CONSTELLATIONS, daysUntil, localSiderealHours, PLANETS, upcomingSkyEvents, type SkyBodyName, type SkyEvent } from '@/entities/sky'
 import { ROUTES } from '@/shared/config'
 import { formatLatitude, formatLongitude, formatUtc } from '@/shared/lib'
-import { EASE, gsap, useMotionPreference } from '@/shared/motion'
+import { gsap, useMotionPreference } from '@/shared/motion'
 
-import { busiestHeading, compassOf, createFieldStars, normalizeAzimuth, projectToView, toAltAz, viewScale, type AltAz, type ViewFrame } from '../lib/sky-view'
+import { busiestHeading, createFieldStars, projectToView, toAltAz, viewScale, type AltAz, type ViewFrame } from '../lib/sky-view'
 
 interface PlacedConstellation {
   name: string
@@ -21,7 +20,6 @@ const FIELD_STARS = createFieldStars(1100)
 const LABELLED_MAGNITUDE = 2.1
 const RECOMPUTE_MS = 30_000
 const TWINKLE_FRAME_MS = 1000 / 24
-const TURN_DEGREES = 30
 const LINE = 'rgb(138 168 255 / 0.62)'
 const PLANET = '#8aa8ff'
 
@@ -50,13 +48,10 @@ let inView = false
 let clockTimer: ReturnType<typeof setInterval> | undefined
 let skyTimer: ReturnType<typeof setInterval> | undefined
 let drag: { pointerId: number; x: number; heading: number } | null = null
-let turnTween: gsap.core.Tween | undefined
 const reveal = { progress: 1 }
 let revealTween: gsap.core.Tween | undefined
 let revealed = false
 
-const compass = computed(() => t(`observatory.${compassOf(heading.value)}`))
-const headingLabel = computed(() => `${String(Math.round(normalizeAzimuth(heading.value))).padStart(3, '0')}°`)
 const coordinates = computed(() => `${formatLatitude(observer.site.latitude)} · ${formatLongitude(observer.site.longitude)}`)
 const nextEventDays = computed(() => (nextEvent.value ? daysUntil(nextEvent.value.date, now.value) : 0))
 const summary = computed(() =>
@@ -263,10 +258,6 @@ function drawBodies(ctx: CanvasRenderingContext2D, view: ViewFrame, taken: DOMRe
     ctx.beginPath()
     ctx.arc(point.x, point.y, isMoon ? 7 : 3, 0, Math.PI * 2)
     ctx.fill()
-    // 별과 색만으로 구분되지 않도록 고리를 둘러 모양도 다르게 합니다.
-    ctx.beginPath()
-    ctx.arc(point.x, point.y, isMoon ? 12 : 7, 0, Math.PI * 2)
-    ctx.stroke()
     if (reveal.progress === 1 && placeLabel(taken, point.x + 11, point.y - 7, ctx.measureText(body.name).width)) {
       ctx.fillText(body.name, point.x + 11, point.y - 7)
     }
@@ -310,20 +301,9 @@ function refreshSky(): void {
   draw(performance.now())
 }
 
-function turn(degrees: number): void {
-  const target = heading.value + degrees
-  turnTween?.kill()
-  if (!enabled.value) {
-    heading.value = target
-    draw(performance.now())
-    return
-  }
-  turnTween = gsap.to(heading, { value: target, duration: 0.9, ease: EASE.out, onUpdate: () => draw(performance.now()) })
-}
 
 function onPointerDown(event: PointerEvent): void {
   if (event.button !== 0) return
-  turnTween?.kill()
   drag = { pointerId: event.pointerId, x: event.clientX, heading: heading.value }
   canvas.value?.setPointerCapture?.(event.pointerId)
 }
@@ -383,7 +363,6 @@ onBeforeUnmount(() => {
   clearInterval(clockTimer)
   clearInterval(skyTimer)
   revealTween?.kill()
-  turnTween?.kill()
   document.removeEventListener('visibilitychange', updateLoop)
 })
 </script>
@@ -434,15 +413,6 @@ onBeforeUnmount(() => {
           <span class="sky__event-name">{{ t(`event.names.${nextEvent.id}`) }}</span>
           <span class="sky__label">{{ nextEvent.date.toISOString().slice(0, 10) }} · D-{{ nextEventDays }}</span>
         </RouterLink>
-        <div class="sky__turn" role="group" :aria-label="t('sky.turnGroup')">
-          <button type="button" class="sky__turn-button" :aria-label="t('sky.turnLeft')" @click="turn(-TURN_DEGREES)">
-            <q-icon :name="symSharpChevronLeft" size="1.5rem" />
-          </button>
-          <p class="sky__heading" aria-live="off">{{ compass }} {{ headingLabel }}</p>
-          <button type="button" class="sky__turn-button" :aria-label="t('sky.turnRight')" @click="turn(TURN_DEGREES)">
-            <q-icon :name="symSharpChevronRight" size="1.5rem" />
-          </button>
-        </div>
       </div>
     </div>
   </section>
@@ -490,18 +460,17 @@ onBeforeUnmount(() => {
 .sky__eyebrow,
 .sky__label {
   margin: 0;
-  color: #c4c4c4;
+  color: #8a8a8a;
   font: 500 0.75rem/1.5 var(--font-mono);
   text-transform: uppercase;
 }
 .sky__title {
   margin: 0.125rem 0;
   font: 700 clamp(1.25rem, 2vw, 1.75rem) / 1.2 var(--font-display);
-  text-shadow: 0 0 0.75rem #000;
 }
 .sky__hint {
   margin: 0;
-  color: #c4c4c4;
+  color: #8a8a8a;
   font-size: 0.9375rem;
 }
 .sky__explain {
@@ -536,7 +505,7 @@ onBeforeUnmount(() => {
 }
 .sky__panel-count {
   font: 500 0.8125rem var(--font-mono);
-  color: #c4c4c4;
+  color: #8a8a8a;
 }
 .sky__names {
   display: flex;
@@ -550,7 +519,6 @@ onBeforeUnmount(() => {
 .sky__readout {
   grid-row: 3;
   align-self: end;
-  text-shadow: 0 0 0.75rem #000;
 }
 .sky__readout p {
   margin: 0;
@@ -577,7 +545,6 @@ onBeforeUnmount(() => {
   min-height: 2.75rem;
   color: #fff;
   text-decoration: none;
-  text-shadow: 0 0 0.75rem #000;
 }
 .sky__event:hover .sky__event-name {
   color: var(--signal-text);
@@ -585,32 +552,6 @@ onBeforeUnmount(() => {
 .sky__event-name {
   font: 500 clamp(1.25rem, 2vw, 1.75rem) / 1.25 var(--font-mono);
   transition: color 0.25s ease;
-}
-.sky__turn {
-  display: flex;
-  align-items: center;
-  border: 1px solid var(--line-strong);
-  background: #000;
-}
-.sky__turn-button {
-  display: grid;
-  place-items: center;
-  width: 2.75rem;
-  height: 2.75rem;
-  background: none;
-  border: 0;
-  color: #fff;
-  cursor: pointer;
-}
-.sky__turn-button:hover {
-  background: #1a1a1e;
-}
-.sky__heading {
-  min-width: 5rem;
-  margin: 0;
-  font: 500 0.8125rem var(--font-mono);
-  font-variant-numeric: tabular-nums;
-  text-align: center;
 }
 @media (max-width: 719px) {
   .sky__ui {

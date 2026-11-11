@@ -83,6 +83,8 @@ function skipToContent(): void {
   transform: translateY(0);
 }
 .main {
+  /* 화면 코드를 받는 동안 푸터가 위로 올라왔다 밀려나지 않게 합니다 */
+  min-height: 100svh;
   padding-top: var(--chrome-height);
   outline: none;
 }

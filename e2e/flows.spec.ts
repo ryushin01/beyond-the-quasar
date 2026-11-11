@@ -279,14 +279,10 @@ test.describe('카탈로그 임무 도식', () => {
 test.describe('실시간 별자리', () => {
   test.use({ reducedMotion: 'reduce', locale: 'ko-KR' })
 
-  test('버튼으로 방향을 돌리고 설명을 연다', async ({ page }) => {
+  test('설명을 열어 보이는 별자리 목록을 본다', async ({ page }) => {
     await page.goto('/')
     const sky = page.locator('#stop-sky')
     await sky.scrollIntoViewIfNeeded()
-    const heading = sky.locator('.sky__heading')
-    const before = await heading.textContent()
-    await sky.getByRole('button', { name: '오른쪽으로 돌리기' }).click()
-    await expect(heading).not.toHaveText(before ?? '')
     await sky.getByRole('button', { name: '무엇이 보이나요?' }).click()
     await expect(sky.locator('#sky-panel')).toBeVisible()
     await expect(sky.locator('#sky-panel li').first()).toBeVisible()

@@ -6,7 +6,7 @@ import { useMotionPreference } from '@/shared/motion'
 
 import { FRAGMENT_SHADER, VERTEX_SHADER } from '../lib/shader'
 
-const props = withDefaults(defineProps<{ mix?: number; fall?: number; dim?: number }>(), { mix: 0, fall: 0, dim: 0 })
+const props = withDefaults(defineProps<{ mix?: number; fall?: number; dim?: number; allowSoftware?: boolean }>(), { mix: 0, fall: 0, dim: 0, allowSoftware: false })
 
 const UNIFORMS = ['uResolution', 'uTime', 'uMix', 'uFall', 'uDim'] as const
 /** 모션을 멈췄을 때 고정해 두는 장면 시각 */
@@ -41,7 +41,8 @@ function compile(type: number, source: string): WebGLShader | null {
 }
 
 function setup(): boolean {
-  gl = canvas.value?.getContext('webgl', { antialias: false, powerPreference: 'high-performance' }) ?? null
+  // GPU 가속이 없으면 광선 적분이 CPU에서 돌아 화면이 멈추므로 정적 대체 화면을 씁니다.
+  gl = canvas.value?.getContext('webgl', { antialias: false, powerPreference: 'high-performance', failIfMajorPerformanceCaveat: !props.allowSoftware }) ?? null
   if (!gl) return false
   const vertex = compile(gl.VERTEX_SHADER, VERTEX_SHADER)
   const fragment = compile(gl.FRAGMENT_SHADER, FRAGMENT_SHADER)
@@ -132,7 +133,11 @@ useIntersectionObserver(canvas, ([entry]) => {
 watch(() => [props.mix, props.fall, props.dim], drawOnce)
 watch(enabled, play)
 
-onMounted(() => {
+let disposed = false
+let idle = 0
+
+function start(): void {
+  if (disposed) return
   startedAt = performance.now()
   if (!setup()) {
     unsupported.value = true
@@ -141,9 +146,17 @@ onMounted(() => {
   resize()
   play()
   document.addEventListener('visibilitychange', play)
+}
+
+// 셰이더 컴파일이 첫 화면 글자를 늦추지 않도록, 글자가 그려진 뒤 한가할 때 켭니다.
+onMounted(() => {
+  idle = typeof requestIdleCallback === 'function' ? requestIdleCallback(start, { timeout: 600 }) : window.setTimeout(start, 60)
 })
 
 onBeforeUnmount(() => {
+  disposed = true
+  if (typeof cancelIdleCallback === 'function') cancelIdleCallback(idle)
+  clearTimeout(idle)
   cancelAnimationFrame(frame)
   cancelAnimationFrame(pendingDraw)
   document.removeEventListener('visibilitychange', play)
