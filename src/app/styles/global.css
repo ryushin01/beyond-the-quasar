@@ -1,7 +1,8 @@
 :root {
-  --font-display: 'Archivo Variable', 'Pretendard Variable', system-ui, sans-serif;
-  --font-sans: 'Pretendard Variable', 'Archivo Variable', system-ui, sans-serif;
-  --font-mono: 'Geist Mono Variable', ui-monospace, 'SFMono-Regular', monospace;
+  /* 글꼴을 받기 전이나 받지 못하면 운영체제의 한글 고딕과 고정폭 글꼴로 */
+  --font-display: 'Oswald Variable', 'Orbit', 'Apple SD Gothic Neo', 'Malgun Gothic', 'Noto Sans KR', sans-serif;
+  --font-sans: 'Gothic A1', 'Apple SD Gothic Neo', 'Malgun Gothic', 'Noto Sans KR', system-ui, sans-serif;
+  --font-mono: 'Roboto Mono Variable', 'Nanum Gothic Coding', ui-monospace, 'SFMono-Regular', 'D2Coding', monospace;
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   --header-height: 4.75rem;
   --banner-height: 1.625rem;

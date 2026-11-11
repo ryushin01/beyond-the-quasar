@@ -1,7 +1,7 @@
 # 🔵 Beyond the Quasar
 
 [![CI](https://github.com/ryushin01/beyond-the-quasar/actions/workflows/ci.yml/badge.svg)](https://github.com/ryushin01/beyond-the-quasar/actions/workflows/ci.yml)
-![version](https://img.shields.io/badge/version-0.7.0-1a3fe0)
+![version](https://img.shields.io/badge/version-0.7.1-1a3fe0)
 ![Histoire](https://img.shields.io/badge/Histoire-1.0_beta-34D399)
 
 군사·항법·기상·통신 위성을 추적하고 오늘 밤의 하늘을 관측하는 위성 관제·천체 관측 웹 앱입니다.
@@ -67,7 +67,7 @@
 
 **위성 분류:** 군사(군 위성통신, 미사일 조기경보, 정찰·감시, 우주 상황 인식 등), 항법, 지구 관측, 기상, 통신, 과학, 유인. 비공개 위성은 공개 카탈로그에 없으므로 나오지 않습니다.
 
-**모션:** WebGL 퀘이사(포인터 주변이 격자로 끊기는 셰이더), 격자 프리로더와 화면 전환, 스크롤에 맞물린 선언문·파란 점 전환·플레이트 펼침·축소되는 헤더, 글자 폭이 변하는 푸터, 스크롤에 따라 채워지는 구역 진행 바, 양쪽에서 모이는 관제·관측과 도는 점 지구본.
+**모션:** WebGL 퀘이사(포인터 주변이 격자로 끊기는 셰이더), 격자 프리로더와 화면 전환, 스크롤에 맞물린 선언문·파란 점 전환·플레이트 펼침·축소되는 헤더, 글자 굵기가 변하는 푸터, 스크롤에 따라 채워지는 구역 진행 바, 양쪽에서 모이는 관제·관측과 도는 점 지구본.
 
 ## 기술 스택
 
@@ -78,7 +78,7 @@
 | 프레임워크 | Vue 3.5, Quasar 2, TypeScript 5.9, Vite 7, Vue Router 5 |
 | 상태·데이터 | Pinia 4, TanStack Query 5, VueUse |
 | 궤도·천체 | satellite.js 6(SGP4), Astronomy Engine, d3-geo, world-atlas, three.js(3D 궤도) |
-| 스타일·다국어 | UnoCSS, vue-i18n 11, Archivo·Pretendard·Geist Mono |
+| 스타일·다국어 | UnoCSS, vue-i18n 11, Oswald·Orbit·Gothic A1·Roboto Mono·Nanum Gothic Coding |
 | 모션 | GSAP 3(ScrollTrigger), Lenis, WebGL 셰이더 |
 | 품질 | oxlint, vue-tsc, Vitest, Vue Test Utils, Cypress(컴포넌트), Playwright, axe |
 | 문서 | Histoire |
