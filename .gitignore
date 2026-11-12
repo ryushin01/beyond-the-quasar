@@ -12,3 +12,5 @@ playwright-report
 cypress/screenshots
 cypress/videos
 cypress/downloads
+.lighthouseci
+!.env.example

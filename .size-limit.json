@@ -1,0 +1,4 @@
+[
+  { "name": "전체 JS(화면별 조각 포함)", "path": "dist/assets/*.js", "gzip": true, "limit": "540 kB" },
+  { "name": "전체 CSS", "path": "dist/assets/*.css", "gzip": true, "limit": "140 kB" }
+]

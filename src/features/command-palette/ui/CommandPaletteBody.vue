@@ -96,6 +96,8 @@ defineExpose({ focus: () => input.value?.focus() })
       @keydown.enter.prevent="run(results[activeIndex])"
     />
     <ul id="palette-results" ref="list" class="palette__list" role="listbox" :aria-label="t('palette.results')">
+      <!-- APG 콤보박스: 초점은 입력란에 두고 aria-activedescendant로 옵션을 가리킨다. 클릭은 마우스 지름길이다. -->
+      <!-- eslint-disable-next-line vuejs-accessibility/click-events-have-key-events, vuejs-accessibility/interactive-supports-focus -->
       <li
         v-for="(item, index) in results"
         :id="`palette-${item.id}`"
