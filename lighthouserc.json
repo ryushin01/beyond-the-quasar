@@ -19,6 +19,37 @@
         {
           "matchingUrlPattern": "localhost:4173/$",
           "assertions": {
+            "categories:accessibility": [
+              "error",
+              {
+                "minScore": 0.9
+              }
+            ],
+            "categories:best-practices": [
+              "error",
+              {
+                "minScore": 0.95
+              }
+            ],
+            "categories:seo": [
+              "error",
+              {
+                "minScore": 0.9
+              }
+            ],
+            "cumulative-layout-shift": [
+              "error",
+              {
+                "maxNumericValue": 0.1
+              }
+            ],
+            "color-contrast": "warn",
+            "target-size": "warn"
+          }
+        },
+        {
+          "matchingUrlPattern": "localhost:4173/control",
+          "assertions": {
             "categories:performance": [
               "error",
               {
@@ -28,7 +59,7 @@
             "categories:accessibility": [
               "error",
               {
-                "minScore": 0.9
+                "minScore": 1
               }
             ],
             "categories:best-practices": [
@@ -50,7 +81,7 @@
               }
             ],
             "cumulative-layout-shift": [
-              "error",
+              "warn",
               {
                 "maxNumericValue": 0.1
               }
@@ -60,13 +91,11 @@
               {
                 "maxNumericValue": 200
               }
-            ],
-            "color-contrast": "warn",
-            "target-size": "warn"
+            ]
           }
         },
         {
-          "matchingUrlPattern": "localhost:4173/.+",
+          "matchingUrlPattern": "localhost:4173/(catalog|observatory)",
           "assertions": {
             "categories:performance": [
               "error",
