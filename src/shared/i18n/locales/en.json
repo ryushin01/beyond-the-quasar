@@ -31,7 +31,7 @@
     "boardMoon": "Moon illumination",
     "footerLead": "Entering orbit",
     "footerCta": "Start control",
-    "credits": "Orbital data: CelesTrak public catalog · Astronomy: Astronomy Engine · Map: Natural Earth",
+    "credits": "Data and font credits (repository README)",
     "disclaimer": "This app is a simulation on public data. Undisclosed satellites are not in the public catalog, and reconnaissance labels reflect public sources.",
     "progressLabel": "Home section progress",
     "stopSky": "Sky",
