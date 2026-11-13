@@ -26,7 +26,7 @@
         "lenis": "^1.3.27",
         "pinia": "^4.1.0",
         "quasar": "^2.35.3",
-        "satellite.js": "6",
+        "satellite.js": "7",
         "three": "0.187.0",
         "topojson-client": "^3.1.0",
         "unocss": "^66.12.0",
@@ -1694,7 +1694,7 @@
 
     "sass-embedded-win32-x64": ["sass-embedded-win32-x64@1.108.1", "", { "os": "win32", "cpu": "x64" }, "sha512-CEAQHFP+MMhAUEWCrkHWojpzWsVJ344O0wNM1Pe4L6qmVUaKE6eMnAvb0p480Wgbx4IgBhw6hKOJvlU0G+xwRA=="],
 
-    "satellite.js": ["satellite.js@6.0.2", "", {}, "sha512-XWKxtqVF5xiJ1xAeiYeT/oSSzsukoCLWvk6nO/WFy4un0M3g4djAU9TAtOCqJLtYW9vxx9pkPJ1L9ITOc607GA=="],
+    "satellite.js": ["satellite.js@7.1.0", "", {}, "sha512-U6nRml9Nb7dV9LJPiMNPyna7U7ry+1nXYkOeCEG7K/YbojQQLHHmcjPisp03VNY+HLcbQHqbt7t4t1vQMaKCLQ=="],
 
     "saxes": ["saxes@6.0.0", "", { "dependencies": { "xmlchars": "^2.2.0" } }, "sha512-xAg7SOnEhrm5zI3puOOKyy1OMcMlIJZYNJY7xLBwSze0UjhPLnWfj2GF2EpT0jmzaJKIWKHLsaSSajf35bcYnA=="],
 
