@@ -130,3 +130,7 @@ Lighthouse가 첫 화면에서 두 가지를 찾았습니다. 디자인을 바�
 | `vite`, `@quasar/vite-plugin`, `vitest`, `cypress` | 7, 1, 4, 15 | Histoire 1.0 베타가 Vite 7만 지원. 나머지는 다음 주 버전이 Vite 8을 요구 |
 | `typescript` | 5 | typescript-eslint가 TypeScript 7을 지원하지 않음 |
 | `satellite.js` | 6 | 7이 함께 싣는 WASM 대량 계산의 pthreads 워커가 최상위 await를 써서 워커(iife) 빌드가 실패. JS 계산만 쓰므로 6에 둠 |
+
+## PR 미리보기 배포
+
+Vercel의 하루 배포 한도를 아끼려고 PR 미리보기 배포를 껐습니다(`vercel.json`의 `git.deploymentEnabled`). `main`에 머지할 때만 운영으로 배포하고, PR에서는 CI 검사만 돕니다. 미리보기가 꼭 필요하면 그 브랜치를 `deploymentEnabled`에 잠시 넣습니다.
