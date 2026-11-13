@@ -8,6 +8,16 @@ updates:
       minor-and-patch:
         update-types: ['minor', 'patch']
     ignore:
+      # Histoire 1.0 베타가 Vite 7만 지원해 Vite를 7에 고정했습니다(docs/development.md의 'Vite 버전', package.json의 overrides).
+      # 같은 이유로 Vite 8이 필요한 @quasar/vite-plugin 2, vitest 5, Cypress 16(컴포넌트 테스트)도 받지 않습니다.
+      - dependency-name: vite
+        update-types: ['version-update:semver-major']
+      - dependency-name: '@quasar/vite-plugin'
+        update-types: ['version-update:semver-major']
+      - dependency-name: vitest
+        update-types: ['version-update:semver-major']
+      - dependency-name: cypress
+        update-types: ['version-update:semver-major']
       # typescript-eslint가 TypeScript 7을 지원하지 않아 린트가 바로 실패합니다. 지원되면 함께 올립니다.
       - dependency-name: typescript
         update-types: ['version-update:semver-major']
