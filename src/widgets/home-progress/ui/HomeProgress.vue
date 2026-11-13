@@ -11,7 +11,7 @@ import { useEventListener } from '@vueuse/core'
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import { scrollToElement } from '@/shared/motion'
+import { goToSection } from '@/shared/motion'
 
 import { readProgress } from '../lib/progress'
 
@@ -35,13 +35,6 @@ function schedule(): void {
   if (!frame) frame = requestAnimationFrame(measure)
 }
 
-function go(id: string): void {
-  const target = document.getElementById(id)
-  if (!target) return
-  scrollToElement(target)
-  target.focus({ preventScroll: true })
-}
-
 useEventListener(window, 'scroll', schedule, { passive: true })
 useEventListener(window, 'resize', schedule, { passive: true })
 onMounted(schedule)
@@ -52,7 +45,7 @@ onBeforeUnmount(() => cancelAnimationFrame(frame))
   <nav class="progress scope-dark" :class="{ 'progress--shown': shown }" :aria-label="t('home.progressLabel')">
     <ol class="progress__list">
       <li v-for="(stop, index) in stops" :key="stop.id" class="progress__item" :class="{ 'progress__item--active': state.active === index }">
-        <a class="progress__link" :href="`#${stop.id}`" :aria-current="state.active === index ? 'location' : undefined" @click.prevent="go(stop.id)">
+        <a class="progress__link" :href="`#${stop.id}`" :aria-current="state.active === index ? 'location' : undefined" @click.prevent="goToSection(stop.id)">
           <span class="progress__num" aria-hidden="true">{{ String(index + 1).padStart(2, '0') }}</span>
           <span class="progress__label">{{ stop.label }}</span>
           <!-- 채워진 부분만 글자색이 뒤집히도록 같은 내용을 잘라서 겹칩니다 -->

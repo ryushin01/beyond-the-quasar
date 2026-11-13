@@ -1,4 +1,4 @@
-export { useSatelliteCatalog, toSatellites } from './model/catalog'
+export { useSatelliteCatalog } from './model/catalog'
 export { useTracking } from './model/tracking'
 export { useWatchlist } from './model/watchlist'
 export { CATEGORIES, MISSIONS, ORBITS } from './model/types'

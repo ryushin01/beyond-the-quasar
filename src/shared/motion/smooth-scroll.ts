@@ -13,6 +13,17 @@ export function scrollToElement(element: HTMLElement): void {
   else window.scrollTo(0, top)
 }
 
+/**
+ * id로 찾은 구역으로 이동하고 그 구역에 초점을 옮깁니다. 진행 표시·목차의 '이동' 버튼이 씁니다.
+ * 초점이 화면을 다시 끌어당기지 않게 preventScroll을 씁니다. 구역에는 tabindex="-1"이 있어야 합니다.
+ */
+export function goToSection(id: string): void {
+  const target = document.getElementById(id)
+  if (!target) return
+  scrollToElement(target)
+  target.focus({ preventScroll: true })
+}
+
 /** 페이지 단위 부드러운 스크롤. 네이티브 스크롤을 유지하므로 키보드 조작은 그대로입니다. */
 export function useSmoothScroll(): void {
   const { enabled } = useMotionPreference()

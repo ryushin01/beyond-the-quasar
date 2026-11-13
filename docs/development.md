@@ -21,6 +21,7 @@ Histoire 1.0 beta가 Vite 7만 지원해 `vite`를 7.3으로 고정하고 `overr
 - 좌표: 관성 좌표(ECI)를 지구 반지름 1로 나눠 씁니다. three.js에 맞춰 북극을 y축으로 둡니다(`entities/satellite`의 `orbitPath`, `scenePosition`). 관성 좌표라 궤도가 닫힌 고리가 되고, 지구본은 그리니치 항성시만큼 돌려 둡니다.
 - 크기: `three`에서 쓰는 클래스만 가져오고, 컴포넌트가 장면 파일(`lib/scene.ts`)을 늦게 불러와 3D 보기를 열 때만 내려받습니다(gzip 약 136kB).
 - 모션: 동작 줄이기나 모션 정지 중에는 자동 회전과 위성 위치 갱신을 멈춥니다.
+- 정리: 보기를 닫으면 `renderer.dispose()` 뒤에 `forceContextLoss()`로 WebGL 맥락을 바로 돌려줍니다. dispose만으로는 브라우저가 GC 때까지 맥락을 쥐고 있어, 여닫기를 반복하면 맥락 수 한도(보통 16개)에 걸립니다.
 - 테스트: jsdom에는 WebGL이 없어 단위 테스트는 글 요약과 대체 안내를 확인하고, 실제 그리기는 E2E(Chromium)에서 확인합니다.
 
 ## 별자리와 이벤트
@@ -85,6 +86,8 @@ E2E는 프로덕션 빌드(`bun run build`)를 대상으로 합니다. `4173` �
 
 ## 품질 예산
 
+- **웹 글꼴:** 한글 글꼴은 글자 묶음마다 `@font-face`가 있어(약 480개) 선언만 CSS 118 kB(gzip)입니다. `src/app/styles/fonts.css`에 모으고 `main.ts`가 화면을 그린 뒤 `import()`로 따로 받아, 첫 화면 CSS가 116 kB에서 41 kB로 줄었습니다. 그 사이에는 `global.css`의 대체 글꼴로 보입니다. 글꼴을 더할 때는 `main.ts`가 아니라 이 파일에 넣습니다.
+- **셰이더 화면:** 화면 전체에 프래그먼트 셰이더를 그리는 곳(이벤트 무대, 퀘이사 배경)은 `shared/lib`의 `createFullscreenShader`로 준비합니다.
 - **번들 크기:** `bun run size`가 전체 JS 540 kB, 전체 CSS 140 kB(gzip)를 넘으면 실패합니다. 기준은 `.size-limit.json`에 있습니다.
 - **Vue 템플릿 접근성:** oxlint의 jsx-a11y는 Vue 템플릿을 보지 못해 `bun run lint`가 `eslint-plugin-vuejs-accessibility`도 돌립니다(`eslint.config.js`, 코드 규칙은 oxlint가 그대로 맡음). 지도·하늘 지도·분포도의 클릭과 검색 팔레트의 옵션은 위 키보드 대안이 있어 그 줄만 예외로 둡니다.
 - **Lighthouse:** `bun run lhci`가 첫 화면·카탈로그·관제·관측소가 데스크톱 기준 성능 90·접근성 100·권장 사항 95·SEO 90점, LCP 2.5초·TBT 200ms·CLS 0.1 이하인지 3번씩 재서 확인합니다. 기준은 `lighthouserc.json`에 있습니다.

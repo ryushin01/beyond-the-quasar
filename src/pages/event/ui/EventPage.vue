@@ -6,7 +6,7 @@ import { useI18n } from 'vue-i18n'
 import { daysUntil, isEclipseId, upcomingSkyEvents, type SkyEvent } from '@/entities/sky'
 import { ROUTES } from '@/shared/config'
 import { formatUtc } from '@/shared/lib'
-import { EASE, gsap, introDone, scrollToElement, useMotionPreference, useSmoothScroll } from '@/shared/motion'
+import { EASE, goToSection, gsap, introDone, useMotionPreference, useSmoothScroll } from '@/shared/motion'
 
 import { readScene, type SceneState } from '../lib/scene'
 import EventStage from './EventStage.vue'
@@ -43,13 +43,6 @@ function measure(): void {
 
 function schedule(): void {
   if (!frame) frame = requestAnimationFrame(measure)
-}
-
-function go(id: string): void {
-  const target = document.getElementById(id)
-  if (!target) return
-  scrollToElement(target)
-  target.focus({ preventScroll: true })
 }
 
 function build(): void {
@@ -105,7 +98,7 @@ onBeforeUnmount(() => {
             :class="{ 'event__rail-link--active': scene.active === index }"
             :href="`#${sectionId(chapter)}`"
             :aria-current="scene.active === index ? 'location' : undefined"
-            @click.prevent="go(sectionId(chapter))"
+            @click.prevent="goToSection(sectionId(chapter))"
           >
             <span class="event__rail-mark" aria-hidden="true" />
             {{ t(`event.chapters.${chapter}`) }}
@@ -122,7 +115,7 @@ onBeforeUnmount(() => {
           <span>{{ t('event.signal.titleB') }}</span>
         </h1>
         <p class="signal__body" data-reveal>{{ t('event.signal.body') }}</p>
-        <a :href="`#${sectionId('calendar')}`" class="cut-link" data-reveal @click.prevent="go(sectionId('calendar'))">
+        <a :href="`#${sectionId('calendar')}`" class="cut-link" data-reveal @click.prevent="goToSection(sectionId('calendar'))">
           <span class="cut-link__mark" aria-hidden="true" />{{ t('event.signal.cta') }}
         </a>
       </div>
