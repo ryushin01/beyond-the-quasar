@@ -121,4 +121,11 @@ Lighthouse가 첫 화면에서 두 가지를 찾았습니다. 디자인을 바�
 
 ## 의존성 갱신 (Dependabot)
 
-`.github/dependabot.yml`이 bun 패키지는 매주 부 버전·패치를 한 PR로 묶어 올리고, GitHub Actions는 매달 올립니다. 주 버전은 따로 PR이 열리므로 변경 내역을 확인하고 CI가 통과할 때만 병합합니다.
+`.github/dependabot.yml`이 bun 패키지는 매주 부 버전·패치를 한 PR로 묶어 올리고, GitHub Actions는 매달 한 PR로 묶어 올립니다. 주 버전은 따로 PR이 열리므로 변경 내역을 확인하고 CI가 통과할 때만 병합합니다.
+
+다음 주 버전은 받지 않습니다(이유는 설정 파일 주석).
+
+| 패키지 | 머무는 버전 | 이유 |
+| --- | --- | --- |
+| `typescript` | 5 | typescript-eslint가 TypeScript 7을 지원하지 않음 |
+| `satellite.js` | 6 | 7이 함께 싣는 WASM 대량 계산의 pthreads 워커가 최상위 await를 써서 워커(iife) 빌드가 실패. JS 계산만 쓰므로 6에 둠 |
