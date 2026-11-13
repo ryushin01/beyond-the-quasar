@@ -1,5 +1,14 @@
 # 버전 기록
 
+## 0.7.3 (2026-11-12)
+
+- 모니터링: `VITE_SENTRY_DSN`이 있으면 처리하지 못한 오류와 나쁜 Web Vitals를 Sentry로 보냄. 오류 내용만 보내고, Sentry(약 31 kB gzip)와 web-vitals는 첫 화면 뒤에 따로 받음
+- 성능 예산: CI에서 size-limit(전체 JS 540 kB, 전체 CSS 140 kB)과 Lighthouse CI(첫 화면·카탈로그·관제·관측소가 데스크톱 기준 성능 90·접근성 100·권장 사항 95·SEO 90점, LCP 2.5초·TBT 200ms·CLS 0.1 이하)로 검사. 첫 화면의 명도 대비·조작 크기는 아래 알려진 문제라 경고로 둠
+- 모니터링: Vue가 잡은 컴포넌트 오류도 `app.config.errorHandler`에서 보냄
+- Dependabot: bun 패키지 매주, GitHub Actions 매월 업데이트 PR
+- 글꼴을 data: 주소로 CSS에 넣지 않고 파일로 내보냄: 글자 묶음별 조각 75개가 CSS에 모두 들어가 CSS가 318 kB(gzip)였던 것을 133 kB로 줄이고, 화면마다 LCP가 약 0.2초 빨라짐
+- Vue 템플릿 접근성 린트: oxlint가 보지 못하는 템플릿을 eslint-plugin-vuejs-accessibility로 검사
+
 ## 0.7.2 (2026-11-11)
 
 - 대체 글꼴: 웹 글꼴을 받지 못해도 관제 화면 분위기가 남도록 제목은 좁은 대문자(Avenir Next Condensed, Arial Narrow), 좌표·시각은 SF Mono·Menlo·Consolas로 이었습니다.

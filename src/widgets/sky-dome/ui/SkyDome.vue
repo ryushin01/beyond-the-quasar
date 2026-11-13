@@ -104,6 +104,8 @@ const summary = computed(() =>
     </g>
 
     <g>
+      <!-- 하늘 지도 위 대상 고르기는 마우스 지름길이다. 키보드로는 대상 플레이트 버튼으로 같은 조작을 한다(docs/development.md, 6.1.1). -->
+      <!-- eslint-disable-next-line vuejs-accessibility/click-events-have-key-events, vuejs-accessibility/no-static-element-interactions -->
       <g
         v-for="target in targets"
         :key="target.id"

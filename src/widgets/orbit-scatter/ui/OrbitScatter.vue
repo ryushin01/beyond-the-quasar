@@ -98,6 +98,8 @@ const summary = computed(() =>
   <figure class="scatter">
     <figcaption class="sr-only">{{ summary }}</figcaption>
     <div ref="plot" class="scatter__plot">
+      <!-- 분포도 위 위성 고르기는 마우스 지름길이다. 키보드로는 위성 목록에서 같은 조작을 한다(docs/development.md, 6.1.1). -->
+      <!-- eslint-disable-next-line vuejs-accessibility/click-events-have-key-events, vuejs-accessibility/no-static-element-interactions -->
       <svg
         ref="svg"
         :viewBox="`0 0 ${WIDTH} ${HEIGHT}`"

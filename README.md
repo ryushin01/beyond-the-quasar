@@ -1,7 +1,7 @@
 # 🔵 Beyond the Quasar
 
 [![CI](https://github.com/ryushin01/beyond-the-quasar/actions/workflows/ci.yml/badge.svg)](https://github.com/ryushin01/beyond-the-quasar/actions/workflows/ci.yml)
-![version](https://img.shields.io/badge/version-0.7.2-1a3fe0)
+![version](https://img.shields.io/badge/version-0.7.3-1a3fe0)
 ![Histoire](https://img.shields.io/badge/Histoire-1.0_beta-34D399)
 
 군사·항법·기상·통신 위성을 추적하고 오늘 밤의 하늘을 관측하는 위성 관제·천체 관측 웹 앱입니다.
@@ -80,7 +80,8 @@
 | 궤도·천체 | satellite.js 6(SGP4), Astronomy Engine, d3-geo, world-atlas, three.js(3D 궤도) |
 | 스타일·다국어 | UnoCSS, vue-i18n 11, Oswald·Orbit·Gothic A1·Roboto Mono·Nanum Gothic Coding |
 | 모션 | GSAP 3(ScrollTrigger), Lenis, WebGL 셰이더 |
-| 품질 | oxlint, vue-tsc, Vitest, Vue Test Utils, Cypress(컴포넌트), Playwright, axe |
+| 품질 | oxlint, eslint-plugin-vuejs-accessibility, vue-tsc, Vitest, Vue Test Utils, Cypress(컴포넌트), Playwright, axe, size-limit, Lighthouse CI |
+| 모니터링 | Sentry(DSN이 있을 때만), web-vitals |
 | 문서 | Histoire |
 | 패키지·배포 | Bun, GitHub Actions, Vercel |
 
@@ -98,9 +99,10 @@ bun run dev    # http://localhost:5173
 | `bun run build` / `preview` | 타입 검사 후 프로덕션 빌드 / 빌드 결과 실행 (`:4173`) |
 | `bun run build:site` | 프로덕션 빌드에 Histoire를 `/histoire/`로 합치기 (Vercel 배포용) |
 | `bun run story:dev` / `story:build` | Histoire 개발 서버 / 빌드 |
-| `bun run lint` / `typecheck` | oxlint / vue-tsc |
+| `bun run lint` / `typecheck` | oxlint와 Vue 템플릿 접근성 / vue-tsc |
 | `bun run test` | 단위·컴포넌트 테스트 |
 | `bun run test:e2e` | 프로덕션 빌드의 레이아웃·접근성·업무 흐름 검사 (먼저 `build` 필요) |
+| `bun run size` / `lhci` | 번들 크기 예산 / Lighthouse 기준 검사 (먼저 `build` 필요) |
 | `bun run data:tle` | CelesTrak에서 궤도 스냅샷 갱신 |
 
 ## 프로젝트 구조
