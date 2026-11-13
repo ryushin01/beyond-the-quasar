@@ -85,12 +85,12 @@
     "sass-embedded": "^1.108.1",
     "size-limit": "^14.3.0",
     "typescript": "~5.9.3",
-    "vite": "7.3.7",
+    "vite": "7.3.8",
     "vitest": "4",
     "vue-eslint-parser": "^10.4.2",
     "vue-tsc": "^3.3.14"
   },
   "overrides": {
-    "vite": "7.3.7"
+    "vite": "7.3.8"
   }
 }

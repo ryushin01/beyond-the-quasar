@@ -12,7 +12,7 @@
 
 ## Vite 버전
 
-Histoire 1.0 beta가 Vite 7만 지원해 `vite`를 7.3으로 고정하고 `overrides`로 하나로 맞췄습니다. 같은 이유로 `@quasar/vite-plugin`은 1.x, `vitest`는 4, Cypress는 15를 씁니다(Cypress 16의 컴포넌트 테스트는 Vite 8만 지원). `satellite.js`는 7의 WASM 빌드가 Vite 빌드와 충돌해 6을 씁니다.
+Histoire 1.0 beta가 Vite 7만 지원해 `vite`를 7.3으로 고정하고 `overrides`로 하나로 맞췄습니다. Dependabot은 `devDependencies`만 올리고 `overrides`는 그대로 두므로, Vite를 올릴 때는 `overrides`도 같은 버전으로 맞춥니다. 둘이 어긋나면 `scripts/vite-pin.test.mjs`가 실패합니다. 같은 이유로 `@quasar/vite-plugin`은 1.x, `vitest`는 4, Cypress는 15를 씁니다(Cypress 16의 컴포넌트 테스트는 Vite 8만 지원). `satellite.js`는 7의 WASM 빌드가 Vite 빌드와 충돌해 6을 씁니다.
 
 ## 3D 궤도
 
