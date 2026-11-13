@@ -13,7 +13,6 @@ export {
   type SkyBodyName,
 } from './lib/sky'
 export {
-  ECLIPSE_IDS,
   eclipseWindow,
   eyepieceScene,
   isEclipseId,

@@ -5,6 +5,7 @@ import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useMotionPreference } from '@/shared/motion'
 
 import { FRAGMENT_SHADER, VERTEX_SHADER } from '../lib/shader'
+import { createFullscreenShader } from '@/shared/lib'
 
 const props = withDefaults(defineProps<{ mix?: number; fall?: number; dim?: number; allowSoftware?: boolean }>(), { mix: 0, fall: 0, dim: 0, allowSoftware: false })
 
@@ -31,34 +32,13 @@ let lastFrameAt = 0
 let frameSum = 0
 let frameCount = 0
 
-function compile(type: number, source: string): WebGLShader | null {
-  if (!gl) return null
-  const shader = gl.createShader(type)
-  if (!shader) return null
-  gl.shaderSource(shader, source)
-  gl.compileShader(shader)
-  return gl.getShaderParameter(shader, gl.COMPILE_STATUS) ? shader : null
-}
-
 function setup(): boolean {
   // GPU 가속이 없으면 광선 적분이 CPU에서 돌아 화면이 멈추므로 정적 대체 화면을 씁니다.
   gl = canvas.value?.getContext('webgl', { antialias: false, powerPreference: 'high-performance', failIfMajorPerformanceCaveat: !props.allowSoftware }) ?? null
   if (!gl) return false
-  const vertex = compile(gl.VERTEX_SHADER, VERTEX_SHADER)
-  const fragment = compile(gl.FRAGMENT_SHADER, FRAGMENT_SHADER)
-  const program = gl.createProgram()
-  if (!vertex || !fragment || !program) return false
-  gl.attachShader(program, vertex)
-  gl.attachShader(program, fragment)
-  gl.linkProgram(program)
-  if (!gl.getProgramParameter(program, gl.LINK_STATUS)) return false
-  gl.useProgram(program)
-  gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer())
-  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW)
-  const position = gl.getAttribLocation(program, 'position')
-  gl.enableVertexAttribArray(position)
-  gl.vertexAttribPointer(position, 2, gl.FLOAT, false, 0, 0)
-  for (const name of UNIFORMS) uniforms[name] = gl.getUniformLocation(program, name)
+  const found = createFullscreenShader(gl, VERTEX_SHADER, FRAGMENT_SHADER, UNIFORMS)
+  if (!found) return false
+  uniforms = found
   return true
 }
 

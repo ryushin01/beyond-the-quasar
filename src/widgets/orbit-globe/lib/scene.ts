@@ -78,6 +78,8 @@ export function createGlobeScene(canvas: HTMLCanvasElement, colors: GlobeColors)
   } catch (error) {
     // 렌더러는 만들었는데 나머지 준비가 실패하면, 보기를 여닫을 때마다 WebGL 맥락이 쌓이지 않게 바로 정리합니다.
     renderer.dispose()
+    // dispose()만으로는 브라우저가 WebGL 맥락을 GC 때까지 쥐고 있어, 보기를 여닫을 때마다 쌓이지 않게 바로 돌려줍니다.
+    renderer.forceContextLoss()
     throw error
   }
 }
@@ -210,6 +212,8 @@ function buildScene(renderer: WebGLRenderer, canvas: HTMLCanvasElement, colors: 
       for (const material of [gridMaterial, orbitMaterial, militaryOrbitMaterial, markerMaterial, militaryMarkerMaterial]) material.dispose()
       ;(occluder.material as Material).dispose()
       renderer.dispose()
+      // dispose()만으로는 브라우저가 WebGL 맥락을 GC 때까지 쥐고 있어, 보기를 여닫을 때마다 쌓이지 않게 바로 돌려줍니다.
+      renderer.forceContextLoss()
     },
   }
 }

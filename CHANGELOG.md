@@ -1,5 +1,12 @@
 # 버전 기록
 
+## 0.7.4 (2026-11-13)
+
+- 성능: 한글 웹 글꼴 선언(글자 묶음마다 있는 `@font-face` 약 480개, CSS 118 kB gzip)을 첫 화면 CSS에서 빼고, 화면을 그린 뒤 따로 받음. 첫 화면 CSS 115.8 → 40.7 kB(gzip)
+- 메모리: 3D 궤도 보기를 닫을 때(준비가 실패할 때 포함) WebGL 맥락을 `forceContextLoss()`로 바로 돌려줌. 여닫기를 반복하면 맥락이 쌓여 브라우저 한도에 걸릴 수 있었음
+- 공통화: 이벤트 무대·퀘이사 배경의 같은 셰이더 준비 코드를 `createFullscreenShader`로, 진행 표시·이벤트 목차의 구역 이동을 `goToSection`으로 모음
+- 정리: 슬라이스 밖에서 쓰지 않는 공개 내보내기(`toSatellites`, `ECLIPSE_IDS`, `filterToQuery`, `queryToFilter`) 정리
+
 ## 0.7.3 (2026-11-12)
 
 - 모니터링: `VITE_SENTRY_DSN`이 있으면 처리하지 못한 오류와 나쁜 Web Vitals를 Sentry로 보냄. 오류 내용만 보내고, Sentry(약 31 kB gzip)와 web-vitals는 첫 화면 뒤에 따로 받음

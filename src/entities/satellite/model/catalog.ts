@@ -10,7 +10,7 @@ async function fetchSnapshot(): Promise<Snapshot> {
   return response.json() as Promise<Snapshot>
 }
 
-export function toSatellites(snapshot: Snapshot): Satellite[] {
+function toSatellites(snapshot: Snapshot): Satellite[] {
   return snapshot.satellites.map((record) => ({
     ...record,
     orbit: classifyOrbit(record.line2),

@@ -29,7 +29,7 @@ const EARTH_RADIUS_KM = 6_378.14
 const SHADOW_ENLARGEMENT = 1.02
 const DEG = 180 / Math.PI
 
-export const ECLIPSE_IDS: readonly EclipseId[] = ['lunarEclipse', 'solarEclipse']
+const ECLIPSE_IDS: readonly EclipseId[] = ['lunarEclipse', 'solarEclipse']
 export const isEclipseId = (value: unknown): value is EclipseId => typeof value === 'string' && (ECLIPSE_IDS as readonly string[]).includes(value)
 
 const toObserver = (site: SiteLike): Observer => new Observer(site.latitude, site.longitude, site.elevationM)
