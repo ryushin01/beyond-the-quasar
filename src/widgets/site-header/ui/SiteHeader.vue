@@ -57,7 +57,7 @@ function onMenuShow(): void {
     </p>
     <div class="bar">
       <RouterLink :to="ROUTES.home" class="logo" :aria-label="t('brand.name')">
-        <span class="logo__dot" aria-hidden="true" />
+        <img class="logo__dot" src="/brand/logo.jpg" alt="" width="24" height="24" />
         <span class="logo__text" aria-hidden="true">Beyond<br />the Quasar</span>
       </RouterLink>
 
@@ -169,10 +169,13 @@ function onMenuShow(): void {
   transform-origin: left center;
   transform: scale(calc(1 - 0.12 * var(--shrink)));
 }
+/* 쿼사르 사진(ESO 상상도)을 원으로 잘라 씁니다. 불러오기 전에는 신호색 원이 보입니다. */
 .logo__dot {
+  display: block;
   width: 1.5rem;
   height: 1.5rem;
   border-radius: 50%;
+  object-fit: cover;
   background: var(--signal);
   box-shadow: 0 0 1.25rem color-mix(in srgb, var(--signal) 70%, transparent);
   transition: transform 0.5s var(--ease-out);
