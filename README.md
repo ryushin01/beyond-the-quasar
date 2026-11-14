@@ -1,7 +1,7 @@
 # 🔵 Beyond the Quasar
 
 [![CI](https://github.com/ryushin01/beyond-the-quasar/actions/workflows/ci.yml/badge.svg)](https://github.com/ryushin01/beyond-the-quasar/actions/workflows/ci.yml)
-![version](https://img.shields.io/badge/version-0.7.6-1a3fe0)
+![version](https://img.shields.io/badge/version-0.7.7-1a3fe0)
 ![Histoire](https://img.shields.io/badge/Histoire-1.0_beta-34D399)
 
 군사·항법·기상·통신 위성을 추적하고 오늘 밤의 하늘을 관측하는 위성 관제·천체 관측 웹 앱입니다.
@@ -132,13 +132,14 @@ src/
 
 ## 출처
 
-사이트 바닥글의 '데이터·글꼴 출처(Data and font credits)' 링크가 이 표로 옵니다.
+사이트 바닥글의 '데이터·글꼴·이미지 출처(Data, font and image credits)' 링크가 이 표로 옵니다.
 
 | 자료 (Material) | 저작자 (Author) | 사용 허락 (License) | 원본 (Source) |
 |---|---|---|---|
 | 궤도 데이터 (Orbital data: TLE, satellite catalog) | CelesTrak (T.S. Kelso) | 공개 데이터 (Public data) | [celestrak.org](https://celestrak.org) |
 | 천체 계산 (Astronomy calculations) | Astronomy Engine (Don Cross) | MIT | [cosinekitty/astronomy](https://github.com/cosinekitty/astronomy) |
 | 세계 지도 (World map) | Natural Earth | 퍼블릭 도메인 (Public domain) | [naturalearthdata.com](https://www.naturalearthdata.com) |
+| 쿼사르 ULAS J1120+0641 상상도 (Quasar artist's impression; 파비콘·로고, 정사각형으로 잘라 줄임 / cropped and resized) | ESO/M. Kornmesser | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) | [ESO eso1122a](https://www.eso.org/public/images/eso1122a/) |
 | Oswald 글꼴 (font) | The Oswald Project Authors | SIL OFL 1.1 | [googlefonts/OswaldFont](https://github.com/googlefonts/OswaldFont) |
 | Roboto Mono 글꼴 (font) | The Roboto Mono Project Authors | SIL OFL 1.1 | [googlefonts/robotomono](https://github.com/googlefonts/robotomono) |
 | Gothic A1 글꼴 (font) | HanYang I&C | SIL OFL 1.1 | [Google Fonts](https://fonts.google.com/specimen/Gothic+A1) |
