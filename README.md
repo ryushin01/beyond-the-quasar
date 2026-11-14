@@ -129,3 +129,18 @@ src/
 | [개발 가이드](docs/development.md) | 데이터 갱신, 모션 규칙, 접근성 점검, 테스트 |
 | [시퀀스 다이어그램](docs/sequence-diagrams.md) | 궤도 스냅샷 갱신, 실시간 위치 계산, 시뮬레이션 명령 전송 |
 | [버전 기록](CHANGELOG.md) | 버전별 변경 내용 |
+
+## 출처
+
+사이트 바닥글의 '데이터·글꼴 출처(Data and font credits)' 링크가 이 표로 옵니다.
+
+| 자료 (Material) | 저작자 (Author) | 사용 허락 (License) | 원본 (Source) |
+|---|---|---|---|
+| 궤도 데이터 (Orbital data: TLE, satellite catalog) | CelesTrak (T.S. Kelso) | 공개 데이터 (Public data) | [celestrak.org](https://celestrak.org) |
+| 천체 계산 (Astronomy calculations) | Astronomy Engine (Don Cross) | MIT | [cosinekitty/astronomy](https://github.com/cosinekitty/astronomy) |
+| 세계 지도 (World map) | Natural Earth | 퍼블릭 도메인 (Public domain) | [naturalearthdata.com](https://www.naturalearthdata.com) |
+| Oswald 글꼴 (font) | The Oswald Project Authors | SIL OFL 1.1 | [googlefonts/OswaldFont](https://github.com/googlefonts/OswaldFont) |
+| Roboto Mono 글꼴 (font) | The Roboto Mono Project Authors | SIL OFL 1.1 | [googlefonts/robotomono](https://github.com/googlefonts/robotomono) |
+| Gothic A1 글꼴 (font) | HanYang I&C | SIL OFL 1.1 | [Google Fonts](https://fonts.google.com/specimen/Gothic+A1) |
+| Nanum Gothic Coding (나눔고딕코딩) 글꼴 (font) | NHN (NAVER), designed by Sandoll Communications | SIL OFL 1.1 | [Google Fonts](https://fonts.google.com/specimen/Nanum+Gothic+Coding) |
+| Orbit 글꼴 (font) | The Orbit Project Authors (JAMO) | SIL OFL 1.1 | [JAMO-TYPEFACE/Orbit](https://github.com/JAMO-TYPEFACE/Orbit) |

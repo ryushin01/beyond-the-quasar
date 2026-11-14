@@ -9,6 +9,8 @@ const { t } = useI18n()
 const { enabled } = useMotionPreference()
 
 const WORD = 'QUASAR'
+/** 데이터·글꼴의 출처는 화면이 아니라 저장소 README에 적습니다. */
+const SOURCES_URL = 'https://github.com/ryushin01/beyond-the-quasar#출처'
 const root = ref<HTMLElement>()
 const giant = ref<HTMLElement>()
 let context: gsap.Context | undefined
@@ -67,7 +69,7 @@ onBeforeUnmount(() => context?.revert())
       <span v-for="(letter, index) in WORD" :key="index" class="footer__letter">{{ letter }}</span>
     </div>
     <div class="footer__notes">
-      <p>{{ t('home.credits') }}</p>
+      <p><a class="footer__credits" :href="SOURCES_URL">{{ t('home.credits') }}</a></p>
       <p>{{ t('home.disclaimer') }}</p>
     </div>
   </footer>
@@ -136,5 +138,9 @@ onBeforeUnmount(() => context?.revert())
 }
 .footer__notes p {
   margin: 0;
+}
+.footer__credits {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
 }
 </style>
