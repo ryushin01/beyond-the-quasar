@@ -139,6 +139,12 @@ a {
 .q-field--outlined .q-field__control::before {
   border-color: var(--line-strong);
 }
+
+/* 셀렉트 화살표: 24px 아이콘 안의 삼각형 둘레에 7px(아이콘의 7/24) 빈 공간이 있어 그만큼 오른쪽으로 옮깁니다.
+   그래야 화살표 오른쪽 간격이 글자 왼쪽 간격(안쪽 여백 12px)과 같습니다. */
+.q-select .q-select__dropdown-icon {
+  margin-right: calc(-7em / 24);
+}
 .q-field__label,
 .q-field__bottom {
   color: var(--muted);
