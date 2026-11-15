@@ -104,6 +104,7 @@ bun run dev    # http://localhost:5173
 | `bun run test:e2e` | 프로덕션 빌드의 레이아웃·접근성·업무 흐름 검사 (먼저 `build` 필요) |
 | `bun run size` / `lhci` | 번들 크기 예산 / Lighthouse 기준 검사 (먼저 `build` 필요) |
 | `bun run data:tle` | CelesTrak에서 궤도 스냅샷 갱신 |
+| `bun run screenshots` | README 화면 다시 찍기 (먼저 `build:site` 뒤 `preview` 실행) |
 
 ## 프로젝트 구조
 
