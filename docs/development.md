@@ -87,6 +87,7 @@ E2E는 프로덕션 빌드(`bun run build`)를 대상으로 합니다. `4173` �
 ## 품질 예산
 
 - **웹 글꼴:** 한글 글꼴은 글자 묶음마다 `@font-face`가 있어(약 480개) 선언만 CSS 118 kB(gzip)입니다. `src/app/styles/fonts.css`에 모으고 `main.ts`가 화면을 그린 뒤 `import()`로 따로 받아, 첫 화면 CSS가 116 kB에서 41 kB로 줄었습니다. 그 사이에는 `global.css`의 대체 글꼴로 보입니다. 글꼴을 더할 때는 `main.ts`가 아니라 이 파일에 넣습니다.
+- **한글 글꼴(에이투지체):** 제목·본문 한글은 에이투지체(300·400·600·700·800)입니다. 원본과 라이선스는 `scripts/fonts/a2z/`, 설정은 `scripts/fonts/config.json`에 있습니다. `bun run fonts`가 소스의 문자열과 `.vue`·JSON·`index.html`에 쓰인 한글·기호만 담은 화면 글자 파일(`src/app/styles/fonts/a2z.css`, 굵기마다 약 27KB)과, 나머지 글자를 글자 묶음으로 나눈 조각(`a2z-rest.css`)을 만듭니다. 화면 글자 파일에 있는 글자는 조각의 `unicode-range`에서 빼서 두 번 받지 않습니다. 화면 글자를 바꾸면 다시 실행하고, 빠진 글자가 있으면 `src/app/styles/fonts.test.ts`가 실패합니다. 본문 영문은 Gothic A1의 영문 글자만(`latin-400`·`latin-700`) 받습니다. 이 변경으로 `fonts.css`가 118 kB에서 49 kB(gzip)로 줄었습니다.
 - **셰이더 화면:** 화면 전체에 프래그먼트 셰이더를 그리는 곳(이벤트 무대, 퀘이사 배경)은 `shared/lib`의 `createFullscreenShader`로 준비합니다.
 - **번들 크기:** `bun run size`가 전체 JS 540 kB, 전체 CSS 140 kB(gzip)를 넘으면 실패합니다. 기준은 `.size-limit.json`에 있습니다.
 - **Vue 템플릿 접근성:** oxlint의 jsx-a11y는 Vue 템플릿을 보지 못해 `bun run lint`가 `eslint-plugin-vuejs-accessibility`도 돌립니다(`eslint.config.js`, 코드 규칙은 oxlint가 그대로 맡음). 지도·하늘 지도·분포도의 클릭과 검색 팔레트의 옵션은 위 키보드 대안이 있어 그 줄만 예외로 둡니다.

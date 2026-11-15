@@ -1,8 +1,9 @@
-// 제목 Oswald(영문)·오르빗(한글), 본문 Gothic A1, 좌표·시각 Roboto Mono(영문·숫자)·나눔고딕코딩(한글)
+// 제목 Oswald(영문), 본문 영문 Gothic A1, 한글 에이투지체, 좌표·시각 Roboto Mono(영문·숫자)·나눔고딕코딩(한글)
 import '@fontsource-variable/oswald/index.css'
-import '@fontsource/orbit/400.css'
-import '@fontsource/gothic-a1/400.css'
-import '@fontsource/gothic-a1/700.css'
+import '@fontsource/gothic-a1/latin-400.css'
+import '@fontsource/gothic-a1/latin-700.css'
+import './styles/fonts/a2z.css'
+import './styles/fonts/a2z-rest.css'
 import '@fontsource-variable/roboto-mono/index.css'
 import '@fontsource/nanum-gothic-coding/400.css'
 import '@fontsource/nanum-gothic-coding/700.css'
