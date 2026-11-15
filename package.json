@@ -21,7 +21,8 @@
     "test:component": "cypress run --component",
     "size": "size-limit",
     "lhci": "lhci autorun",
-    "fonts": "node scripts/build-fonts.mjs"
+    "fonts": "node scripts/build-fonts.mjs",
+    "screenshots": "node scripts/screenshots.mjs"
   },
   "dependencies": {
     "@fontsource-variable/oswald": "^5.3.0",
