@@ -1,12 +1,14 @@
 /*
- * 웹 글꼴 선언. 제목 Oswald(영문)·오르빗(한글), 본문 Gothic A1, 좌표·시각 Roboto Mono(영문·숫자)·나눔고딕코딩(한글)
- * 한글 글꼴은 글자 묶음마다 @font-face가 있어(약 480개) CSS만 118 kB(gzip)입니다.
+ * 웹 글꼴 선언. 제목 Oswald(영문), 본문 영문 Gothic A1(영문 글자만), 한글은 제목·본문 모두 에이투지체,
+ * 좌표·시각 Roboto Mono(영문·숫자)·나눔고딕코딩(한글).
+ * 에이투지체는 화면에 쓰는 글자만 담은 파일(a2z.css)과 나머지 글자 조각(a2z-rest.css)으로 나눴습니다(pnpm fonts로 만듦).
  * 첫 화면을 막지 않게 main.ts가 화면을 그린 뒤 따로 받고, 그 사이에는 global.css의 대체 글꼴로 보입니다.
  */
 @import '@fontsource-variable/oswald/index.css';
-@import '@fontsource/orbit/400.css';
-@import '@fontsource/gothic-a1/400.css';
-@import '@fontsource/gothic-a1/700.css';
+@import '@fontsource/gothic-a1/latin-400.css';
+@import '@fontsource/gothic-a1/latin-700.css';
+@import './fonts/a2z.css';
+@import './fonts/a2z-rest.css';
 @import '@fontsource-variable/roboto-mono/index.css';
 @import '@fontsource/nanum-gothic-coding/400.css';
 @import '@fontsource/nanum-gothic-coding/700.css';

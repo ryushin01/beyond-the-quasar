@@ -1,7 +1,7 @@
 # 🔵 Beyond the Quasar
 
 [![CI](https://github.com/ryushin01/beyond-the-quasar/actions/workflows/ci.yml/badge.svg)](https://github.com/ryushin01/beyond-the-quasar/actions/workflows/ci.yml)
-![version](https://img.shields.io/badge/version-0.7.7-1a3fe0)
+![version](https://img.shields.io/badge/version-0.8.0-1a3fe0)
 ![Histoire](https://img.shields.io/badge/Histoire-1.0_beta-34D399)
 
 군사·항법·기상·통신 위성을 추적하고 오늘 밤의 하늘을 관측하는 위성 관제·천체 관측 웹 앱입니다.
@@ -78,7 +78,7 @@
 | 프레임워크 | Vue 3.5, Quasar 2, TypeScript 5.9, Vite 7, Vue Router 5 |
 | 상태·데이터 | Pinia 4, TanStack Query 5, VueUse |
 | 궤도·천체 | satellite.js 6(SGP4), Astronomy Engine, d3-geo, world-atlas, three.js(3D 궤도) |
-| 스타일·다국어 | UnoCSS, vue-i18n 11, Oswald·Orbit·Gothic A1·Roboto Mono·Nanum Gothic Coding |
+| 스타일·다국어 | UnoCSS, vue-i18n 11, 웹 폰트 Oswald·Gothic A1(영문)·에이투지체(한글)·Roboto Mono·Nanum Gothic Coding |
 | 모션 | GSAP 3(ScrollTrigger), Lenis, WebGL 셰이더 |
 | 품질 | oxlint, eslint-plugin-vuejs-accessibility, vue-tsc, Vitest, Vue Test Utils, Cypress(컴포넌트), Playwright, axe, size-limit, Lighthouse CI |
 | 모니터링 | Sentry(DSN이 있을 때만), web-vitals |
@@ -130,6 +130,18 @@ src/
 | [시퀀스 다이어그램](docs/sequence-diagrams.md) | 궤도 스냅샷 갱신, 실시간 위치 계산, 시뮬레이션 명령 전송 |
 | [버전 기록](CHANGELOG.md) | 버전별 변경 내용 |
 
+## 웹 폰트
+
+| 글꼴 | 쓰는 곳 | 굵기 |
+|---|---|---|
+| Oswald | 영문 제목 | 200~700 가변 |
+| Gothic A1 | 영문·숫자 본문 (영문 글자만 받음) | 400·700 |
+| 에이투지체 (A2Z) | 한글 제목·본문 | 300·400·600·700·800 |
+| Roboto Mono | 좌표·시각 (영문·숫자) | 100~700 가변 |
+| 나눔고딕코딩 | 좌표·시각 (한글) | 400·700 |
+
+저작자·라이선스·원본은 아래 출처 표에 있습니다. 모두 같은 사이트에서 제공하고(외부 글꼴 CDN 없음), 첫 화면을 막지 않게 화면을 그린 뒤 받습니다. 에이투지체는 화면에 쓰는 글자만 담은 작은 파일과 나머지 글자 조각으로 나눠, 조각은 그 글자를 쓸 때만 받습니다(`bun run fonts`로 다시 만듦, [개발 문서](docs/development.md)).
+
 ## 출처
 
 사이트 바닥글의 '데이터·글꼴·이미지 출처(Data, font and image credits)' 링크가 이 표로 옵니다.
@@ -144,4 +156,4 @@ src/
 | Roboto Mono 글꼴 (font) | The Roboto Mono Project Authors | SIL OFL 1.1 | [googlefonts/robotomono](https://github.com/googlefonts/robotomono) |
 | Gothic A1 글꼴 (font) | HanYang I&C | SIL OFL 1.1 | [Google Fonts](https://fonts.google.com/specimen/Gothic+A1) |
 | Nanum Gothic Coding (나눔고딕코딩) 글꼴 (font) | NHN (NAVER), designed by Sandoll Communications | SIL OFL 1.1 | [Google Fonts](https://fonts.google.com/specimen/Nanum+Gothic+Coding) |
-| Orbit 글꼴 (font) | The Orbit Project Authors (JAMO) | SIL OFL 1.1 | [JAMO-TYPEFACE/Orbit](https://github.com/JAMO-TYPEFACE/Orbit) |
+| 에이투지체 (A2Z) 글꼴 (font) | 이주임, 오토노머스에이투지 (PT&) | SIL OFL 1.1 | [눈누 (noonnu)](https://noonnu.cc/font_page/1778) |
