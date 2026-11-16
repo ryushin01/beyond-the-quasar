@@ -89,6 +89,15 @@ async function chapter(page, id) {
   await shot(page, 'observatory')
   await context.close()
 }
+// 관측소: 우주 위협 패널(NOAA 실시간 + JPL 주간 스냅샷)
+{
+  const { page, context } = await open('/observatory')
+  const panel = page.locator('.observatory__hazards')
+  await panel.scrollIntoViewIfNeeded()
+  await page.waitForTimeout(4000)
+  await shot(panel, 'hazards')
+  await context.close()
+}
 for (const [name, query, site] of [
   ['eclipse-solar', 'event=solarEclipse&at=2027-02-06T16:00:00Z', 'atacama'],
   ['eclipse-lunar', 'event=lunarEclipse&at=2028-12-31T16:00:00Z', 'daejeon'],
@@ -114,6 +123,33 @@ for (const [name, query, site] of [
   await page.keyboard.type('GPS')
   await page.waitForTimeout(1200)
   await shot(page, 'palette')
+  await context.close()
+}
+
+// 관제: 통과 예측(맨눈 표시와 달력 내보내기). 대전의 저녁(18시)으로 시계를 맞춰 맨눈으로 보이는 통과가 나오게 합니다.
+{
+  const context = await browser.newContext({ ...DESKTOP, viewport: { width: 1440, height: 1300 }, locale: 'ko-KR', colorScheme: 'dark' })
+  const page = await context.newPage()
+  await page.addInitScript(() => {
+    localStorage.setItem('btq:locale', JSON.stringify('ko'))
+    // 시계를 고정하면 첫 방문 프리로더가 끝나지 않으므로 건너뜁니다.
+    sessionStorage.setItem('btq:intro-seen', '1')
+  })
+  const evening = new Date()
+  evening.setUTCHours(9, 0, 0, 0)
+  await page.clock.setFixedTime(evening)
+  await page.goto(`${BASE}/control`, { waitUntil: 'networkidle' })
+  await page.waitForTimeout(3000)
+  // 탭부터 내보내기 링크까지만 담습니다(아래 빈 칸 제외).
+  const top = await page.locator('.panels').boundingBox()
+  const bottom = await page.locator('.panels__actions').boundingBox()
+  await page.screenshot({
+    path: `${OUT}/control-passes.jpg`,
+    type: 'jpeg',
+    quality: 82,
+    clip: { x: top.x, y: top.y, width: top.width, height: bottom.y + bottom.height + 8 - top.y },
+  })
+  console.log('저장', 'control-passes')
   await context.close()
 }
 

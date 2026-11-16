@@ -16,9 +16,12 @@ const JD_UNIX_EPOCH = 2_440_587.5
 export const TT_MINUS_UTC_S = 69.184
 
 /** API 응답(fields + data 행)을 앱이 쓰는 접근 목록으로 바꿉니다. 형식이 다르면 예외를 던집니다. */
+/** count가 실제 0(숫자 0 또는 글자 "0")인지. null·빈 글자는 Number()가 0으로 바꾸므로 따로 막습니다. */
+const isZeroCount = (count) => count === 0 || count === '0'
+
 export function toApproaches(response) {
   // 맞는 접근이 없으면 API는 fields·data 없이 count 0만 돌려줍니다.
-  if (response && Number(response.count) === 0 && response.data === undefined) return []
+  if (response && isZeroCount(response.count) && response.data === undefined) return []
   if (!response || !Array.isArray(response.fields) || !Array.isArray(response.data)) throw new Error('응답 형식이 다릅니다')
   const index = Object.fromEntries(response.fields.map((field, i) => [field, i]))
   for (const field of ['des', 'jd', 'dist', 'v_rel', 'h']) {
@@ -44,7 +47,8 @@ export function toApproaches(response) {
 /** 저장하면 안 되는 이유. 문제가 없으면 null(앞으로 60일에 가까이 오는 천체가 없을 수도 있어 0건은 허용) */
 export function findNeoProblem(response, approaches) {
   if (!response?.signature?.source?.includes('Close Approach')) return '서명이 다릅니다'
-  if (Number(response.count) !== approaches.length) return `건수가 맞지 않습니다: ${response.count} / ${approaches.length}`
+  const count = typeof response.count === 'number' || (typeof response.count === 'string' && response.count.trim() !== '') ? Number(response.count) : Number.NaN
+  if (count !== approaches.length) return `건수가 맞지 않습니다: ${response.count} / ${approaches.length}`
   return null
 }
 

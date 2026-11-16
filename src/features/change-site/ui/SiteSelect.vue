@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { symSharpArrowDropDown } from '@quasar/extras/material-symbols-sharp'
 import { useQuasar } from 'quasar'
-import { computed, ref } from 'vue'
+import { computed, onBeforeUnmount, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { HERE_ID, SITES, useObserver } from '@/entities/observer'
@@ -43,6 +43,11 @@ function locate(): void {
     { enableHighAccuracy: false, timeout: 10_000, maximumAge: 600_000 },
   )
 }
+
+// 기다리는 사이 이 선택 컴포넌트가 사라지면(화면 이동) 늦게 온 위치가 다른 화면의 선택을 덮어쓰지 않게 요청을 버립니다.
+onBeforeUnmount(() => {
+  request += 1
+})
 
 const model = computed({
   get: () => observer.siteId,
