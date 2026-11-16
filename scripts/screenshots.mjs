@@ -1,4 +1,4 @@
-// README 화면(docs/images/*.jpg)을 다시 찍습니다.
+// README 화면(docs/images/*.jpg)과 링크 공유 미리보기(public/og.jpg)를 다시 찍습니다.
 // 먼저 사이트를 빌드해 띄워 두세요: bun run build:site && bun run preview
 // 사용: BASE_URL=http://localhost:4173 bun run screenshots
 import { chromium } from '@playwright/test'
@@ -48,6 +48,15 @@ async function chapter(page, id) {
     window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY, behavior: 'instant' })
   }, id)
   await page.waitForTimeout(4000)
+}
+
+// 링크 공유 미리보기(public/og.jpg): 홈 첫 화면을 README와 같은 1440×900 배치 그대로 1200×750으로 줄여 찍습니다.
+// README 화면과 함께 다시 찍어, 로고나 첫 화면이 바뀌어도 미리보기에 옛 모습이 남지 않게 합니다.
+{
+  const { page, context } = await open('/', { ...DESKTOP, deviceScaleFactor: 1200 / 1440 })
+  await page.screenshot({ path: 'public/og.jpg', type: 'jpeg', quality: 82 })
+  console.log('저장', 'og')
+  await context.close()
 }
 
 // 홈
