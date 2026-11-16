@@ -51,6 +51,12 @@ describe('findNeoProblem', () => {
     const empty = { ...response, count: '0', data: [] }
     expect(findNeoProblem(empty, toApproaches(empty))).toBeNull()
   })
+  it('count가 비어 있으면(null) 0건으로 받지 않아 기존 스냅샷을 지킨다', () => {
+    const broken = { signature: response.signature, count: null }
+    expect(() => toApproaches(broken)).toThrow()
+    expect(findNeoProblem(broken, [])).toMatch(/건수/)
+  })
+
   it('0건이면 API가 fields·data 없이 보내는 응답도 받는다', () => {
     const empty = { signature: response.signature, count: 0 }
     expect(toApproaches(empty)).toEqual([])

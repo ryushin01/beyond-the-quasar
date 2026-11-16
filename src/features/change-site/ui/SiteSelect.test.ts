@@ -58,6 +58,23 @@ describe('SiteSelect', () => {
     expect(useObserver().siteId).toBe('seoul')
   })
 
+  it('기다리는 사이 선택 컴포넌트가 사라지면 늦게 온 위치를 버린다', async () => {
+    let answer!: PositionCallback
+    Object.defineProperty(navigator, 'geolocation', {
+      configurable: true,
+      value: { getCurrentPosition: (success: PositionCallback) => (answer = success) },
+    })
+    const first = mount(SiteSelect, { props: { label: '지상국' } })
+    first.getComponent({ name: 'QSelect' }).vm.$emit('update:modelValue', 'here')
+    first.unmount()
+    // 다른 화면의 선택 컴포넌트에서 서울을 고른 뒤에 첫 요청의 위치가 도착
+    const second = mount(SiteSelect, { props: { label: '지상국' } })
+    second.getComponent({ name: 'QSelect' }).vm.$emit('update:modelValue', 'seoul')
+    answer({ coords: { latitude: 10, longitude: 20 } } as unknown as GeolocationPosition)
+    await flushPromises()
+    expect(useObserver().siteId).toBe('seoul')
+  })
+
   it('위치를 거부하면 이전 관측지를 그대로 두고 알린다', async () => {
     stubGeolocation('denied')
     const wrapper = mount(SiteSelect, { props: { label: '지상국' }, attachTo: document.body })
