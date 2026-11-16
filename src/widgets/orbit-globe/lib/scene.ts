@@ -150,6 +150,8 @@ function buildScene(renderer: WebGLRenderer, canvas: HTMLCanvasElement, colors: 
     if (!pending && running) pending = requestAnimationFrame(render)
   }
   controls.addEventListener('change', requestRender)
+  // 맥락을 되찾으면 three.js가 상태는 되살리지만 그리지는 않으므로, 멈춰 있던 장면도 한 장 다시 그립니다.
+  canvas.addEventListener('webglcontextrestored', requestRender)
   requestRender()
 
   return {
@@ -221,6 +223,7 @@ function buildScene(renderer: WebGLRenderer, canvas: HTMLCanvasElement, colors: 
       running = false
       cancelAnimationFrame(pending)
       controls.removeEventListener('change', requestRender)
+      canvas.removeEventListener('webglcontextrestored', requestRender)
       clearOrbits()
       controls.dispose()
       grid.geometry.dispose()

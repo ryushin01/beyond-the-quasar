@@ -33,5 +33,6 @@ export function useSatelliteCatalog() {
   const now = useNow({ scheduler: (tick) => useIntervalFn(tick, 3_600_000) })
   /** 스냅샷이 오래됐으면 지난 날수(화면 경고용), 아니면 null */
   const staleDays = computed(() => staleSnapshotDays(fetchedAt.value, now.value))
-  return { satellites, fetchedAt, staleDays, isPending: query.isPending, isError: query.isError, refetch: query.refetch }
+  // 처음 받기가 실패했을 때만 오류 화면을 보입니다. 이미 받은 뒤의 다시 받기(창 복귀 등)가 실패하면 받아 둔 스냅샷을 계속 씁니다.
+  return { satellites, fetchedAt, staleDays, isPending: query.isPending, isError: query.isLoadingError, refetch: query.refetch }
 }

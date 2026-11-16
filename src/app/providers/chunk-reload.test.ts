@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { isChunkLoadError, reloadOnce } from './chunk-reload'
 
@@ -16,7 +16,11 @@ describe('isChunkLoadError', () => {
 })
 
 describe('reloadOnce', () => {
-  beforeEach(() => sessionStorage.clear())
+  beforeEach(() => {
+    sessionStorage.clear()
+    vi.spyOn(console, 'warn').mockImplementation(() => {})
+  })
+  afterEach(() => vi.restoreAllMocks())
 
   it('한 번 새로고침하고, 10초 안에 다시 실패하면 그대로 둔다(무한 새로고침 방지)', () => {
     const assign = vi.fn()
@@ -26,10 +30,31 @@ describe('reloadOnce', () => {
     expect(assign).toHaveBeenCalledTimes(1)
   })
 
-  it('시간이 지나면 다시 새로고침할 수 있다', () => {
+  it('막힌 시도는 시각을 남기지 않아, 마지막 새로고침에서 10초가 지나면 다시 새로고침한다', () => {
     const assign = vi.fn()
     reloadOnce('/a', 1_000_000, assign)
-    expect(reloadOnce('/b', 1_020_000, assign)).toBe(true)
+    reloadOnce('/a', 1_005_000, assign) // 막힘
+    expect(reloadOnce('/b', 1_011_000, assign)).toBe(true)
     expect(assign).toHaveBeenLastCalledWith('/b')
+  })
+
+  it('저장소를 쓸 수 없으면 반복을 막을 수 없으므로 새로고침하지 않는다', () => {
+    const assign = vi.fn()
+    vi.spyOn(Storage.prototype, 'getItem').mockImplementation(() => {
+      throw new Error('SecurityError')
+    })
+    const original = globalThis.sessionStorage
+    Object.defineProperty(globalThis, 'sessionStorage', {
+      configurable: true,
+      get: () => {
+        throw new Error('SecurityError')
+      },
+    })
+    try {
+      expect(reloadOnce('/control', 1_000_000, assign)).toBe(false)
+      expect(assign).not.toHaveBeenCalled()
+    } finally {
+      Object.defineProperty(globalThis, 'sessionStorage', { configurable: true, value: original })
+    }
   })
 })
