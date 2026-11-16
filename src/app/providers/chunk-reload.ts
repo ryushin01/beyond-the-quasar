@@ -81,7 +81,11 @@ export function reloadOnChunkError(router: Router, assign?: (to: string) => void
   window.addEventListener('vite:preloadError', onPreloadError)
   // 조각 자체를 받지 못한 경우. 사용자가 그새 다른 곳으로 갔으면(버려진 이동) 새로고침하지 않습니다.
   const removeError = router.onError((error, to) => {
-    if (isChunkLoadError(error) && pending === to) reloadOnce(to.fullPath, Date.now(), assign)
+    // 사용자가 그새 다른 곳으로 간 이동(버려진 이동)이면 아무것도 하지 않습니다.
+    if (pending !== to) return
+    // 오류로 끝난 이동은 afterEach가 불리지 않으므로 여기서 비웁니다(조각 문제가 아닌 오류여도).
+    pending = null
+    if (isChunkLoadError(error)) reloadOnce(to.fullPath, Date.now(), assign)
   })
   // 앱에서는 끝까지 두지만, 테스트가 정리할 수 있게 해제 함수를 돌려줍니다.
   return () => {
