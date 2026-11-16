@@ -41,10 +41,11 @@ jobs:
         run: |
           title='궤도 스냅샷 갱신 실패'
           # 검색은 제목에 단어가 들어 있기만 해도 걸리므로, 제목이 정확히 같은 이슈만 고릅니다.
-          number=$(gh issue list --state open --search "$title in:title" --limit 50 --json number,title \
+          # checkout 전에 실패해도 저장소를 알 수 있게 --repo를 줍니다.
+          number=$(gh issue list --repo "$GITHUB_REPOSITORY" --state open --search "$title in:title" --limit 50 --json number,title \
             | jq -r --arg title "$title" '[.[] | select(.title == $title)][0].number // empty')
           if [ -n "$number" ]; then
-            gh issue comment "$number" --body "다시 실패했습니다: $RUN_URL"
+            gh issue comment "$number" --repo "$GITHUB_REPOSITORY" --body "다시 실패했습니다: $RUN_URL"
           else
-            gh issue create --title "$title" --body "주간 TLE 갱신이 실패했습니다. 화면은 이전 스냅샷으로 계속 그립니다(10일이 지나면 화면에 경고가 나옵니다). 실행 기록: $RUN_URL"
+            gh issue create --repo "$GITHUB_REPOSITORY" --title "$title" --body "주간 TLE 갱신이 실패했습니다. 화면은 이전 스냅샷으로 계속 그립니다(10일이 지나면 화면에 경고가 나옵니다). 실행 기록: $RUN_URL"
           fi
