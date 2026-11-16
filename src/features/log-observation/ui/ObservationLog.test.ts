@@ -1,9 +1,13 @@
 import { flushPromises, mount } from '@vue/test-utils'
 import { createPinia, setActivePinia } from 'pinia'
-import { beforeEach, describe, expect, it } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+
+import { downloadText } from '@/shared/lib'
 
 import { useObservationLog } from '../model/log'
 import ObservationLog from './ObservationLog.vue'
+
+vi.mock('@/shared/lib', async (original) => ({ ...(await original<typeof import('@/shared/lib')>()), downloadText: vi.fn() }))
 
 describe('ObservationLog', () => {
   beforeEach(() => {
@@ -29,5 +33,18 @@ describe('ObservationLog', () => {
     await flushPromises()
     expect(useObservationLog().entries).toHaveLength(0)
     expect(wrapper.text()).toContain('기록을 입력해 주세요.')
+  })
+
+  it('기록을 CSV로 내보낸다(머리말, 관측지 이름, 쉼표가 든 메모)', async () => {
+    const log = useObservationLog()
+    log.add({ targetName: 'M42', siteId: 'daejeon', seeing: 4, note: '맑음, 바람 약함' })
+    const wrapper = mount(ObservationLog, { props: { targetName: 'M42' } })
+    await wrapper.get('button.log__export').trigger('click')
+    const [filename, content, type] = vi.mocked(downloadText).mock.calls[0]!
+    expect(filename).toMatch(/^observation-log-\d{4}-\d{2}-\d{2}\.csv$/)
+    expect(type).toContain('text/csv')
+    const lines = content.replace('\uFEFF', '').trim().split('\r\n')
+    expect(lines[0]).toBe('기록 시각 (UTC),대상,관측지,시상 (1~5),메모')
+    expect(lines[1]).toMatch(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}Z,M42,대전,4,"맑음, 바람 약함"$/)
   })
 })

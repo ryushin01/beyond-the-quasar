@@ -19,6 +19,7 @@ export {
   toSatrec,
 } from './lib/orbit'
 export { buildPassSchedule, type PassScheduleRow } from './lib/schedule'
+export { isSunlit, isVisiblePass, sunAltitude } from './lib/visibility'
 export { default as SatelliteTags } from './ui/SatelliteTags.vue'
 export { default as SatellitePlate } from './ui/SatellitePlate.vue'
 export { default as SatelliteWireframe } from './ui/SatelliteWireframe.vue'

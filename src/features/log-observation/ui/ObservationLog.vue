@@ -4,7 +4,7 @@ import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { useObserver } from '@/entities/observer'
-import { formatUtc } from '@/shared/lib'
+import { downloadText, formatUtc, toCsv } from '@/shared/lib'
 
 import { useObservationLog } from '../model/log'
 
@@ -19,6 +19,13 @@ const note = ref('')
 const status = ref('')
 
 const seeingId = computed(() => `seeing-${props.targetName.replace(/\W/g, '')}`)
+
+/** 관측 일지를 CSV로 내려받습니다(이 브라우저에만 있는 기록을 따로 보관할 때). */
+function exportCsv(): void {
+  const rows = log.entries.map((entry) => [formatUtc(new Date(entry.loggedAt), true), entry.targetName, t(`sites.${entry.siteId}`), entry.seeing, entry.note])
+  const header = [t('log.csv.time'), t('log.csv.target'), t('log.csv.site'), t('log.csv.seeing'), t('log.csv.note')]
+  downloadText(`observation-log-${new Date().toISOString().slice(0, 10)}.csv`, toCsv([header, ...rows]), 'text/csv;charset=utf-8')
+}
 
 function save(): void {
   log.add({ targetName: props.targetName, siteId: observer.siteId, seeing: seeing.value, note: note.value.trim() })
@@ -52,7 +59,12 @@ function save(): void {
     </q-form>
 
     <p v-if="!log.entries.length" class="log__empty">{{ t('log.empty') }}</p>
-    <ol v-else class="log__list">
+    <!-- 넓은 화면에서 .log는 두 칸 격자라, 내보내기와 목록을 한 칸에 함께 둡니다. -->
+    <div v-else class="log__records">
+    <div class="log__actions">
+      <button type="button" class="log__export" @click="exportCsv">{{ t('log.exportCsv') }}</button>
+    </div>
+    <ol class="log__list">
       <li v-for="entry in log.entries" :key="entry.id" class="log__entry">
         <div>
           <strong>{{ entry.targetName }}</strong>
@@ -62,6 +74,7 @@ function save(): void {
         <q-btn flat dense square :icon="symSharpClose" :aria-label="t('log.remove', { name: entry.targetName })" class="log__remove" @click="log.remove(entry.id)" />
       </li>
     </ol>
+    </div>
   </div>
 </template>
 
@@ -95,6 +108,20 @@ function save(): void {
 }
 .log__save {
   min-height: 2.75rem;
+}
+.log__actions {
+  display: flex;
+  justify-content: flex-end;
+}
+.log__export {
+  min-height: 2rem;
+  padding: 0;
+  background: none;
+  border: 0;
+  color: var(--ink);
+  font-size: 0.75rem;
+  text-decoration: underline;
+  cursor: pointer;
 }
 .log__empty {
   margin: 0;
