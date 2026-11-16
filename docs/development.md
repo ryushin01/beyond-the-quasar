@@ -20,7 +20,8 @@ Histoire 1.0 beta가 Vite 7만 지원해 `vite`를 7.3으로 고정하고 `overr
 
 - 좌표: 관성 좌표(ECI)를 지구 반지름 1로 나눠 씁니다. three.js에 맞춰 북극을 y축으로 둡니다(`entities/satellite`의 `orbitPath`, `scenePosition`). 관성 좌표라 궤도가 닫힌 고리가 되고, 지구본은 그리니치 항성시만큼 돌려 둡니다.
 - 크기: `three`에서 쓰는 클래스만 가져오고, 컴포넌트가 장면 파일(`lib/scene.ts`)을 늦게 불러와 3D 보기를 열 때만 내려받습니다(gzip 약 136kB).
-- 모션: 동작 줄이기나 모션 정지 중에는 자동 회전과 위성 위치 갱신을 멈춥니다.
+- 모션: 동작 줄이기나 모션 정지 중에는 자동 회전과 위성 위치 갱신을 멈춥니다. 화면 밖으로 스크롤해도 멈춥니다.
+- 그리기: 필요할 때만 그립니다. 자동 회전 중에는 매 프레임, 끌고 놓은 뒤의 감속은 `controls.update()`가 참인 동안 이어 그리고, 그 밖에는 조작(`change`)이나 장면 값 변경(위치·색·크기) 때 한 장만 그립니다. 4배 느린 CPU에서 화면 밖 메인 스레드 사용률이 110%에서 5%로, 모션을 끈 화면 안에서는 105%에서 1.5%로 줄었습니다.
 - 정리: 보기를 닫으면 `renderer.dispose()` 뒤에 `forceContextLoss()`로 WebGL 맥락을 바로 돌려줍니다. dispose만으로는 브라우저가 GC 때까지 맥락을 쥐고 있어, 여닫기를 반복하면 맥락 수 한도(보통 16개)에 걸립니다.
 - 테스트: jsdom에는 WebGL이 없어 단위 테스트는 글 요약과 대체 안내를 확인하고, 실제 그리기는 E2E(Chromium)에서 확인합니다.
 
@@ -33,7 +34,7 @@ Histoire 1.0 beta가 Vite 7만 지원해 `vite`를 7.3으로 고정하고 `overr
 
 ## Histoire 배포와 바로가기
 
-`bun run build:site`가 `HISTOIRE_BASE=/histoire/`로 Histoire를 빌드해 `dist/histoire`에 합칩니다. Vercel은 이 명령을 쓰고, `vercel.json`의 SPA rewrite에서 `histoire/`를 뺐습니다. 바로가기 주소(`HISTOIRE_URL`)는 개발 중 `http://localhost:6006/`(`bun run story:dev` 필요), 배포본에서 `/histoire/index.html`이고 `VITE_HISTOIRE_URL`로 바꿀 수 있습니다.
+`bun run build:site`가 `HISTOIRE_BASE=/histoire/`로 Histoire를 빌드해 `dist/histoire`에 합칩니다. Vercel은 이 명령을 쓰고, `vercel.json`은 앱 화면 4개만 rewrite하므로 `histoire/`는 정적 파일로 그대로 나갑니다. 바로가기 주소(`HISTOIRE_URL`)는 개발 중 `http://localhost:6006/`(`bun run story:dev` 필요), 배포본에서 `/histoire/index.html`이고 `VITE_HISTOIRE_URL`로 바꿀 수 있습니다.
 
 ## 모션 규칙
 
@@ -42,6 +43,8 @@ Histoire 1.0 beta가 Vite 7만 지원해 `vite`를 7.3으로 고정하고 `overr
 - OS의 동작 줄이기와 헤더의 모션 정지 버튼을 함께 반영합니다(KWCAG 6.2.2). 셰이더, CSS 애니메이션, Lenis, 프리로더가 모두 멈춥니다.
 - 글자를 쪼개는 연출은 원문을 `sr-only`로 두고 조각에 `aria-hidden`을 답니다.
 - 이징은 `shared/motion`의 `EASE`, CSS는 `--ease-out`으로 통일합니다.
+- 캔버스를 매 프레임 그리는 곳(퀘이사 배경, 이벤트 무대, 홈 별자리)은 `useVisibleFrameLoop`를 씁니다. 화면에 보이고 탭이 열려 있고 모션이 허용될 때만 `requestAnimationFrame`을 돌리고, 아니면 정지 화면 한 장을 그립니다. 컴포넌트가 사라지면 함께 정리합니다.
+- WebGL을 직접 쓰는 곳(퀘이사 배경, 이벤트 무대)은 `webglcontextlost`에서 기본 동작을 막고 그리기를 멈췄다가, `webglcontextrestored`에서 셰이더를 다시 준비합니다. 휴대폰에서 탭을 오래 숨기거나 GPU가 초기화되면 맥락을 잃는데, 이 처리가 없으면 검은 화면으로 남습니다(Cypress `EventStage.cy.ts`가 확인).
 
 ## 접근성 점검
 
@@ -73,6 +76,10 @@ axe는 E2E에서 전 페이지, 밝은·어두운 화면, 데스크톱·모바�
 
 Vercel 프로젝트 `beyond-the-quasar`가 GitHub 저장소와 연결되어 있어 `main`에 푸시하면 자동으로 배포됩니다. 설정은 `vercel.json`에 있습니다. 궤도 스냅샷 자동 갱신 커밋도 같은 경로로 배포됩니다.
 
+- **화면별 HTML:** `bun run build`가 끝에 `scripts/route-html.mjs`를 돌려 관제·카탈로그·관측·이벤트의 제목·설명·OG가 다른 `dist/<화면>/index.html`과 `dist/404.html`(검색 제외)을 만듭니다. `vercel.json`은 이 4개 화면만 rewrite하고, 없는 주소는 Vercel이 `404.html`을 404 상태로 돌려줍니다(앱이 '찾을 수 없음' 화면을 그림). 화면을 더하면 `PAGES`에도 넣습니다(테스트가 라우터와 비교). 규칙을 바꾸면 `vercel build`로 해석되는지 확인합니다.
+- **궤도 스냅샷 미리 받기:** `index.html`이 `/data/tle-snapshot.json`을 `preload`합니다(`as="fetch" crossorigin`이어야 `fetch()`가 재사용). 쓰지 않는 이벤트·404 HTML에서는 `route-html.mjs`가 뺍니다.
+- **배포 직후 열린 탭:** 새 배포로 이전 빌드의 화면 조각이 사라지면, 열어 둔 탭에서 아직 안 받은 화면으로 갈 때 조각을 받지 못합니다. `app/providers/chunk-reload.ts`가 `vite:preloadError`와 라우터 오류에서 이를 잡아 가려던 주소로 한 번 새로고침합니다(10초 안에 다시 실패하면 멈춤, E2E `배포 직후`가 확인).
+
 ## 테스트
 
 | 범위 | 위치 | 내용 |
@@ -88,7 +95,10 @@ E2E는 프로덕션 빌드(`bun run build`)를 대상으로 합니다. `4173` �
 
 - **웹 글꼴:** 한글 글꼴은 글자 묶음마다 `@font-face`가 있어(약 480개) 선언만 CSS 118 kB(gzip)입니다. `src/app/styles/fonts.css`에 모으고 `main.ts`가 화면을 그린 뒤 `import()`로 따로 받아, 첫 화면 CSS가 116 kB에서 41 kB로 줄었습니다. 그 사이에는 `global.css`의 대체 글꼴로 보입니다. 글꼴을 더할 때는 `main.ts`가 아니라 이 파일에 넣습니다.
 - **한글 글꼴(에이투지체):** 제목·본문 한글은 에이투지체(300·400·600·700·800)입니다. 원본과 라이선스는 `scripts/fonts/a2z/`, 설정은 `scripts/fonts/config.json`에 있습니다. `bun run fonts`가 소스의 문자열과 `.vue`·JSON·`index.html`에 쓰인 한글·기호만 담은 화면 글자 파일(`src/app/styles/fonts/a2z.css`, 굵기마다 약 27KB)과, 나머지 글자를 글자 묶음으로 나눈 조각(`a2z-rest.css`)을 만듭니다. 화면 글자 파일에 있는 글자는 조각의 `unicode-range`에서 빼서 두 번 받지 않습니다. 화면 글자를 바꾸면 다시 실행하고, 빠진 글자가 있으면 `src/app/styles/fonts.test.ts`가 실패합니다. 본문 영문은 Gothic A1의 영문 글자만(`latin-400`·`latin-700`) 받습니다. 이 변경으로 `fonts.css`가 118 kB에서 49 kB(gzip)로 줄었습니다.
+- **좌표·시각 한글(나눔고딕코딩):** 같은 방식으로 화면 글자 파일(`src/app/styles/fonts/btq-coding.css`, 굵기마다 약 88KB, 힌팅 유지)을 만듭니다. 원본과 라이선스는 `scripts/fonts/nanum-gothic-coding/`에 있습니다. 나눔 글꼴은 OFL 예약 글꼴 이름("Nanum")이 있어, 줄인 파일은 `scripts/fonts/rename-font.py`가 글꼴 안의 이름을 'BTQ Coding'으로 바꿉니다(`pip install fonttools brotli` 필요, 다른 파이썬은 `FONT_PYTHON=<경로> bun run fonts`). 저작권·라이선스 이름표는 남깁니다. 나머지 조각은 만들지 않고(`rest: false`), 화면 글자 밖의 글자는 `--font-mono` 목록의 다음 글꼴인 fontsource 나눔고딕코딩 조각이 맡습니다. 이전에는 화면의 한글 라벨 때문에 조각 7~12개(146~240 KB)를 받았고, 이제는 1~2개(86~174 KB)를 받습니다.
 - **셰이더 화면:** 화면 전체에 프래그먼트 셰이더를 그리는 곳(이벤트 무대, 퀘이사 배경)은 `shared/lib`의 `createFullscreenShader`로 준비합니다.
+- **Quasar CSS:** 전체 CSS(`quasar.prod.css`, 240 kB) 대신 `src/app/styles/quasar.sass`가 쓰는 컴포넌트·플러그인의 Sass만 묶습니다(157 kB, gzip 42 → 28 kB). 새 Quasar 컴포넌트를 쓰면 이 파일에 그 `.sass`를 더합니다(안에서 그리는 하위 컴포넌트 포함).
+- **i18n:** 메시지는 빌드 때 미리 컴파일하므로 런타임 메시지 컴파일러를 빼고(`dropMessageCompiler`), 쓰지 않는 전역 컴포넌트(`i18n-t` 등)와 `v-t`도 설치하지 않습니다(`fullInstall: false`). 템플릿에서 `$t`·`i18n-t`를 쓰지 말고 `useI18n()`의 `t`를 씁니다.
 - **번들 크기:** `bun run size`가 전체 JS 540 kB, 전체 CSS 140 kB(gzip)를 넘으면 실패합니다. 기준은 `.size-limit.json`에 있습니다.
 - **Vue 템플릿 접근성:** oxlint의 jsx-a11y는 Vue 템플릿을 보지 못해 `bun run lint`가 `eslint-plugin-vuejs-accessibility`도 돌립니다(`eslint.config.js`, 코드 규칙은 oxlint가 그대로 맡음). 지도·하늘 지도·분포도의 클릭과 검색 팔레트의 옵션은 위 키보드 대안이 있어 그 줄만 예외로 둡니다.
 - **Lighthouse:** `bun run lhci`가 첫 화면·카탈로그·관제·관측소가 데스크톱 기준 성능 90·접근성 100·권장 사항 95·SEO 90점, LCP 2.5초·TBT 200ms·CLS 0.1 이하인지 3번씩 재서 확인합니다. 기준은 `lighthouserc.json`에 있습니다.

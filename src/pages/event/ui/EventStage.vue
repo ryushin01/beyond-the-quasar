@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { useIntersectionObserver, useResizeObserver } from '@vueuse/core'
+import { useEventListener, useResizeObserver } from '@vueuse/core'
 import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
 
-import { useMotionPreference } from '@/shared/motion'
+import { createFullscreenShader } from '@/shared/lib'
+import { useMotionPreference, useVisibleFrameLoop } from '@/shared/motion'
 
 import { FRAGMENT_SHADER, VERTEX_SHADER } from '../lib/shader'
-import { createFullscreenShader } from '@/shared/lib'
 
 const props = withDefaults(defineProps<{ mix?: number; fall?: number; dim?: number; allowSoftware?: boolean }>(), { mix: 0, fall: 0, dim: 0, allowSoftware: false })
 
@@ -20,17 +20,18 @@ const MIN_QUALITY = 0.45
 const { enabled } = useMotionPreference()
 const canvas = ref<HTMLCanvasElement>()
 const unsupported = ref(false)
+/** 셰이더가 준비되어 그릴 수 있는 상태. WebGL 맥락을 잃으면 false가 됩니다. */
+const ready = ref(false)
 
 let gl: WebGLRenderingContext | null = null
 let uniforms: Partial<Record<(typeof UNIFORMS)[number], WebGLUniformLocation | null>> = {}
-let frame = 0
-let visible = true
 let pendingDraw = 0
 let startedAt = 0
 let quality = 1
 let lastFrameAt = 0
 let frameSum = 0
 let frameCount = 0
+let disposed = false
 
 function setup(): boolean {
   // GPU 가속이 없으면 광선 적분이 CPU에서 돌아 화면이 멈추므로 정적 대체 화면을 씁니다.
@@ -55,7 +56,7 @@ function resize(): void {
 }
 
 function draw(now: number): void {
-  if (!gl) return
+  if (!gl || !ready.value) return
   gl.uniform2f(uniforms.uResolution!, gl.drawingBufferWidth, gl.drawingBufferHeight)
   gl.uniform1f(uniforms.uTime!, enabled.value ? ((now - startedAt) / 1000) % TIME_WRAP_SECONDS : STILL_TIME)
   gl.uniform1f(uniforms.uMix!, props.mix)
@@ -81,23 +82,21 @@ function adaptQuality(now: number): void {
   }
 }
 
-function loop(now: number): void {
-  draw(now)
-  adaptQuality(now)
-  frame = requestAnimationFrame(loop)
-}
-
-function play(): void {
-  cancelAnimationFrame(frame)
-  frame = 0
-  lastFrameAt = 0
-  if (enabled.value && visible && !document.hidden) frame = requestAnimationFrame(loop)
-  else draw(performance.now())
-}
+// 화면에 보이고 탭이 열려 있고 모션이 허용될 때만 매 프레임 그리고, 아니면 정지 화면 한 장을 그립니다.
+const loop = useVisibleFrameLoop(canvas, {
+  onFrame: (now) => {
+    draw(now)
+    adaptQuality(now)
+  },
+  onStill: draw,
+  // 멈춰 있던 시간을 프레임 간격으로 세지 않도록 다시 시작할 때 비웁니다.
+  onPlay: () => (lastFrameAt = 0),
+  active: () => enabled.value && ready.value,
+})
 
 /** 멈춘 상태에서도 장면 값이 바뀌면 한 장만 다시 그립니다. */
 function drawOnce(): void {
-  if (frame || pendingDraw) return
+  if (loop.isRunning() || pendingDraw) return
   pendingDraw = requestAnimationFrame((now) => {
     pendingDraw = 0
     draw(now)
@@ -105,15 +104,21 @@ function drawOnce(): void {
 }
 
 useResizeObserver(canvas, resize)
-useIntersectionObserver(canvas, ([entry]) => {
-  visible = entry?.isIntersecting ?? true
-  play()
+watch(() => [props.mix, props.fall, props.dim], drawOnce)
+
+// 휴대폰에서 탭을 오래 숨기거나 GPU가 초기화되면 WebGL 맥락을 잃습니다. 기본 동작을 막아야 브라우저가 맥락을 되돌려 주고,
+// 되돌아오면 셰이더를 다시 준비해 이어 그립니다(그러지 않으면 검은 화면으로 남음).
+useEventListener(canvas, 'webglcontextlost', (event: Event) => {
+  if (disposed) return
+  event.preventDefault()
+  ready.value = false
+})
+useEventListener(canvas, 'webglcontextrestored', () => {
+  if (disposed) return
+  if (setup()) ready.value = true
+  else unsupported.value = true
 })
 
-watch(() => [props.mix, props.fall, props.dim], drawOnce)
-watch(enabled, play)
-
-let disposed = false
 let idle = 0
 
 function start(): void {
@@ -123,9 +128,8 @@ function start(): void {
     unsupported.value = true
     return
   }
+  ready.value = true
   resize()
-  play()
-  document.addEventListener('visibilitychange', play)
 }
 
 // 셰이더 컴파일이 첫 화면 글자를 늦추지 않도록, 글자가 그려진 뒤 한가할 때 켭니다.
@@ -135,11 +139,10 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   disposed = true
+  ready.value = false
   if (typeof cancelIdleCallback === 'function') cancelIdleCallback(idle)
   clearTimeout(idle)
-  cancelAnimationFrame(frame)
   cancelAnimationFrame(pendingDraw)
-  document.removeEventListener('visibilitychange', play)
   gl?.getExtension('WEBGL_lose_context')?.loseContext()
   gl = null
   uniforms = {}

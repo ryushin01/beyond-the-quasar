@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { symSharpAdd, symSharpChevronLeft, symSharpChevronRight, symSharpRemove } from '@quasar/extras/material-symbols-sharp'
-import { useElementSize, useIntervalFn, useMutationObserver } from '@vueuse/core'
+import { useElementSize, useIntersectionObserver, useIntervalFn, useMutationObserver } from '@vueuse/core'
 import { computed, onBeforeUnmount, onMounted, ref, shallowRef, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
@@ -81,14 +81,25 @@ function draw(): void {
   move()
 }
 
+// 화면 밖으로 스크롤하면 자동 회전과 위치 갱신을 멈춰, 보이지 않는 장면을 매 프레임 그리지 않습니다.
+const inView = ref(true)
+useIntersectionObserver(frame, ([entry]) => {
+  inView.value = entry?.isIntersecting ?? true
+})
+
 // 동작 줄이기나 모션 정지 중에는 위성 위치를 움직이지 않습니다(KWCAG 6.2.2).
 const ticker = useIntervalFn(() => move(), 1000, { immediate: false })
 watch(
-  [motion, scene],
-  ([on, ready]) => {
-    ready?.setAutoRotate(on)
-    if (on && ready) ticker.resume()
-    else ticker.pause()
+  [motion, scene, inView],
+  ([on, ready, visible]) => {
+    ready?.setAutoRotate(on && visible)
+    if (on && visible && ready) {
+      // 멈춘 사이 지난 시간만큼 위치를 바로 맞춥니다.
+      move()
+      ticker.resume()
+    } else {
+      ticker.pause()
+    }
   },
   { immediate: true },
 )

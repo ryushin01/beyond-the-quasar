@@ -9,6 +9,9 @@
  *    Google Fonts 한국어 글꼴과 같은 글자 묶음(최대 124조각)으로 나눈 파일입니다. `<slug>-rest.css`에 들어가
  *    첫 화면 뒤에 붙고, 1에 없는 글자(사용자가 입력한 글자 등)를 쓸 때 그 글자가 든 조각만 받습니다.
  *
+ * `rest: false`인 글꼴은 2를 만들지 않습니다. 화면 글자 밖의 글자는 CSS 글꼴 목록의 다음 글꼴(원본 글꼴의 조각 등)이 맡습니다.
+ * `rename: true`인 글꼴은 OFL 예약 이름 때문에 만든 파일의 글꼴 이름을 family로 바꿉니다(fontTools 필요, 파이썬은 FONT_PYTHON으로 바꿀 수 있음).
+ *
  * 화면 글자가 바뀌면 다시 실행합니다. `--check`는 1에 빠진 글자가 있으면 실패합니다(단위 테스트에서 씀).
  * 조각 파일은 글자가 바뀌어도 그대로라 없는 것만 만듭니다. 원본 글꼴을 바꿨으면 `--all`로 모두 다시 만듭니다.
  */
@@ -37,6 +40,8 @@ const OUT = path.join(ROOT, config.outDir);
 // 나머지 조각은 따로 둘 수 있음(Next.js처럼 public에 두고 주소로 붙일 때)
 const REST = path.join(ROOT, config.restDir ?? config.outDir);
 const HEADER = "/* pnpm fonts로 만든 파일입니다. 직접 고치지 마세요. */\n";
+// 줄인 파일에도 라이선스 설명(13)·주소(14)를 남깁니다(OFL은 고친 글꼴에도 저작권·라이선스 표시를 요구). 0~6은 harfbuzz가 늘 남깁니다.
+const LICENSE_NAME_IDS = [13, 14];
 
 /** 'U+ac00-ac0f, U+ac11' 같은 unicode-range를 코드 포인트 집합으로 */
 function parseRange(text) {
@@ -95,7 +100,8 @@ async function screenText() {
   const parts = [config.extra ?? ""];
   for (const dir of config.scan) {
     for await (const file of walk(path.join(ROOT, dir))) {
-      if (/\.(test|spec|stories)\.[jt]sx?$/.test(file)) continue;
+      // 테스트 파일(Cypress 컴포넌트 테스트 .cy 포함)의 글자는 화면에 나오지 않습니다.
+      if (/\.(test|spec|stories|cy)\.[jt]sx?$/.test(file)) continue;
       if (/\.[cm]?[jt]sx?$/.test(file)) {
         const text = await readFile(file, "utf8");
         if (!AST) {
@@ -212,12 +218,13 @@ for (const font of config.fonts) {
     const uiName = `${slug}-${weight}-ui.woff2`;
     const uiFont = await subsetFont(original, String.fromCodePoint(...ui), {
       targetFormat: "woff2",
+      preserveNameIds: LICENSE_NAME_IDS,
     });
     await writeFile(path.join(dir, uiName), uiFont);
     written.push(path.join(dir, uiName));
     uiRules.push(fontFace(family, weight, `./${slug}/${uiName}`, toRange(ui)));
 
-    for (const [index, range] of SLICES.entries()) {
+    for (const [index, range] of font.rest === false ? [] : SLICES.entries()) {
       const inFont = [...parseRange(range)].filter((cp) => cmap.has(cp));
       if (!inFont.length) continue;
       const name = `${slug}-${weight}-${String(index).padStart(3, "0")}.woff2`;
@@ -226,7 +233,7 @@ for (const font of config.fonts) {
         const piece = await subsetFont(
           original,
           String.fromCodePoint(...inFont),
-          { targetFormat: "woff2" },
+          { targetFormat: "woff2", preserveNameIds: LICENSE_NAME_IDS },
         );
         await writeFile(path.join(restDir, name), piece);
         written.push(path.join(restDir, name));
@@ -254,13 +261,14 @@ for (const font of config.fonts) {
   restRules.sort(
     (a, b) => a.index - b.index || Number(a.weight) - Number(b.weight),
   );
-  await writeFile(
-    path.join(REST, `${slug}-rest.css`),
-    `${HEADER}${restRules.map((r) => r.rule).join("\n")}\n`,
-  );
+  if (font.rest !== false)
+    await writeFile(
+      path.join(REST, `${slug}-rest.css`),
+      `${HEADER}${restRules.map((r) => r.rule).join("\n")}\n`,
+    );
   // OFL 예약 이름이 있는 글꼴은 줄인 파일의 이름표도 바꿈(fontTools 필요: pip install fonttools brotli)
   if (font.rename && written.length)
-    execFileSync("python3", [path.join(ROOT, "scripts/fonts/rename-font.py"), family, ...written], { stdio: "inherit" });
+    execFileSync(process.env.FONT_PYTHON ?? "python3", [path.join(ROOT, "scripts/fonts/rename-font.py"), family, ...written], { stdio: "inherit" });
 }
 
 if (CHECK) {

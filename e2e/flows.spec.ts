@@ -362,3 +362,23 @@ test.describe('일식·월식 망원경 시야', () => {
     await expect(slider).toHaveAttribute('aria-valuetext', /절정 0:\d\d 후/)
   })
 })
+
+test.describe('배포 직후', () => {
+  test('열어 둔 탭에서 사라진 화면 조각을 받지 못하면 가려던 주소로 한 번 새로고침한다', async ({ page }) => {
+    await page.goto('/observatory')
+    await expect(page.getByRole('heading', { level: 1 })).toBeVisible()
+    // 새 배포로 이전 빌드의 조각이 사라진 상황: 이후 JS 조각 요청을 모두 실패시킵니다.
+    await page.route(/\/assets\/.+\.js$/, (route) => route.abort())
+    const reloaded = page.waitForEvent('load')
+    // 메뉴 링크와 같은 앱 안 이동(모바일은 메뉴가 접혀 있어 주소 이동으로 대신함)
+    await page.evaluate(() => {
+      history.pushState({}, '', '/catalog')
+      dispatchEvent(new PopStateEvent('popstate'))
+    })
+    await reloaded
+    await expect(page).toHaveURL(/\/catalog$/)
+    // 새로고침 뒤에도 실패하면 더 새로고침하지 않습니다(무한 새로고침 방지).
+    const again = page.waitForEvent('load', { timeout: 3000 }).then(() => true, () => false)
+    expect(await again).toBe(false)
+  })
+})

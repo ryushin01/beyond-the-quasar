@@ -2,6 +2,8 @@
  * 웹 글꼴 선언. 제목 Oswald(영문), 본문 영문 Gothic A1(영문 글자만), 한글은 제목·본문 모두 에이투지체,
  * 좌표·시각 Roboto Mono(영문·숫자)·나눔고딕코딩(한글).
  * 에이투지체는 화면에 쓰는 글자만 담은 파일(a2z.css)과 나머지 글자 조각(a2z-rest.css)으로 나눴습니다(pnpm fonts로 만듦).
+ * 나눔고딕코딩도 화면에 쓰는 글자만 담은 파일(btq-coding.css)을 먼저 씁니다. OFL 예약 이름("Nanum") 때문에 줄인 파일은
+ * 'BTQ Coding'으로 이름을 바꿨고, 그 밖의 글자(사용자가 입력한 글자 등)는 원본 그대로인 fontsource 조각이 맡습니다.
  * 첫 화면을 막지 않게 main.ts가 화면을 그린 뒤 따로 받고, 그 사이에는 global.css의 대체 글꼴로 보입니다.
  */
 @import '@fontsource-variable/oswald/index.css';
@@ -10,5 +12,6 @@
 @import './fonts/a2z.css';
 @import './fonts/a2z-rest.css';
 @import '@fontsource-variable/roboto-mono/index.css';
+@import './fonts/btq-coding.css';
 @import '@fontsource/nanum-gothic-coding/400.css';
 @import '@fontsource/nanum-gothic-coding/700.css';

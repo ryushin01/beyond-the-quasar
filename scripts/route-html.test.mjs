@@ -23,6 +23,13 @@ describe('routeHtml', () => {
     expect(routeHtml(html, { title: 'x', description: 'y', url: 'z', noindex: true })).toContain('<meta name="robots" content="noindex" />')
   })
 
+  it('궤도 스냅샷을 쓰지 않는 화면은 미리 받기를 뺀다', () => {
+    expect(html).toContain('href="/data/tle-snapshot.json"')
+    expect(routeHtml(html, { title: 'x', description: 'y', url: 'z' })).toContain('href="/data/tle-snapshot.json"')
+    const out = routeHtml(html, { title: 'x', description: 'y', url: 'z', usesSnapshot: false })
+    expect(out).not.toContain('tle-snapshot.json')
+  })
+
   it('index.html 구조가 바뀌어 바꿀 태그가 없으면 실패한다', () => {
     expect(() => routeHtml('<html><head></head></html>', { title: 'x', description: 'y', url: 'z' })).toThrow()
   })
@@ -30,7 +37,7 @@ describe('routeHtml', () => {
 
 it('화면 목록이 라우터의 ROUTES(홈 제외)와 같고, 모든 화면에 한국어 제목·설명이 있다', () => {
   const routes = [...read('src/shared/config/routes.ts').matchAll(/^\s+(\w+): '(\/[^']*)'/gm)].map(([, key, path]) => ({ key, path }))
-  expect(PAGES).toEqual(routes.filter((route) => route.path !== '/'))
+  expect(PAGES.map(({ key, path }) => ({ key, path }))).toEqual(routes.filter((route) => route.path !== '/'))
   const ko = JSON.parse(read('src/shared/i18n/locales/ko.json'))
   for (const page of PAGES) {
     expect(ko.titles[page.key]).toBeTruthy()

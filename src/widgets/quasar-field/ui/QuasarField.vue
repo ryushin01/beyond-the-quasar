@@ -1,23 +1,24 @@
 <script setup lang="ts">
-import { useIntersectionObserver, useResizeObserver } from '@vueuse/core'
-import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { useEventListener, useResizeObserver } from '@vueuse/core'
+import { onBeforeUnmount, onMounted, ref } from 'vue'
 
-import { useMotionPreference } from '@/shared/motion'
+import { createFullscreenShader } from '@/shared/lib'
+import { useMotionPreference, useVisibleFrameLoop } from '@/shared/motion'
 
 import { FRAGMENT_SHADER, VERTEX_SHADER } from '../lib/shader'
-import { createFullscreenShader } from '@/shared/lib'
 
 const props = withDefaults(defineProps<{ progress?: number }>(), { progress: 0 })
 
 const { enabled } = useMotionPreference()
 const canvas = ref<HTMLCanvasElement>()
 const unsupported = ref(false)
+/** 셰이더가 준비되어 그릴 수 있는 상태. WebGL 맥락을 잃으면 false가 됩니다. */
+const ready = ref(false)
 
 let gl: WebGLRenderingContext | null = null
 let uniforms: Record<string, WebGLUniformLocation | null> = {}
-let frame = 0
-let visible = true
 let startedAt = 0
+let disposed = false
 const pointer = { x: 0.72, y: 0.5, tx: 0.72, ty: 0.5, power: 0 }
 
 function setup(): boolean {
@@ -43,7 +44,7 @@ function resize(): void {
 }
 
 function drawFrame(now: number): void {
-  if (!gl) return
+  if (!gl || !ready.value) return
   pointer.x += (pointer.tx - pointer.x) * 0.09
   pointer.y += (pointer.ty - pointer.y) * 0.09
   pointer.power *= 0.965
@@ -55,16 +56,8 @@ function drawFrame(now: number): void {
   gl.drawArrays(gl.TRIANGLES, 0, 3)
 }
 
-function loop(now: number): void {
-  drawFrame(now)
-  frame = requestAnimationFrame(loop)
-}
-
-function play(): void {
-  cancelAnimationFrame(frame)
-  if (enabled.value && visible && !document.hidden) frame = requestAnimationFrame(loop)
-  else drawFrame(performance.now())
-}
+// 화면에 보이고 탭이 열려 있고 모션이 허용될 때만 매 프레임 그리고, 아니면 정지 화면 한 장을 그립니다.
+useVisibleFrameLoop(canvas, { onFrame: drawFrame, active: () => enabled.value && ready.value })
 
 function onPointerMove(event: PointerEvent): void {
   if (!canvas.value) return
@@ -77,9 +70,19 @@ function onPointerMove(event: PointerEvent): void {
 }
 
 useResizeObserver(canvas, resize)
-useIntersectionObserver(canvas, ([entry]) => {
-  visible = entry?.isIntersecting ?? true
-  play()
+useEventListener(window, 'pointermove', onPointerMove, { passive: true })
+
+// 휴대폰에서 탭을 오래 숨기거나 GPU가 초기화되면 WebGL 맥락을 잃습니다. 기본 동작을 막아야 브라우저가 맥락을 되돌려 주고,
+// 되돌아오면 셰이더를 다시 준비해 이어 그립니다(그러지 않으면 검은 화면으로 남음).
+useEventListener(canvas, 'webglcontextlost', (event: Event) => {
+  if (disposed) return
+  event.preventDefault()
+  ready.value = false
+})
+useEventListener(canvas, 'webglcontextrestored', () => {
+  if (disposed) return
+  if (setup()) ready.value = true
+  else unsupported.value = true
 })
 
 onMounted(() => {
@@ -88,18 +91,13 @@ onMounted(() => {
     unsupported.value = true
     return
   }
+  ready.value = true
   resize()
-  play()
-  window.addEventListener('pointermove', onPointerMove, { passive: true })
-  document.addEventListener('visibilitychange', play)
 })
 
-watch(enabled, play)
-
 onBeforeUnmount(() => {
-  cancelAnimationFrame(frame)
-  window.removeEventListener('pointermove', onPointerMove)
-  document.removeEventListener('visibilitychange', play)
+  disposed = true
+  ready.value = false
   gl?.getExtension('WEBGL_lose_context')?.loseContext()
   gl = null
   uniforms = {}

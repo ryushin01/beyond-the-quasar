@@ -12,8 +12,12 @@ export const PAGES = [
   { path: '/control', key: 'control' },
   { path: '/catalog', key: 'catalog' },
   { path: '/observatory', key: 'observatory' },
-  { path: '/event', key: 'event' },
+  { path: '/event', key: 'event', usesSnapshot: false },
 ]
+
+// index.html은 궤도 스냅샷을 메인 스크립트를 다 받기 전부터 미리 받습니다(`as="fetch" crossorigin`이어야 fetch()가 재사용).
+// 스냅샷을 쓰지 않는 화면(이벤트·404)의 HTML에서는 이 줄을 뺍니다.
+const SNAPSHOT_PRELOAD = /\n\s*<link rel="preload" href="\/data\/tle-snapshot\.json"[^>]*\/>/
 
 const escapeHtml = (text) => text.replaceAll('&', '&amp;').replaceAll('"', '&quot;').replaceAll('<', '&lt;').replaceAll('>', '&gt;')
 
@@ -24,7 +28,7 @@ function replaceOnce(html, pattern, replacement, label) {
 }
 
 /** index.html의 제목·설명·OG 값을 바꾼 HTML */
-export function routeHtml(html, { title, description, url, noindex = false }) {
+export function routeHtml(html, { title, description, url, noindex = false, usesSnapshot = true }) {
   const t = escapeHtml(title)
   const d = escapeHtml(description)
   let out = html
@@ -34,6 +38,8 @@ export function routeHtml(html, { title, description, url, noindex = false }) {
   out = replaceOnce(out, /<meta property="og:description" content="[^"]*" \/>/, `<meta property="og:description" content="${d}" />`, 'og:description')
   out = replaceOnce(out, /<meta property="og:url" content="[^"]*" \/>/, `<meta property="og:url" content="${escapeHtml(url)}" />`, 'og:url')
   if (noindex) out = out.replace('</head>', '    <meta name="robots" content="noindex" />\n  </head>')
+  // 궤도 스냅샷을 쓰지 않는 화면에서 미리 받으면 내려받기만 낭비하고 콘솔 경고가 남습니다.
+  if (!usesSnapshot) out = out.replace(SNAPSHOT_PRELOAD, '')
   return out
 }
 
@@ -44,14 +50,14 @@ async function main() {
   const ko = JSON.parse(await readFile(path.join(root, 'src/shared/i18n/locales/ko.json'), 'utf8'))
 
   for (const page of PAGES) {
-    const out = routeHtml(html, { title: ko.titles[page.key], description: ko.descriptions[page.key], url: `${SITE_URL}${page.path}` })
+    const out = routeHtml(html, { title: ko.titles[page.key], description: ko.descriptions[page.key], url: `${SITE_URL}${page.path}`, usesSnapshot: page.usesSnapshot })
     await mkdir(path.join(dist, page.path), { recursive: true })
     await writeFile(path.join(dist, page.path, 'index.html'), out)
   }
   // 없는 주소는 Vercel이 404.html을 404 상태로 돌려줍니다. 앱은 그대로 떠서 '페이지를 찾을 수 없음' 화면을 그립니다.
   await writeFile(
     path.join(dist, '404.html'),
-    routeHtml(html, { title: ko.titles.notFound, description: ko.descriptions.notFound, url: SITE_URL, noindex: true }),
+    routeHtml(html, { title: ko.titles.notFound, description: ko.descriptions.notFound, url: SITE_URL, noindex: true, usesSnapshot: false }),
   )
   console.log(`화면별 HTML ${PAGES.length}개와 404.html을 만들었습니다.`)
 }

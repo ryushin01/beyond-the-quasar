@@ -1,4 +1,4 @@
-import 'quasar/dist/quasar.prod.css'
+import './styles/quasar.sass'
 import 'virtual:uno.css'
 import './styles/global.css'
 

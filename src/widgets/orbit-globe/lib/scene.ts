@@ -42,6 +42,7 @@ export interface GlobeScene {
   setEarthRotation(radians: number): void
   rotate(radians: number): void
   zoom(factor: number): void
+  /** 자동 회전. 끄면 바뀐 것이 있을 때만 한 장씩 그립니다. 화면 밖에서는 끕니다. */
   setAutoRotate(on: boolean): void
   resize(width: number, height: number): void
   dispose(): void
@@ -121,8 +122,8 @@ function buildScene(renderer: WebGLRenderer, canvas: HTMLCanvasElement, colors: 
 
   let width = 1
   let height = 1
-  let frame = 0
   let running = true
+  let pending = 0
   const markers = new Map<number, Mesh>()
 
   function clearOrbits(): void {
@@ -135,16 +136,25 @@ function buildScene(renderer: WebGLRenderer, canvas: HTMLCanvasElement, colors: 
     markers.clear()
   }
 
+  // 필요할 때만 그립니다. 자동 회전 중에는 매 프레임 이어 그리고(감속이 걸린 첫 몇 프레임은 이동량이 작아
+  // controls.update()가 거짓을 돌려주므로 그 값에 기대지 않음), 끌고 놓은 뒤의 감속은 update()가 참인 동안 이어 그립니다.
+  // 끌기·확대는 controls의 change로, 장면 값 변경은 각 메서드가 다시 그리기를 요청합니다.
   function render(): void {
+    pending = 0
     if (!running) return
-    controls.update()
+    const moving = controls.update()
     renderer.render(scene, camera)
-    frame = requestAnimationFrame(render)
+    if (moving || controls.autoRotate) requestRender()
   }
-  frame = requestAnimationFrame(render)
+  function requestRender(): void {
+    if (!pending && running) pending = requestAnimationFrame(render)
+  }
+  controls.addEventListener('change', requestRender)
+  requestRender()
 
   return {
     setOrbits(orbits) {
+      requestRender()
       clearOrbits()
       for (const orbit of orbits) {
         if (orbit.path.length > 1) {
@@ -162,6 +172,7 @@ function buildScene(renderer: WebGLRenderer, canvas: HTMLCanvasElement, colors: 
       }
     },
     setPositions(positions) {
+      requestRender()
       for (const [id, marker] of markers) {
         const position = positions.get(id)
         marker.visible = Boolean(position)
@@ -169,6 +180,7 @@ function buildScene(renderer: WebGLRenderer, canvas: HTMLCanvasElement, colors: 
       }
     },
     setColors(next) {
+      requestRender()
       ;(occluder.material as MeshBasicMaterial).color.set(next.paper)
       gridMaterial.color.set(next.line)
       orbitMaterial.color.set(next.signal)
@@ -177,23 +189,28 @@ function buildScene(renderer: WebGLRenderer, canvas: HTMLCanvasElement, colors: 
       militaryMarkerMaterial.color.set(next.alert)
     },
     setEarthRotation(radians) {
+      requestRender()
       earth.rotation.y = radians
     },
     rotate(radians) {
+      requestRender()
       const offset = camera.position.clone().sub(controls.target)
       offset.applyAxisAngle(new Vector3(0, 1, 0), radians)
       camera.position.copy(controls.target).add(offset)
     },
     zoom(factor) {
+      requestRender()
       const offset = camera.position.clone().sub(controls.target)
       const distance = Math.min(controls.maxDistance, Math.max(controls.minDistance, offset.length() * factor))
       camera.position.copy(controls.target).add(offset.setLength(distance))
     },
     setAutoRotate(on) {
+      requestRender()
       controls.autoRotate = on
       controls.enableDamping = on
     },
     resize(nextWidth, nextHeight) {
+      requestRender()
       width = Math.max(1, nextWidth)
       height = Math.max(1, nextHeight)
       renderer.setSize(width, height, false)
@@ -202,7 +219,8 @@ function buildScene(renderer: WebGLRenderer, canvas: HTMLCanvasElement, colors: 
     },
     dispose() {
       running = false
-      cancelAnimationFrame(frame)
+      cancelAnimationFrame(pending)
+      controls.removeEventListener('change', requestRender)
       clearOrbits()
       controls.dispose()
       grid.geometry.dispose()

@@ -1,0 +1,47 @@
+// Quasar 전체 CSS(quasar.prod.css, 240 kB) 대신 이 앱이 쓰는 컴포넌트·플러그인의 스타일만 묶습니다.
+// 새 Quasar 컴포넌트를 쓰면 여기에 그 .sass를 더합니다(안에서 그리는 하위 컴포넌트 포함).
+// 순서와 core 묶음은 quasar/src/css/index.sass를 따릅니다.
+@import 'quasar/src/css/helpers/string.sass'
+@import 'quasar/src/css/helpers/math.sass'
+
+@import 'quasar/src/css/variables.sass'
+@import 'quasar/src/css/normalize.sass'
+
+@import 'quasar/src/components/icon/QIcon.sass'
+
+/* 컴포넌트: 직접 쓰는 것 + 그 안에서 그리는 것(QSelect → QField·QMenu·QItem·QVirtualScroll·QChip, QBtn → QSpinner, QTab → QBadge) */
+@import 'quasar/src/components/badge/QBadge.sass'
+@import 'quasar/src/components/btn/QBtn.sass'
+@import 'quasar/src/components/card/QCard.sass'
+@import 'quasar/src/components/chip/QChip.sass'
+@import 'quasar/src/components/dialog/QDialog.sass'
+@import 'quasar/src/components/field/QField.sass'
+@import 'quasar/src/components/form/QForm.sass'
+@import 'quasar/src/components/input/QInput.sass'
+@import 'quasar/src/components/item/QItem.sass'
+@import 'quasar/src/components/menu/QMenu.sass'
+@import 'quasar/src/components/select/QSelect.sass'
+@import 'quasar/src/components/separator/QSeparator.sass'
+@import 'quasar/src/components/slider/QSlider.sass'
+@import 'quasar/src/components/spinner/QSpinner.sass'
+@import 'quasar/src/components/tabs/QTabs.sass'
+@import 'quasar/src/components/virtual-scroll/QVirtualScroll.sass'
+
+@import 'quasar/src/directives/ripple/Ripple.sass'
+@import 'quasar/src/plugins/notify/Notify.sass'
+
+/* Core: 컴포넌트가 안에서 쓰는 도우미 클래스(row, absolute-full, q-focus-helper 등)라 모두 둡니다. */
+@import 'quasar/src/css/core/animations.sass'
+@import 'quasar/src/css/core/colors.sass'
+@import 'quasar/src/css/core/elevation.sass'
+@import 'quasar/src/css/core/flex.sass'
+@import 'quasar/src/css/core/helpers.sass'
+@import 'quasar/src/css/core/mouse.sass'
+@import 'quasar/src/css/core/orientation.sass'
+@import 'quasar/src/css/core/positioning.sass'
+@import 'quasar/src/css/core/size.sass'
+@import 'quasar/src/css/core/touch.sass'
+@import 'quasar/src/css/core/transitions.sass'
+@import 'quasar/src/css/core/typography.sass'
+@import 'quasar/src/css/core/visibility.sass'
+@import 'quasar/src/css/core/dark.sass'
