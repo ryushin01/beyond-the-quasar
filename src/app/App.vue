@@ -2,7 +2,7 @@
 import { useTitle } from '@vueuse/core'
 import { computed, nextTick, ref, watchEffect } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 
 import { consumeRestoreTop } from './providers/router'
 import { HistoireLauncher } from '@/features/open-histoire'
@@ -16,6 +16,11 @@ import { TargetCursor } from '@/widgets/target-cursor'
 
 const { t } = useI18n()
 const route = useRoute()
+const router = useRouter()
+// 첫 화면이 정해지기 전에는 화면 종류(관제 여부)를 몰라, 떠 있는 바로가기 버튼이 기본 자리에 그려졌다가 옮겨지며
+// 레이아웃 이동(CLS)이 생깁니다. 첫 화면이 정해진 뒤에 그려 처음부터 맞는 자리에 나타나게 합니다.
+const routeReady = ref(false)
+void router.isReady().then(() => (routeReady.value = true))
 syncDocumentLanguage()
 useRefreshOnDocumentWidth()
 useRefreshOnFontsLoaded()
@@ -66,7 +71,7 @@ function skipToContent(): void {
     </RouterView>
   </main>
   <SiteFooter v-if="!route.meta.console" />
-  <HistoireLauncher :beside-panel="Boolean(route.meta.console)" />
+  <HistoireLauncher v-if="routeReady" :beside-panel="Boolean(route.meta.console)" />
   <RouteShutter ref="shutter" />
   <Preloader />
   <TargetCursor />
