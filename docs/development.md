@@ -43,6 +43,7 @@ Histoire 1.0 beta가 Vite 7만 지원해 `vite`를 7.3으로 고정하고 `overr
 - OS의 동작 줄이기와 헤더의 모션 정지 버튼을 함께 반영합니다(KWCAG 6.2.2). 셰이더, CSS 애니메이션, Lenis, 프리로더가 모두 멈춥니다.
 - 글자를 쪼개는 연출은 원문을 `sr-only`로 두고 조각에 `aria-hidden`을 답니다.
 - 이징은 `shared/motion`의 `EASE`, CSS는 `--ease-out`으로 통일합니다.
+- 웹 글꼴은 첫 화면을 그린 뒤 받으므로 글꼴이 바뀌면 구역 높이가 달라집니다. `App.vue`의 `useRefreshOnFontsLoaded`가 글꼴 묶음을 다 받을 때마다(`document.fonts`의 `loadingdone`) ScrollTrigger 위치를 다시 계산해, 고정 구간과 등장 시점이 낡지 않게 합니다.
 - 캔버스를 매 프레임 그리는 곳(퀘이사 배경, 이벤트 무대, 홈 별자리)은 `useVisibleFrameLoop`를 씁니다. 화면에 보이고 탭이 열려 있고 모션이 허용될 때만 `requestAnimationFrame`을 돌리고, 아니면 정지 화면 한 장을 그립니다. 컴포넌트가 사라지면 함께 정리합니다.
 - WebGL을 직접 쓰는 곳(퀘이사 배경, 이벤트 무대)은 `webglcontextlost`에서 기본 동작을 막고 그리기를 멈췄다가, `webglcontextrestored`에서 셰이더를 다시 준비합니다. 휴대폰에서 탭을 오래 숨기거나 GPU가 초기화되면 맥락을 잃는데, 이 처리가 없으면 검은 화면으로 남습니다(Cypress `EventStage.cy.ts`가 확인).
 

@@ -7,7 +7,7 @@ import { useRoute } from 'vue-router'
 import { consumeRestoreTop } from './providers/router'
 import { HistoireLauncher } from '@/features/open-histoire'
 import { syncDocumentLanguage } from '@/shared/i18n'
-import { ScrollTrigger, useRefreshOnDocumentWidth } from '@/shared/motion'
+import { ScrollTrigger, useRefreshOnDocumentWidth, useRefreshOnFontsLoaded } from '@/shared/motion'
 import { Preloader } from '@/widgets/preloader'
 import { RouteShutter } from '@/widgets/route-shutter'
 import { SiteFooter } from '@/widgets/site-footer'
@@ -18,6 +18,7 @@ const { t } = useI18n()
 const route = useRoute()
 syncDocumentLanguage()
 useRefreshOnDocumentWidth()
+useRefreshOnFontsLoaded()
 
 useTitle(computed(() => t(String(route.meta.title ?? 'brand.name'))))
 // 검색 결과에 화면마다 다른 설명이 나오도록 index.html의 설명을 화면에 맞게 바꿉니다.
