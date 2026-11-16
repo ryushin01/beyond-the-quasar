@@ -193,38 +193,4 @@ const nearest = computed(() => {
 .panels__mil {
   color: var(--alert);
 }
-.table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 0.8125rem;
-}
-.table caption {
-  padding: 0.625rem 1rem;
-  color: var(--muted);
-  font-size: 0.75rem;
-  text-align: left;
-}
-.table th,
-.table td {
-  padding: 0.4375rem 1rem;
-  border-top: 1px solid var(--line);
-  text-align: left;
-  font-weight: 400;
-}
-.table thead th {
-  color: var(--muted);
-  font: 500 0.6875rem var(--font-mono);
-}
-.table tbody td {
-  font-family: var(--font-mono);
-  font-variant-numeric: tabular-nums;
-  font-size: 0.75rem;
-  white-space: nowrap;
-}
-.table tbody th {
-  font-weight: 600;
-}
-.table__mil {
-  color: var(--alert);
-}
 </style>

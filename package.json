@@ -1,6 +1,6 @@
 {
   "name": "beyond-the-quasar",
-  "version": "0.11.0",
+  "version": "0.12.0",
   "private": true,
   "type": "module",
   "packageManager": "bun@1.4.4",
@@ -17,6 +17,7 @@
     "story:build": "histoire build",
     "build:site": "bun run build && HISTOIRE_BASE=/histoire/ bun run story:build && cp -R .histoire/dist dist/histoire",
     "data:tle": "node scripts/fetch-tle.mjs",
+    "data:neo": "node scripts/fetch-neo.mjs",
     "test:snapshot": "vitest run src/entities/satellite/model/snapshot.test.ts",
     "test:component": "cypress run --component",
     "size": "size-limit",

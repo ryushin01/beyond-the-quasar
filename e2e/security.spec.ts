@@ -36,6 +36,18 @@ test('운영 CSP에서 화면과 주요 조작이 위반 없이 동작한다', a
     await page.waitForLoadState('networkidle')
     expect(await violations(page), path).toEqual([])
   }
+  // 우주 위협 패널: 브라우저가 NOAA로 직접 요청합니다(CSP connect-src 확인, 응답은 고정 값).
+  await page.route('https://services.swpc.noaa.gov/**', (route) =>
+    route.fulfill({
+      json: route.request().url().includes('scales')
+        ? { '0': { DateStamp: '2026-11-16', TimeStamp: '00:00:00', R: { Scale: '0' }, S: { Scale: '0' }, G: { Scale: '0' } } }
+        : [{ time_tag: '2026-11-16T00:00:00', Kp: 1 }],
+    }),
+  )
+  await page.goto('/observatory')
+  await page.locator('.observatory__hazards').scrollIntoViewIfNeeded()
+  await expect(page.locator('.hazards__value').first()).toBeVisible()
+  expect(await violations(page)).toEqual([])
   // 검색 팔레트(대화상자)·알림·셀렉트
   await page.goto('/control')
   await page.getByRole('button', { name: /검색/ }).first().click()
