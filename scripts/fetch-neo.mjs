@@ -9,9 +9,16 @@ export const API = 'https://ssd-api.jpl.nasa.gov/cad.api?dist-max=0.05&date-min=
 const OUTPUT = 'public/data/neo-snapshot.json'
 /** 율리우스일(JD)을 Unix 밀리초로 바꿀 때의 기준(1970-01-01T00:00Z = JD 2440587.5) */
 const JD_UNIX_EPOCH = 2_440_587.5
+/**
+ * CAD API의 `jd`는 TDB(역학시) 기준입니다. UTC로 바꾸려면 TT−UTC(= 32.184초 + 윤초 37초, 2017년 이후 그대로)를 뺍니다.
+ * TDB와 TT의 차이(최대 0.002초)는 초 단위 반올림에 묻힙니다. 윤초가 새로 생기면 이 값을 고칩니다.
+ */
+export const TT_MINUS_UTC_S = 69.184
 
 /** API 응답(fields + data 행)을 앱이 쓰는 접근 목록으로 바꿉니다. 형식이 다르면 예외를 던집니다. */
 export function toApproaches(response) {
+  // 맞는 접근이 없으면 API는 fields·data 없이 count 0만 돌려줍니다.
+  if (response && Number(response.count) === 0 && response.data === undefined) return []
   if (!response || !Array.isArray(response.fields) || !Array.isArray(response.data)) throw new Error('응답 형식이 다릅니다')
   const index = Object.fromEntries(response.fields.map((field, i) => [field, i]))
   for (const field of ['des', 'jd', 'dist', 'v_rel', 'h']) {
@@ -24,8 +31,8 @@ export function toApproaches(response) {
       return {
         designation: String(row[index.des]),
         name: index.fullname === undefined ? String(row[index.des]) : String(row[index.fullname]).trim(),
-        // 접근 시각은 분 단위 정밀도라, 율리우스일을 바꿀 때 생기는 부동소수점 오차(1ms 안팎)를 초 단위 반올림으로 없앱니다.
-        date: jd === null ? null : new Date(Math.round(((jd - JD_UNIX_EPOCH) * 86_400_000) / 1000) * 1000).toISOString(),
+        // TDB → UTC로 바꾸고, 율리우스일을 바꿀 때 생기는 부동소수점 오차(1ms 안팎)는 초 단위 반올림으로 없앱니다.
+        date: jd === null ? null : new Date(Math.round(((jd - JD_UNIX_EPOCH) * 86_400_000 - TT_MINUS_UTC_S * 1000) / 1000) * 1000).toISOString(),
         distanceAu: number(row[index.dist]),
         velocityKmS: number(row[index.v_rel]),
         absoluteMagnitude: number(row[index.h]),

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useElementVisibility } from '@vueuse/core'
+import { useElementVisibility, useIntervalFn, useNow } from '@vueuse/core'
 import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
@@ -7,7 +7,7 @@ import { estimateDiameterM, toLunarDistances, upcomingApproaches, useCloseApproa
 import { useSpaceWeather, type ScaleKey } from '@/entities/space-weather'
 import { formatNumber } from '@/shared/lib'
 
-const props = withDefaults(defineProps<{ now?: Date; limit?: number }>(), { now: () => new Date(), limit: 6 })
+const props = withDefaults(defineProps<{ now?: Date; limit?: number }>(), { now: undefined, limit: 6 })
 
 const { t } = useI18n()
 const root = ref<HTMLElement>()
@@ -19,6 +19,10 @@ watch(visible, (value) => {
   if (value) active.value = true
 }, { immediate: true })
 
+// 화면을 열어 둔 채 접근 시각이 지나면 목록에서 빠지도록 1분마다 시각을 갱신합니다(고정 시각을 받으면 그 값을 씀).
+const clock = useNow({ scheduler: (tick) => useIntervalFn(tick, 60_000) })
+const now = computed(() => props.now ?? clock.value)
+
 const space = useSpaceWeather(active)
 const neo = useCloseApproaches(active)
 
@@ -27,9 +31,10 @@ const scales = computed(() => {
   const weather = space.weather.value
   if (!weather) return []
   const today = weather.forecast[0]
-  const peakG = Math.max(...weather.forecast.map((day) => day.g ?? 0), 0)
+  // 예보 값이 없는 날은 G0으로 치지 않습니다. 하나도 없으면 '—'로 보입니다.
+  const forecastG = weather.forecast.map((day) => day.g).filter((value): value is number => value !== null)
   const notes: Record<ScaleKey, string> = {
-    g: t('hazards.forecastG', { n: peakG }),
+    g: t('hazards.forecastG', { n: forecastG.length ? Math.max(...forecastG) : '—' }),
     s: t('hazards.forecastS', { n: today?.s ?? '—' }),
     r: t('hazards.forecastR', { minor: today?.rMinor ?? '—', major: today?.rMajor ?? '—' }),
   }
@@ -48,7 +53,7 @@ const kp = computed(() => {
 })
 
 const approaches = computed(() =>
-  upcomingApproaches(neo.approaches.value, props.now, props.limit).map((item) => {
+  upcomingApproaches(neo.approaches.value, now.value, props.limit).map((item) => {
     const lunar = toLunarDistances(item.distanceAu)
     const size = item.absoluteMagnitude === null ? null : estimateDiameterM(item.absoluteMagnitude)
     const iso = item.date.toISOString()
