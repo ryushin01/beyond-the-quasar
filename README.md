@@ -1,7 +1,7 @@
 # 🔵 Beyond the Quasar
 
 [![CI](https://github.com/ryushin01/beyond-the-quasar/actions/workflows/ci.yml/badge.svg)](https://github.com/ryushin01/beyond-the-quasar/actions/workflows/ci.yml)
-![version](https://img.shields.io/badge/version-0.13.0-1a3fe0)
+![version](https://img.shields.io/badge/version-1.0.0-1a3fe0)
 ![Histoire](https://img.shields.io/badge/Histoire-1.0_beta-34D399)
 
 군사·항법·기상·통신 위성을 추적하고 오늘 밤의 하늘을 관측하는 위성 관제·천체 관측 웹 앱입니다.
@@ -49,6 +49,10 @@
 | 검색 팔레트 | 천체 관측 |
 |---|---|
 | ![GPS를 검색해 위성 목록이 나온 검색 대화상자](docs/images/palette.jpg) | ![별, 위성, 관측 대상을 표시한 하늘 지도와 현재 고도가 있는 대상 목록](docs/images/observatory.jpg) |
+
+| 우주 위협 | 맨눈 통과와 일정 내보내기 |
+|---|---|
+| ![관측 화면의 우주 위협 패널. 왼쪽에 지자기 폭풍·태양 복사 폭풍·전파 두절 등급과 지난 24시간 Kp 막대, 오른쪽에 앞으로 지나갈 근지구 소행성의 날짜·거리(달 거리 배수)·상대 속도·추정 크기 표](docs/images/hazards.jpg) | ![대전 기준 24시간 통과 예측 표. 저녁 통과의 최고 고도각 옆에 '맨눈' 표시가 붙고, 아래에 달력 파일(.ics)로 받기 링크가 있다](docs/images/control-passes.jpg) |
 
 | 모바일 | |
 |---|---|
