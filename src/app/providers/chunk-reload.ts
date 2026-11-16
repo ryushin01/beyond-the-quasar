@@ -10,11 +10,26 @@ export function isChunkLoadError(error: unknown): boolean {
   return /Failed to fetch dynamically imported module|Importing a module script failed|error loading dynamically imported module|Unable to preload CSS|Loading chunk|Loading CSS chunk/i.test(message)
 }
 
+/** 같은 출처의 경로로만 바꿉니다. `//다른.사이트/`처럼 다른 출처로 풀리는 주소는 null(열린 리다이렉트 방지) */
+export function sameOriginPath(url: string, origin = window.location.origin): string | null {
+  try {
+    const resolved = new URL(url, origin)
+    return resolved.origin === origin ? resolved.pathname + resolved.search + resolved.hash : null
+  } catch {
+    return null
+  }
+}
+
 /**
  * 주소로 한 번만 새로고침합니다. 실제로 새로고침할 때만 시각을 남기고, 직전 새로고침에서 10초가 지나지 않았으면 그대로 둡니다.
  * 시각을 남길 수 없으면(저장소 막힘) 새로고침 뒤에도 반복을 막을 방법이 없으므로 새로고침하지 않습니다.
  */
 export function reloadOnce(url: string, now = Date.now(), assign = (to: string) => window.location.assign(to)): boolean {
+  const target = sameOriginPath(url)
+  if (target === null) {
+    console.warn('[chunk-reload] 같은 출처의 경로가 아니므로 새로고침하지 않습니다.')
+    return false
+  }
   try {
     const last = Number(sessionStorage.getItem(STORAGE_KEY) ?? 0)
     if (now - last < RETRY_WINDOW_MS) {
@@ -26,7 +41,7 @@ export function reloadOnce(url: string, now = Date.now(), assign = (to: string) 
     console.warn('[chunk-reload] 저장소를 쓸 수 없어 반복을 막을 수 없으므로 새로고침하지 않습니다.')
     return false
   }
-  assign(url)
+  assign(target)
   return true
 }
 
