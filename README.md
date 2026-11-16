@@ -1,7 +1,7 @@
 # 🔵 Beyond the Quasar
 
 [![CI](https://github.com/ryushin01/beyond-the-quasar/actions/workflows/ci.yml/badge.svg)](https://github.com/ryushin01/beyond-the-quasar/actions/workflows/ci.yml)
-![version](https://img.shields.io/badge/version-1.0.0-1a3fe0)
+![version](https://img.shields.io/badge/version-1.0.1-1a3fe0)
 ![Histoire](https://img.shields.io/badge/Histoire-1.0_beta-34D399)
 
 군사·항법·기상·통신 위성을 추적하고 오늘 밤의 하늘을 관측하는 위성 관제·천체 관측 웹 앱입니다.
@@ -108,7 +108,7 @@ bun run dev    # http://localhost:5173
 | `bun run test:e2e` | 프로덕션 빌드의 레이아웃·접근성·업무 흐름 검사 (먼저 `build` 필요) |
 | `bun run size` / `lhci` | 번들 크기 예산 / Lighthouse 기준 검사 (먼저 `build` 필요) |
 | `bun run data:tle` | CelesTrak에서 궤도 스냅샷 갱신 |
-| `bun run screenshots` | README 화면 다시 찍기 (먼저 `build:site` 뒤 `preview` 실행) |
+| `bun run screenshots` | README 화면과 링크 공유 미리보기(`public/og.jpg`) 다시 찍기 (먼저 `build:site` 뒤 `preview` 실행) |
 
 ## 프로젝트 구조
 
