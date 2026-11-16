@@ -199,4 +199,17 @@ describe('reloadOnChunkError', () => {
     window.dispatchEvent(new Event('vite:preloadError'))
     expect(assign).toHaveBeenCalledWith(here('/catalog'))
   })
+
+  it('조각 문제가 아닌 오류로 끝난 이동은 진행 중 표시를 지워, 나중의 미리 받기 실패로 그 화면을 새로고침하지 않는다', async () => {
+    const router = createRouter({
+      history: createMemoryHistory(),
+      routes: [{ path: '/', component: Blank }, { path: '/catalog', component: () => Promise.reject(new Error('render failed')) }],
+    })
+    const assign = vi.fn()
+    watchChunks(router, assign)
+    await router.push('/')
+    await router.push('/catalog').catch(() => {})
+    window.dispatchEvent(new Event('vite:preloadError'))
+    expect(assign).not.toHaveBeenCalled()
+  })
 })
