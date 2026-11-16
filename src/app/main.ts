@@ -19,5 +19,5 @@ app.config.errorHandler = (error) => {
 installProviders(app)
 app.mount('#app')
 
-// 웹 글꼴 선언(styles/fonts.css, CSS 118 kB gzip)은 첫 화면을 막지 않게 그린 뒤 따로 받습니다.
+// 웹 글꼴 선언(styles/fonts.css, CSS 49 kB gzip)은 첫 화면을 막지 않게 그린 뒤 따로 받습니다.
 void import('./styles/fonts.css')

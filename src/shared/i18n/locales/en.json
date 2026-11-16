@@ -5,6 +5,7 @@
   "nav": { "main": "Main menu", "home": "Home", "control": "Control", "catalog": "Catalog", "observatory": "Observatory", "event": "Event", "open": "Open menu", "close": "Close menu" },
   "prefs": { "language": "Language", "toEnglish": "EN, Switch to English", "toKorean": "KO, 한국어로 전환", "themeLight": "Switch to light theme", "themeDark": "Switch to dark theme", "motionPause": "Pause motion", "motionPlay": "Play motion" },
   "titles": { "home": "Beyond the Quasar — Satellite control and sky observation", "control": "Control · Beyond the Quasar", "catalog": "Catalog · Beyond the Quasar", "observatory": "Observatory · Beyond the Quasar", "event": "Event Horizon · Beyond the Quasar", "notFound": "Page not found · Beyond the Quasar" },
+  "descriptions": { "home": "Track and command satellites and observe tonight's sky with Beyond the Quasar", "control": "A simulated control console with ground tracks, telemetry and pass predictions for 151 satellites", "catalog": "A catalog of military, navigation, weather and communications satellites filtered by mission, orbit and operator", "observatory": "Sunset, twilight, moon phase and tonight's target altitudes for your observing site", "event": "Upcoming full moons, solar terms and eclipses, and a black hole rendered in WebGL", "notFound": "The page you requested could not be found." },
   "home": {
     "tagline": "Command the assets in orbit. Observe the light beyond them.",
     "scroll": "Scroll down",
@@ -103,6 +104,7 @@
     "tabUplink": "Command",
     "tabOverflight": "Overhead",
     "tabProximity": "Proximity",
+    "staleSnapshot": "Orbital data is {n} days old. Satellite positions may be off.",
     "loadError": "Could not load satellite data.",
     "retry": "Try again",
     "loading": "Loading satellite data."

@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /histoire/
+
+Sitemap: https://beyond-the-quasar-ryushin01.vercel.app/sitemap.xml

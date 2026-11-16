@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/vue-query'
 import { computed } from 'vue'
 
+import { staleSnapshotDays } from '../lib/freshness'
 import { classifyOrbit, tleEpoch } from '../lib/orbit'
 import type { Satellite, Snapshot } from './types'
 
@@ -26,5 +27,7 @@ export function useSatelliteCatalog() {
   })
   const satellites = computed<Satellite[]>(() => (query.data.value ? toSatellites(query.data.value) : []))
   const fetchedAt = computed(() => (query.data.value ? new Date(query.data.value.fetchedAt) : null))
-  return { satellites, fetchedAt, isPending: query.isPending, isError: query.isError, refetch: query.refetch }
+  /** 스냅샷이 오래됐으면 지난 날수(화면 경고용), 아니면 null */
+  const staleDays = computed(() => staleSnapshotDays(fetchedAt.value, new Date()))
+  return { satellites, fetchedAt, staleDays, isPending: query.isPending, isError: query.isError, refetch: query.refetch }
 }
