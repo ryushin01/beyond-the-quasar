@@ -157,10 +157,11 @@ export function predictPasses(
     for (let second = start + 1; second <= finish; second++) if (elevation(second) > elevation(best)) best = second
     return best
   }
-  const toPass = (aos: number, los: number, sampledMax: number): Pass => {
+  /** peakFrom: 최고점을 찾기 시작할 초. 진행 중인 통과는 표본을 찍기 전의 최고점을 놓치지 않게 되찾은 시작부터 찾습니다. */
+  const toPass = (aos: number, los: number, sampledMax: number, peakFrom: number | null): Pass => {
     const aosLook = lookAt(aos * 1000)
     const losLook = lookAt(los * 1000)
-    const maxSecond = peak(Math.max(aos, sampledMax - stepSec), Math.min(los, sampledMax + stepSec))
+    const maxSecond = peak(Math.max(aos, peakFrom ?? sampledMax - stepSec), Math.min(los, sampledMax + stepSec))
     return {
       aos: new Date(aos * 1000),
       los: new Date(los * 1000),
@@ -172,13 +173,15 @@ export function predictPasses(
   }
 
   let aos: number | null = null
+  let peakFrom: number | null = null
   let sampledMax = 0
   let sampledMaxElevation = -90
   let previous: number | null = null
-  for (let t = from.getTime(); t <= end && passes.length < limit; t += stepMs) {
+  // 표본을 정수 초에 맞춰 찍어, 위·아래 판정과 경계 탐색이 같은 초를 쓰게 합니다.
+  for (let t = Math.ceil(from.getTime() / 1000) * 1000; t <= end && passes.length < limit; t += stepMs) {
     const look = lookAt(t)
     if (!look) continue
-    const second = Math.floor(t / 1000)
+    const second = t / 1000
     const above = look.elevation >= minElevation
     if (above && aos === null) {
       if (previous === null) {
@@ -186,8 +189,10 @@ export function predictPasses(
         let back = second
         while (isAbove(back) && second - back < 7200) back -= stepSec
         aos = isAbove(back) ? second : firstAbove(back, back + stepSec)
+        peakFrom = aos
       } else {
         aos = firstAbove(previous, second)
+        peakFrom = null
       }
       sampledMax = second
       sampledMaxElevation = look.elevation
@@ -197,14 +202,14 @@ export function predictPasses(
         sampledMaxElevation = look.elevation
       }
     } else if (!above && aos !== null) {
-      passes.push(toPass(aos, lastAbove(previous ?? second - stepSec, second), sampledMax))
+      passes.push(toPass(aos, lastAbove(previous ?? second - stepSec, second), sampledMax, peakFrom))
       aos = null
       sampledMaxElevation = -90
     }
     previous = second
   }
   // 예측 끝에서도 위에 있으면 마지막 표본을 끝으로 둡니다.
-  if (aos !== null && passes.length < limit && previous !== null) passes.push(toPass(aos, previous, sampledMax))
+  if (aos !== null && passes.length < limit && previous !== null) passes.push(toPass(aos, previous, sampledMax, peakFrom))
   return passes
 }
 
