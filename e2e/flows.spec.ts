@@ -264,6 +264,53 @@ test.describe('홈 진행 바와 모션', () => {
   })
 })
 
+test.describe('스크롤 연출(모션 켬)', () => {
+  test.use({ reducedMotion: 'no-preference', locale: 'ko-KR' })
+  test.beforeEach(async ({ page }) => {
+    await page.addInitScript(() => sessionStorage.setItem('btq:intro-seen', '1'))
+  })
+
+  const opacity = (locator: import('@playwright/test').Locator) => locator.evaluate((node) => Number(getComputedStyle(node).opacity))
+  const scrollToTop = (locator: import('@playwright/test').Locator, offset = 0) =>
+    locator.evaluate((node, extra) => window.scrollTo(0, node.getBoundingClientRect().top + window.scrollY + extra), offset)
+
+  test('홈 구역을 지나가면 숨어 있던 내용이 모두 드러난다', async ({ page }) => {
+    test.setTimeout(60_000)
+    await page.goto('/')
+    const footerShift = () => page.locator('.footer__letter').first().evaluate((node) => new DOMMatrixReadOnly(getComputedStyle(node).transform).m42)
+    // 연출이 실제로 걸려 있는지: 스크롤하기 전에는 아래 구역의 내용이 숨어 있습니다.
+    await expect.poll(() => opacity(page.locator('.manifesto__word').last()), { timeout: 8000 }).toBeLessThan(0.5)
+    await expect.poll(() => opacity(page.locator('.board__tile').last()), { timeout: 8000 }).toBeLessThan(0.01)
+    await expect.poll(footerShift, { timeout: 8000 }).toBeGreaterThan(10)
+    // 선언문: 화면을 붙잡은 채 낱말이 차례로 밝아집니다. 붙잡는 구간(220%)을 지나면 마지막 낱말까지 밝습니다.
+    const manifesto = page.locator('#manifesto')
+    await scrollToTop(manifesto)
+    await page.evaluate(() => window.scrollBy(0, window.innerHeight * 2.3))
+    await expect.poll(() => opacity(page.locator('.manifesto__word').last()), { timeout: 8000 }).toBeGreaterThan(0.99)
+    // 시스템 목록·실시간 현황판: 화면에 들어오면 아래에서 올라오며 나타납니다.
+    for (const selector of ['.systems__row', '.board__tile']) {
+      await scrollToTop(page.locator(selector).first(), -200)
+      await expect.poll(() => opacity(page.locator(selector).last()), { timeout: 8000 }).toBeGreaterThan(0.99)
+    }
+    // 바닥글의 큰 글자가 제자리로 올라옵니다.
+    await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight))
+    await expect.poll(footerShift, { timeout: 8000 }).toBeCloseTo(0, 0)
+  })
+
+  test('이벤트 화면의 글은 스크롤하면 드러난다', async ({ page }) => {
+    await page.goto('/event')
+    const heading = page.locator('#event-calendar-title')
+    // 연출이 실제로 걸려 있는지: 화면 아래의 제목은 스크롤하기 전에는 숨어 있습니다.
+    await expect.poll(() => opacity(heading), { timeout: 8000 }).toBeLessThan(0.01)
+    await scrollToTop(heading, -300)
+    await expect.poll(() => opacity(heading), { timeout: 8000 }).toBeGreaterThan(0.99)
+    // 좁은 화면에서는 일정 칸이 세로로 쌓이므로 마지막 칸까지 내려가 확인합니다.
+    const lastTile = page.locator('.tile').last()
+    await scrollToTop(lastTile, -300)
+    await expect.poll(() => opacity(lastTile), { timeout: 8000 }).toBeGreaterThan(0.99)
+  })
+})
+
 test.describe('카탈로그 임무 도식', () => {
   test.use({ reducedMotion: 'reduce', locale: 'ko-KR' })
 

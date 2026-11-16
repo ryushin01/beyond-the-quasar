@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { useEventListener } from '@vueuse/core'
-import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { computed, onBeforeUnmount, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { daysUntil, isEclipseId, upcomingSkyEvents, type SkyEvent } from '@/entities/sky'
 import { ROUTES } from '@/shared/config'
 import { formatUtc } from '@/shared/lib'
-import { EASE, goToSection, gsap, introDone, useMotionPreference, useSmoothScroll } from '@/shared/motion'
+import { EASE, goToSection, gsap, introDone, useGsapContext, useMotionPreference, useSmoothScroll } from '@/shared/motion'
 
 import { readScene, type SceneState } from '../lib/scene'
 import EventStage from './EventStage.vue'
@@ -23,7 +23,6 @@ const scene = ref<SceneState>({ mix: 0, fall: 0, dim: 0, active: 0 })
 const now = new Date()
 const events = ref<SkyEvent[]>(upcomingSkyEvents(now))
 let frame = 0
-let context: gsap.Context | undefined
 
 const activeNumber = computed(() => String(scene.value.active + 1).padStart(2, '0'))
 const tiles = computed(() =>
@@ -45,12 +44,10 @@ function schedule(): void {
   if (!frame) frame = requestAnimationFrame(measure)
 }
 
-function build(): void {
-  context?.revert()
-  context = undefined
-  schedule()
-  if (!enabled.value) return
-  context = gsap.context(() => {
+// 인트로가 끝난 뒤에 다시 만들고, 모션과 상관없이 장면 값을 한 번 잽니다.
+useGsapContext(
+  root,
+  () => {
     gsap.utils.toArray<HTMLElement>('[data-reveal]').forEach((element) => {
       gsap.from(element, {
         y: 36,
@@ -60,20 +57,14 @@ function build(): void {
         scrollTrigger: { trigger: element, start: 'top 88%', once: true },
       })
     })
-  }, root.value)
-}
+  },
+  { watch: [introDone], before: schedule },
+)
 
 useEventListener(window, 'scroll', schedule, { passive: true })
 useEventListener(window, 'resize', schedule, { passive: true })
 
-onMounted(() => {
-  watch([enabled, introDone], build, { immediate: true, flush: 'post' })
-})
-
-onBeforeUnmount(() => {
-  cancelAnimationFrame(frame)
-  context?.revert()
-})
+onBeforeUnmount(() => cancelAnimationFrame(frame))
 </script>
 
 <template>

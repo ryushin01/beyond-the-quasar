@@ -1,21 +1,17 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import { gsap, ScrollTrigger, useMotionPreference } from '@/shared/motion'
+import { gsap, useGsapContext } from '@/shared/motion'
 
 const { t, locale } = useI18n()
-const { enabled } = useMotionPreference()
 
 const root = ref<HTMLElement>()
 const words = computed(() => t('home.manifesto').split(' '))
-let context: gsap.Context | undefined
-
-function build(): void {
-  context?.revert()
-  context = undefined
-  if (!enabled.value) return
-  context = gsap.context(() => {
+// 언어가 바뀌면 낱말 수가 달라지므로 다시 만듭니다. 화면을 붙잡는 구역이라 만든 뒤 위치를 다시 계산합니다.
+useGsapContext(
+  root,
+  () => {
     const timeline = gsap.timeline({
       scrollTrigger: { trigger: root.value, start: 'top top', end: '+=220%', pin: true, scrub: 0.4 },
     })
@@ -24,14 +20,9 @@ function build(): void {
       .to({}, { duration: 0.6 })
       // 파란 점이 커져 다음 구역의 바탕이 됩니다.
       .fromTo('.manifesto__dot', { scale: 0 }, { scale: 1, duration: 2.4, ease: 'expo.in' })
-  }, root.value)
-  ScrollTrigger.refresh()
-}
-
-onMounted(() => {
-  watch([enabled, locale], build, { immediate: true, flush: 'post' })
-})
-onBeforeUnmount(() => context?.revert())
+  },
+  { watch: [locale], refresh: true },
+)
 </script>
 
 <template>

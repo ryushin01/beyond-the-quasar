@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { useMissionClock } from '@/entities/clock'
@@ -7,13 +7,12 @@ import { SITES } from '@/entities/observer'
 import { lookAngleAt, stateAt, toSatrec, type Satellite } from '@/entities/satellite'
 import { moonInfo } from '@/entities/sky'
 import { formatNumber } from '@/shared/lib'
-import { EASE, gsap, useMotionPreference } from '@/shared/motion'
+import { EASE, gsap, useGsapContext } from '@/shared/motion'
 
 const props = defineProps<{ satellites: Satellite[] }>()
 
 const { t } = useI18n()
 const clock = useMissionClock()
-const { enabled } = useMotionPreference()
 const root = ref<HTMLElement>()
 
 const DAEJEON = SITES[0]!
@@ -40,33 +39,20 @@ const tiles = computed(() => [
   { key: 'boardMoon', value: formatNumber(moon.value.illumination * 100, 0), unit: '%' },
 ])
 
-let context: gsap.Context | undefined
-
-function build(): void {
-  context?.revert()
-  context = undefined
-  if (!enabled.value) return
-  context = gsap.context(() => {
-    gsap.from('.board__tile', {
-      autoAlpha: 0,
-      clipPath: 'inset(0 0 100% 0)',
-      duration: 0.9,
-      ease: EASE.out,
-      stagger: { each: 0.07, from: 'start' },
-      clearProps: 'clipPath',
-      scrollTrigger: { trigger: root.value, start: 'top 70%' },
-    })
-  }, root.value)
-}
-
-onMounted(() => {
-  clock.start()
-  watch(enabled, build, { immediate: true, flush: 'post' })
+useGsapContext(root, () => {
+  gsap.from('.board__tile', {
+    autoAlpha: 0,
+    clipPath: 'inset(0 0 100% 0)',
+    duration: 0.9,
+    ease: EASE.out,
+    stagger: { each: 0.07, from: 'start' },
+    clearProps: 'clipPath',
+    scrollTrigger: { trigger: root.value, start: 'top 70%' },
+  })
 })
-onBeforeUnmount(() => {
-  clock.stop()
-  context?.revert()
-})
+
+onMounted(() => clock.start())
+onBeforeUnmount(() => clock.stop())
 </script>
 
 <template>

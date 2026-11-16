@@ -1,15 +1,14 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { CATEGORIES, countBy, type Category, type Mission, type Satellite } from '@/entities/satellite'
 import { ROUTES } from '@/shared/config'
-import { gsap, ScrollTrigger, useMotionPreference } from '@/shared/motion'
+import { gsap, useGsapContext } from '@/shared/motion'
 
 const props = defineProps<{ satellites: Satellite[] }>()
 
 const { t } = useI18n()
-const { enabled } = useMotionPreference()
 const root = ref<HTMLElement>()
 
 const LEAD_MISSION: Record<Category, Mission> = {
@@ -23,13 +22,10 @@ const LEAD_MISSION: Record<Category, Mission> = {
 }
 
 const counts = computed(() => countBy(props.satellites, (item) => item.category))
-let context: gsap.Context | undefined
-
-function build(): void {
-  context?.revert()
-  context = undefined
-  if (!enabled.value) return
-  context = gsap.context(() => {
+// 화면을 붙잡는 구역이라 만든 뒤 ScrollTrigger 위치를 다시 계산합니다.
+useGsapContext(
+  root,
+  () => {
     gsap.matchMedia().add('(min-width: 1000px)', () => {
       const plates = gsap.utils.toArray<HTMLElement>('.deck__plate')
       const row = root.value?.querySelector<HTMLElement>('.deck__row')
@@ -50,14 +46,9 @@ function build(): void {
         )
       })
     })
-  }, root.value)
-  ScrollTrigger.refresh()
-}
-
-onMounted(() => {
-  watch(enabled, build, { immediate: true, flush: 'post' })
-})
-onBeforeUnmount(() => context?.revert())
+  },
+  { refresh: true },
+)
 </script>
 
 <template>
