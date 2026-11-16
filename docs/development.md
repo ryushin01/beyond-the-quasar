@@ -2,13 +2,21 @@
 
 ## 궤도 데이터
 
-앱은 `public/data/tle-snapshot.json`만 읽고 실행 중에 외부로 요청하지 않습니다. CelesTrak 이용 규칙(같은 데이터 반복 요청 제한)을 지키고, 백엔드 없이 배포할 수 있게 하려는 선택입니다.
+앱은 `public/data/tle-snapshot.json`만 읽고 궤도 때문에 실행 중에 외부로 요청하지 않습니다. CelesTrak 이용 규칙(같은 데이터 반복 요청 제한)을 지키고, 백엔드 없이 배포할 수 있게 하려는 선택입니다.
 
 - 갱신: 매주 월요일 `.github/workflows/refresh-tle.yml`이 자동으로 받아 커밋합니다(Actions에서 수동 실행도 가능). 로컬에서는 `bun run data:tle`. `scripts/fetch-tle.mjs`의 `FAMILIES`가 받을 위성과 분류를 정합니다.
 - TLE는 시간이 지나면 오차가 커집니다. 원격 측정의 **TLE 기원**이 오래되면 다시 받습니다. 받을 때 기원이 45일 넘은 항목은 제외합니다.
 - 분류(`category`)와 임무(`mission`)는 위성 계열을 기준으로 직접 붙인 값이고, 운영 주체·발사일·원지점 등은 SATCAT 값입니다.
 - 정찰 임무는 "공개 자료 기준"으로 표시합니다. 비공개 위성의 궤도 추정치는 쓰지 않습니다.
 - 통과 예측과 근접 거리는 참고 값입니다. 충돌 판단이나 실제 운용에 쓸 수 없습니다.
+
+## 우주 위협 자료
+
+관측 화면의 '우주 위협' 패널(`widgets/space-hazards`)은 두 자료를 씁니다. 둘 다 패널이 화면에 들어온 뒤에만 받습니다.
+
+- 우주 기상(`entities/space-weather`): NOAA SWPC 공개 JSON(`noaa-scales.json`, `noaa-planetary-k-index.json`)을 브라우저에서 바로 받습니다(CORS 허용, CSP `connect-src`에 등록). 10분 동안은 다시 받지 않고, 보고 있는 동안 15분마다 갱신합니다. 응답 형식이 바뀌면 `parseScales`·`parseKp`가 예외를 던지고 패널은 그 영역에만 안내와 '다시 시도'를 보입니다. Kp 응답은 객체 배열(현재)과 머리 행이 있는 배열의 배열(이전 형식)을 모두 읽습니다.
+- 근지구 소행성 접근(`entities/asteroid`): NASA/JPL SBDB Close Approach Data API는 브라우저에서 부를 수 없어(CORS 없음) `bun run data:neo`가 `public/data/neo-snapshot.json`으로 받습니다. 주간 갱신 워크플로가 TLE와 함께 받되, 실패해도 궤도 갱신은 막지 않습니다. 앞으로 60일 안에 0.05 AU 안으로 오는 접근을 받고, 화면은 지금 이후의 접근만 날짜순으로 보입니다. 거리는 달 거리(LD) 배수이고 달보다 가까우면 앰버로, 크기는 절대 등급과 반사율 0.05~0.25로 어림한 범위입니다.
+- 경보 서비스가 아니며 공개 자료를 그대로 보여 줍니다.
 
 ## Vite 버전
 

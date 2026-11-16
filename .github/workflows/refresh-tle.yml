@@ -1,6 +1,6 @@
 name: Refresh TLE
 
-# TLE는 시간이 지나면 오차가 커지므로 매주 공개 카탈로그에서 다시 받습니다.
+# TLE는 시간이 지나면 오차가 커지므로 매주 공개 카탈로그에서 다시 받습니다. 근지구 소행성 접근 목록(NASA/JPL)도 함께 받습니다.
 on:
   schedule:
     - cron: '17 3 * * 1'
@@ -23,13 +23,18 @@ jobs:
       - run: bun run data:tle
       # 푸시하면 바로 배포되므로, 새 스냅샷을 검사한 뒤에만 올립니다.
       - run: bun run test:snapshot
+      # 소행성 접근은 받지 못해도 궤도 갱신을 막지 않습니다(화면은 지난 접근을 빼고 남은 목록과 자료 날짜를 보여 줌).
+      # 스크립트가 응답을 검사해 이상하면 기존 스냅샷을 그대로 둡니다.
+      - name: 소행성 접근 스냅샷
+        continue-on-error: true
+        run: bun run data:neo
       - name: 변경 내용 커밋
         run: |
-          git diff --quiet public/data/tle-snapshot.json && exit 0
+          git diff --quiet public/data/ && exit 0
           git config user.name 'github-actions[bot]'
           git config user.email '41898583+github-actions[bot]@users.noreply.github.com'
-          git add public/data/tle-snapshot.json
-          git commit -m "궤도 스냅샷 갱신"
+          git add public/data/tle-snapshot.json public/data/neo-snapshot.json
+          git commit -m "궤도·소행성 스냅샷 갱신"
           git pull --rebase origin main
           git push
       # 갱신이 실패하면 화면은 오래된 궤도로 계속 그리므로, 이슈를 열어 알립니다(같은 제목의 열린 이슈가 있으면 댓글만 남김).

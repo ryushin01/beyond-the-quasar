@@ -387,6 +387,33 @@ test.describe('Histoire 바로가기', () => {
   })
 })
 
+test.describe('우주 위협', () => {
+  test.use({ reducedMotion: 'reduce', locale: 'ko-KR' })
+
+  test('관측 화면 아래로 내려가면 우주 기상과 소행성 접근을 보여 준다', async ({ page }) => {
+    // 외부(NOAA) 응답은 고정한 값으로 바꿔, 지자기 폭풍 G2 상황을 만듭니다.
+    await page.route('https://services.swpc.noaa.gov/products/noaa-scales.json', (route) =>
+      route.fulfill({
+        json: {
+          '0': { DateStamp: '2026-11-16', TimeStamp: '02:19:00', R: { Scale: '0' }, S: { Scale: '0' }, G: { Scale: '2' } },
+          '1': { DateStamp: '2026-11-16', TimeStamp: '02:19:00', R: { MinorProb: '25', MajorProb: '5' }, S: { Prob: '5' }, G: { Scale: '2' } },
+        },
+      }),
+    )
+    await page.route('https://services.swpc.noaa.gov/products/noaa-planetary-k-index.json', (route) =>
+      route.fulfill({ json: [{ time_tag: '2026-11-16T00:00:00', Kp: 6.33 }] }),
+    )
+    await page.goto('/observatory')
+    const panel = page.getByRole('region', { name: '우주 위협' })
+    await panel.scrollIntoViewIfNeeded()
+    // 등급 1 이상은 앰버로 표시합니다.
+    await expect(panel.locator('.hazards__value--alert', { hasText: 'G2' })).toBeVisible()
+    await expect(panel.locator('.hazards__value--alert', { hasText: '6.3' })).toBeVisible()
+    // 소행성 접근은 저장소의 주간 스냅샷에서 읽습니다(지난 접근은 빠질 수 있어 표 또는 '없음' 안내).
+    await expect(panel.locator('table tbody tr').first().or(panel.getByText(/접근이 없습니다/))).toBeVisible()
+  })
+})
+
 test.describe('일식·월식 망원경 시야', () => {
   test.use({ reducedMotion: 'reduce', locale: 'ko-KR' })
 

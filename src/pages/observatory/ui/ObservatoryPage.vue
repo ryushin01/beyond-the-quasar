@@ -16,6 +16,7 @@ import { AltitudeChart } from '@/widgets/altitude-chart'
 import { NightBrief } from '@/widgets/night-brief'
 import { SkyDome } from '@/widgets/sky-dome'
 import { TargetList } from '@/widgets/target-list'
+import { SpaceHazards } from '@/widgets/space-hazards'
 
 import { parsePinnedTime } from '../lib/pinned-time'
 import EclipsePanel from './EclipsePanel.vue'
@@ -126,6 +127,10 @@ onBeforeUnmount(() => {
       <div class="observatory__pad"><AltitudeChart :target="selected" :from="pinned ?? clock.now" /></div>
     </PanelFrame>
 
+    <PanelFrame :title="t('hazards.title')" code="HAZ" class="observatory__hazards">
+      <SpaceHazards />
+    </PanelFrame>
+
     <PanelFrame :title="t('log.title')" code="LOG" class="observatory__log">
       <div class="observatory__pad"><ObservationLog :target-name="selected.name" /></div>
     </PanelFrame>
@@ -182,6 +187,7 @@ onBeforeUnmount(() => {
 .observatory__eclipse,
 .observatory__sky,
 .observatory__chart,
+.observatory__hazards,
 .observatory__log {
   border: 1px solid var(--line);
   margin-bottom: var(--gutter);
