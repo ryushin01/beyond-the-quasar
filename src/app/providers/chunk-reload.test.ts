@@ -42,6 +42,22 @@ describe('reloadOnce', () => {
     expect(assign).toHaveBeenLastCalledWith(here('/b'))
   })
 
+  it('실패가 10초보다 조금씩 늦게 되풀이돼도 10분 안에는 두 번까지만 새로고침한다', () => {
+    const assign = vi.fn()
+    expect(reloadOnce('/a', 1_000_000, assign)).toBe(true)
+    expect(reloadOnce('/a', 1_011_000, assign)).toBe(true)
+    expect(reloadOnce('/a', 1_022_000, assign)).toBe(false)
+    expect(reloadOnce('/a', 1_033_000, assign)).toBe(false)
+    // 10분이 지나면 다시 한 번 시도할 수 있습니다.
+    expect(reloadOnce('/a', 1_000_000 + 10 * 60_000 + 1, assign)).toBe(true)
+    expect(assign).toHaveBeenCalledTimes(3)
+  })
+
+  it('예전 형식(숫자 하나)으로 남은 기록도 읽는다', () => {
+    sessionStorage.setItem('btq:chunk-reload', '1000000')
+    expect(reloadOnce('/a', 1_005_000, vi.fn())).toBe(false)
+  })
+
   it('저장소를 쓸 수 없으면 반복을 막을 수 없으므로 새로고침하지 않는다', () => {
     const assign = vi.fn()
     vi.spyOn(Storage.prototype, 'getItem').mockImplementation(() => {
@@ -100,16 +116,22 @@ describe('reloadOnce 목적지', () => {
 describe('reloadOnChunkError', () => {
   const chunkError = () => new TypeError('Failed to fetch dynamically imported module: /assets/index-abc.js')
   const Blank = { render: () => null }
+  const stops: (() => void)[] = []
+  const watchChunks = (router: Parameters<typeof reloadOnChunkError>[0], assign: (to: string) => void) => stops.push(reloadOnChunkError(router, assign))
   beforeEach(() => {
     sessionStorage.clear()
     vi.spyOn(console, 'warn').mockImplementation(() => {})
   })
-  afterEach(() => vi.restoreAllMocks())
+  afterEach(() => {
+    // 테스트마다 붙인 window 리스너를 떼어 서로 간섭하지 않게 합니다.
+    while (stops.length) stops.pop()!()
+    vi.restoreAllMocks()
+  })
 
   it('화면 조각을 받지 못하면 가려던 주소로 새로고침한다', async () => {
     const router = createRouter({ history: createMemoryHistory(), routes: [{ path: '/', component: Blank }, { path: '/catalog', component: () => Promise.reject(chunkError()) }] })
     const assign = vi.fn()
-    reloadOnChunkError(router, assign)
+    watchChunks(router, assign)
     await router.push('/')
     await router.push('/catalog').catch(() => {})
     expect(assign).toHaveBeenCalledWith(here('/catalog'))
@@ -133,7 +155,7 @@ describe('reloadOnChunkError', () => {
       ],
     })
     const assign = vi.fn()
-    reloadOnChunkError(router, assign)
+    watchChunks(router, assign)
     await router.push('/')
     const abandoned = router.push('/catalog').catch(() => {})
     // 카탈로그 조각을 받기 시작한 뒤에 지금 화면(/)으로 다시 갑니다.
@@ -142,5 +164,39 @@ describe('reloadOnChunkError', () => {
     fail(chunkError())
     await abandoned
     expect(assign).not.toHaveBeenCalled()
+  })
+
+  it('화면 이동 중이 아닐 때의 조각 미리 받기 실패(버려진 이동·3D 장면 등)는 새로고침하지 않는다', async () => {
+    const router = createRouter({ history: createMemoryHistory(), routes: [{ path: '/', component: Blank }] })
+    const assign = vi.fn()
+    watchChunks(router, assign)
+    await router.push('/')
+    window.dispatchEvent(new Event('vite:preloadError'))
+    expect(assign).not.toHaveBeenCalled()
+  })
+
+  it('화면 이동 중 조각 미리 받기가 실패하면 그 목적지로 새로고침한다', async () => {
+    let markStarted!: () => void
+    const started = new Promise<void>((resolve) => (markStarted = resolve))
+    const router = createRouter({
+      history: createMemoryHistory(),
+      routes: [
+        { path: '/', component: Blank },
+        {
+          path: '/catalog',
+          component: () => {
+            markStarted()
+            return new Promise(() => {})
+          },
+        },
+      ],
+    })
+    const assign = vi.fn()
+    watchChunks(router, assign)
+    await router.push('/')
+    void router.push('/catalog')
+    await started
+    window.dispatchEvent(new Event('vite:preloadError'))
+    expect(assign).toHaveBeenCalledWith(here('/catalog'))
   })
 })
