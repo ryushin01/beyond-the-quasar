@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { isChunkLoadError, reloadOnce } from './chunk-reload'
+import { isChunkLoadError, reloadOnce, sameOriginPath } from './chunk-reload'
 
 describe('isChunkLoadError', () => {
   it('브라우저별 조각 로드 실패 문구를 알아본다', () => {
@@ -56,5 +56,33 @@ describe('reloadOnce', () => {
     } finally {
       Object.defineProperty(globalThis, 'sessionStorage', { configurable: true, value: original })
     }
+  })
+})
+
+describe('sameOriginPath', () => {
+  const origin = 'https://beyond-the-quasar-ryushin01.vercel.app'
+  it('같은 출처의 경로는 그대로(쿼리·해시 포함)', () => {
+    expect(sameOriginPath('/catalog?view=globe#x', origin)).toBe('/catalog?view=globe#x')
+  })
+  it('다른 출처로 풀리는 주소는 막는다(열린 리다이렉트 방지)', () => {
+    expect(sameOriginPath('//attacker.example/', origin)).toBeNull()
+    expect(sameOriginPath('/\\attacker.example/', origin)).toBeNull()
+    expect(sameOriginPath('https://attacker.example/', origin)).toBeNull()
+  })
+})
+
+describe('reloadOnce 목적지', () => {
+  beforeEach(() => {
+    sessionStorage.clear()
+    vi.spyOn(console, 'warn').mockImplementation(() => {})
+  })
+  afterEach(() => vi.restoreAllMocks())
+
+  it('다른 출처로 풀리는 주소로는 새로고침하지 않고 반복 방지 시각도 남기지 않는다', () => {
+    const assign = vi.fn()
+    expect(reloadOnce('//attacker.example/', 1_000_000, assign)).toBe(false)
+    expect(assign).not.toHaveBeenCalled()
+    expect(reloadOnce('/catalog', 1_001_000, assign)).toBe(true)
+    expect(assign).toHaveBeenCalledWith('/catalog')
   })
 })
