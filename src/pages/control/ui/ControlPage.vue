@@ -3,7 +3,7 @@ import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { useMissionClock } from '@/entities/clock'
-import { useSatelliteCatalog, useTracking } from '@/entities/satellite'
+import { StaleSnapshotNotice, useSatelliteCatalog, useTracking } from '@/entities/satellite'
 import { SiteSelect } from '@/features/change-site'
 import { SatelliteFilterPanel, useSatelliteFilter } from '@/features/filter-satellites'
 import { TimeControls } from '@/features/time-warp'
@@ -21,7 +21,7 @@ const clock = useMissionClock()
 const tracking = useTracking()
 const filterStore = useSatelliteFilter()
 const { enabled } = useMotionPreference()
-const { satellites, isPending, isError, refetch } = useSatelliteCatalog()
+const { satellites, staleDays, isPending, isError, refetch } = useSatelliteCatalog()
 
 const root = ref<HTMLElement>()
 const filtered = computed(() => filterStore.apply(satellites.value))
@@ -57,6 +57,7 @@ watch(
     </div>
 
     <template v-else>
+      <StaleSnapshotNotice v-if="staleDays" class="console__stale" :days="staleDays" />
       <PanelFrame :title="t('control.roster')" code="AST" class="console__cell console__roster">
         <div class="console__filters"><SatelliteFilterPanel :satellites="satellites" dense /></div>
         <SatelliteRoster :satellites="satellites" />
@@ -82,6 +83,10 @@ watch(
 .console {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
+}
+.console__stale {
+  grid-column: 1 / -1;
+  margin: 0.75rem var(--margin) 0;
 }
 .console__state {
   padding: 3rem var(--margin);

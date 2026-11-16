@@ -3,12 +3,12 @@ import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
 import { ROUTES } from '@/shared/config'
 
 const routes: RouteRecordRaw[] = [
-  { path: ROUTES.home, name: 'home', component: () => import('@/pages/home'), meta: { title: 'titles.home' } },
-  { path: ROUTES.control, name: 'control', component: () => import('@/pages/control'), meta: { title: 'titles.control', console: true } },
-  { path: ROUTES.catalog, name: 'catalog', component: () => import('@/pages/catalog'), meta: { title: 'titles.catalog' } },
-  { path: ROUTES.observatory, name: 'observatory', component: () => import('@/pages/observatory'), meta: { title: 'titles.observatory' } },
-  { path: ROUTES.event, name: 'event', component: () => import('@/pages/event'), meta: { title: 'titles.event' } },
-  { path: '/:pathMatch(.*)*', name: 'not-found', component: () => import('@/pages/not-found'), meta: { title: 'titles.notFound' } },
+  { path: ROUTES.home, name: 'home', component: () => import('@/pages/home'), meta: { title: 'titles.home', description: 'descriptions.home' } },
+  { path: ROUTES.control, name: 'control', component: () => import('@/pages/control'), meta: { title: 'titles.control', description: 'descriptions.control', console: true } },
+  { path: ROUTES.catalog, name: 'catalog', component: () => import('@/pages/catalog'), meta: { title: 'titles.catalog', description: 'descriptions.catalog' } },
+  { path: ROUTES.observatory, name: 'observatory', component: () => import('@/pages/observatory'), meta: { title: 'titles.observatory', description: 'descriptions.observatory' } },
+  { path: ROUTES.event, name: 'event', component: () => import('@/pages/event'), meta: { title: 'titles.event', description: 'descriptions.event' } },
+  { path: '/:pathMatch(.*)*', name: 'not-found', component: () => import('@/pages/not-found'), meta: { title: 'titles.notFound', description: 'descriptions.notFound' } },
 ]
 
 let restoreTop = 0

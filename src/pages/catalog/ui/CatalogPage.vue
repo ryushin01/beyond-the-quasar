@@ -3,7 +3,7 @@ import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 
-import { useSatelliteCatalog, type Satellite } from '@/entities/satellite'
+import { StaleSnapshotNotice, useSatelliteCatalog, type Satellite } from '@/entities/satellite'
 import { SatelliteFilterPanel, useFilterUrlSync } from '@/features/filter-satellites'
 import { EASE, gsap, useMotionPreference, useSmoothScroll } from '@/shared/motion'
 import { ToggleChip } from '@/shared/ui'
@@ -17,7 +17,7 @@ const { t } = useI18n()
 const route = useRoute()
 const router = useRouter()
 const { enabled } = useMotionPreference()
-const { satellites, fetchedAt, isPending, isError, refetch } = useSatelliteCatalog()
+const { satellites, fetchedAt, staleDays, isPending, isError, refetch } = useSatelliteCatalog()
 
 const root = ref<HTMLElement>()
 const snapshotDate = computed(() => fetchedAt.value?.toISOString().slice(0, 10) ?? '—')
@@ -55,6 +55,7 @@ onBeforeUnmount(() => context?.revert())
       <div class="catalog__lead">
         <p>{{ t('catalog.lead') }}</p>
         <p class="catalog__stamp">{{ t('catalog.snapshot', { date: snapshotDate }) }}</p>
+        <StaleSnapshotNotice v-if="staleDays" class="catalog__stale" :days="staleDays" />
       </div>
     </header>
 
@@ -122,6 +123,9 @@ onBeforeUnmount(() => context?.revert())
   margin-top: 0.5rem !important;
   color: var(--muted);
   font: 400 0.75rem var(--font-mono);
+}
+.catalog__stale {
+  margin-top: 0.5rem;
 }
 .catalog__body {
   display: grid;

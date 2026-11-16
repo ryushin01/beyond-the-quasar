@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useTitle } from '@vueuse/core'
-import { computed, nextTick, ref } from 'vue'
+import { computed, nextTick, ref, watchEffect } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute } from 'vue-router'
 
@@ -20,6 +20,10 @@ syncDocumentLanguage()
 useRefreshOnDocumentWidth()
 
 useTitle(computed(() => t(String(route.meta.title ?? 'brand.name'))))
+// 검색 결과에 화면마다 다른 설명이 나오도록 index.html의 설명을 화면에 맞게 바꿉니다.
+watchEffect(() => {
+  document.querySelector('meta[name="description"]')?.setAttribute('content', t(String(route.meta.description ?? 'descriptions.home')))
+})
 
 const shutter = ref<InstanceType<typeof RouteShutter>>()
 const main = ref<HTMLElement>()

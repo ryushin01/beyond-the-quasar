@@ -1,7 +1,7 @@
 # 🔵 Beyond the Quasar
 
 [![CI](https://github.com/ryushin01/beyond-the-quasar/actions/workflows/ci.yml/badge.svg)](https://github.com/ryushin01/beyond-the-quasar/actions/workflows/ci.yml)
-![version](https://img.shields.io/badge/version-0.8.0-1a3fe0)
+![version](https://img.shields.io/badge/version-0.9.0-1a3fe0)
 ![Histoire](https://img.shields.io/badge/Histoire-1.0_beta-34D399)
 
 군사·항법·기상·통신 위성을 추적하고 오늘 밤의 하늘을 관측하는 위성 관제·천체 관측 웹 앱입니다.
@@ -63,7 +63,7 @@
 | 천체 관측 | 관측지별 일몰·박명·월출, 달 위상, 하늘 지도, 시각 조절, 퀘이사·은하·성운·성단 고도 곡선, 관측 일지 |
 | 홈 별자리 | 선택한 지상국의 현재 하늘을 계산한 별자리선·밝은 별·달·행성, 끌어서 방향 전환, 다음 천문 현상 안내 |
 | 이벤트 | 다음 보름달·절기·월식·일식 계산 일정과 그날 하늘 보기(관측 화면 `?at=`), 일식·월식 망원경 시야와 5분 단위 시각 이동, 광선 적분으로 그린 WebGL 블랙홀, 스크롤로 이어지는 네 구역 |
-| 공통 | Histoire 문서로 가는 워프 전환 버튼, `Ctrl/⌘ K` 검색 팔레트, 관심 위성, 필터·위성이 담긴 공유 링크, 한국어·영어, 밝은·어두운 화면, 모션 정지 버튼과 동작 줄이기 대응 |
+| 공통 | Histoire 문서로 가는 워프 전환 버튼, `Ctrl/⌘ K` 검색 팔레트, 관심 위성, 필터·위성이 담긴 공유 링크, 한국어·영어, 밝은·어두운 화면, 모션 정지 버튼과 동작 줄이기 대응, 궤도 데이터가 10일 넘게 오래되면 관제·카탈로그에 경고, 홈 화면에 설치(웹 앱 매니페스트) |
 
 **위성 분류:** 군사(군 위성통신, 미사일 조기경보, 정찰·감시, 우주 상황 인식 등), 항법, 지구 관측, 기상, 통신, 과학, 유인. 비공개 위성은 공개 카탈로그에 없으므로 나오지 않습니다.
 
@@ -152,7 +152,7 @@ src/
 | 궤도 데이터 (Orbital data: TLE, satellite catalog) | CelesTrak (T.S. Kelso) | 공개 데이터 (Public data) | [celestrak.org](https://celestrak.org) |
 | 천체 계산 (Astronomy calculations) | Astronomy Engine (Don Cross) | MIT | [cosinekitty/astronomy](https://github.com/cosinekitty/astronomy) |
 | 세계 지도 (World map) | Natural Earth | 퍼블릭 도메인 (Public domain) | [naturalearthdata.com](https://www.naturalearthdata.com) |
-| 쿼사르 ULAS J1120+0641 상상도 (Quasar artist's impression; 파비콘·로고, 정사각형으로 잘라 줄임 / cropped and resized) | ESO/M. Kornmesser | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) | [ESO eso1122a](https://www.eso.org/public/images/eso1122a/) |
+| 쿼사르 ULAS J1120+0641 상상도 (Quasar artist's impression; 파비콘·로고·앱 아이콘, 정사각형으로 잘라 줄임 / cropped and resized) | ESO/M. Kornmesser | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) | [ESO eso1122a](https://www.eso.org/public/images/eso1122a/) |
 | Oswald 글꼴 (font) | The Oswald Project Authors | SIL OFL 1.1 | [googlefonts/OswaldFont](https://github.com/googlefonts/OswaldFont) |
 | Roboto Mono 글꼴 (font) | The Roboto Mono Project Authors | SIL OFL 1.1 | [googlefonts/robotomono](https://github.com/googlefonts/robotomono) |
 | Gothic A1 글꼴 (font) | HanYang I&C | SIL OFL 1.1 | [Google Fonts](https://fonts.google.com/specimen/Gothic+A1) |

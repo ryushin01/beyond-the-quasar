@@ -12,6 +12,8 @@ declare module 'world-atlas/land-110m.json' {
 declare module 'vue-router' {
   interface RouteMeta {
     title?: string
+    /** 화면 설명(i18n 키). `<meta name="description">`에 들어갑니다. */
+    description?: string
     console?: boolean
   }
 }
