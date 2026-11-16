@@ -40,7 +40,9 @@ jobs:
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
           title='궤도 스냅샷 갱신 실패'
-          number=$(gh issue list --state open --search "in:title $title" --json number --jq '.[0].number')
+          # 검색은 제목에 단어가 들어 있기만 해도 걸리므로, 제목이 정확히 같은 이슈만 고릅니다.
+          number=$(gh issue list --state open --search "$title in:title" --limit 50 --json number,title \
+            | jq -r --arg title "$title" '[.[] | select(.title == $title)][0].number // empty')
           if [ -n "$number" ]; then
             gh issue comment "$number" --body "다시 실패했습니다: $RUN_URL"
           else

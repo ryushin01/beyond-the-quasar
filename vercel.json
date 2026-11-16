@@ -4,7 +4,7 @@
   "installCommand": "bun install --frozen-lockfile",
   "buildCommand": "bun run build:site",
   "outputDirectory": "dist",
-  "rewrites": [{ "source": "/((?!assets/|data/|histoire/).*)", "destination": "/index.html" }],
+  "rewrites": [{ "source": "/(control|catalog|observatory|event)/?", "destination": "/$1/index.html" }],
   "headers": [
     {
       "source": "/(.*)",

@@ -5,7 +5,7 @@
   "nav": { "main": "주요 메뉴", "home": "홈", "control": "위성 관제", "catalog": "위성 카탈로그", "observatory": "천체 관측", "event": "이벤트", "open": "메뉴 열기", "close": "메뉴 닫기" },
   "prefs": { "language": "언어", "toEnglish": "EN, Switch to English", "toKorean": "KO, 한국어로 전환", "themeLight": "밝은 화면으로 전환", "themeDark": "어두운 화면으로 전환", "motionPause": "모션 정지", "motionPlay": "모션 재생" },
   "titles": { "home": "Beyond the Quasar — 위성 관제와 천체 관측", "control": "위성 관제 · Beyond the Quasar", "catalog": "위성 카탈로그 · Beyond the Quasar", "observatory": "천체 관측 · Beyond the Quasar", "event": "사건의 지평선 · Beyond the Quasar", "notFound": "페이지를 찾을 수 없음 · Beyond the Quasar" },
-  "descriptions": { "home": "인공위성을 추적·관제하고 오늘 밤의 하늘을 관측하는 웹 앱, Beyond the Quasar", "control": "위성 151기의 지상 궤적, 원격 측정, 통과 예측을 한 화면에서 보는 시뮬레이션 관제 콘솔", "catalog": "군사·항법·기상·통신 위성을 임무, 궤도, 운영 주체로 걸러 보는 위성 카탈로그", "observatory": "관측지의 일몰·박명·달 위상과 오늘 밤 보이는 천체의 고도를 계산하는 관측 화면", "event": "다음 보름달·절기·월식·일식 일정과 WebGL로 그린 블랙홀", "notFound": "요청한 페이지를 찾을 수 없습니다." },
+  "descriptions": { "home": "인공위성을 추적·관제하고 오늘 밤의 하늘을 관측하는 웹 앱, Beyond the Quasar", "control": "공개 궤도 데이터로 위성의 지상 궤적, 원격 측정, 통과 예측을 한 화면에서 보는 시뮬레이션 관제 콘솔", "catalog": "군사·항법·기상·통신 위성을 임무, 궤도, 운영 주체로 걸러 보는 위성 카탈로그", "observatory": "관측지의 일몰·박명·달 위상과 오늘 밤 보이는 천체의 고도를 계산하는 관측 화면", "event": "다음 보름달·절기·월식·일식 일정과 WebGL로 그린 블랙홀", "notFound": "요청한 페이지를 찾을 수 없습니다." },
   "home": {
     "tagline": "궤도 위의 자산을 지휘하고, 그 너머의 빛을 관측합니다.",
     "scroll": "아래로 스크롤",

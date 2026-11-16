@@ -3,9 +3,10 @@ export const STALE_SNAPSHOT_DAYS = 10
 
 const DAY_MS = 86_400_000
 
-/** 스냅샷을 받은 지 며칠 지났는지. 오래되지 않았으면 null */
+/** 스냅샷을 받은 지 며칠 지났는지(내림한 날수). 기준을 넘지 않았으면 null */
 export function staleSnapshotDays(fetchedAt: Date | null, now: Date): number | null {
   if (!fetchedAt) return null
-  const days = Math.floor((now.getTime() - fetchedAt.getTime()) / DAY_MS)
-  return days > STALE_SNAPSHOT_DAYS ? days : null
+  // 기준은 내림하기 전의 경과 시간으로 비교합니다(10일 12시간이면 이미 넘음).
+  const elapsed = now.getTime() - fetchedAt.getTime()
+  return elapsed > STALE_SNAPSHOT_DAYS * DAY_MS ? Math.floor(elapsed / DAY_MS) : null
 }
