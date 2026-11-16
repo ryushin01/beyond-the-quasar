@@ -10,6 +10,12 @@
 - 정찰 임무는 "공개 자료 기준"으로 표시합니다. 비공개 위성의 궤도 추정치는 쓰지 않습니다.
 - 통과 예측과 근접 거리는 참고 값입니다. 충돌 판단이나 실제 운용에 쓸 수 없습니다.
 
+## 관측 도구
+
+- 맨눈 통과(`entities/satellite`의 `isVisiblePass`): 통과에서 가장 높이 뜬 순간에 관측지의 해 고도가 -6°보다 낮고(시민 박명 뒤) 위성이 지구 그림자 밖이면 '맨눈'으로 표시합니다. 그림자는 원기둥으로 근사하고(반그림자 무시), 해 방향은 Astronomy Engine으로 구합니다. 위성 밝기(등급)는 크기·자세에 따라 크게 달라 따지지 않으므로 '보일 수 있는' 통과입니다.
+- 일정 내보내기(`features/export-passes`): 통과 예측과 관심 위성 일정을 iCalendar(`.ics`, RFC 5545)로 만듭니다. UID를 위성·시작 시각으로 정해 다시 받아도 달력에 겹쳐 넣지 않습니다. 관측 일지는 CSV(엑셀용 BOM)로 내보냅니다. 파일은 브라우저에서 만들어 서버로 보내지 않습니다(`shared/lib`의 `toIcs`·`toCsv`·`downloadText`).
+- 내 위치(`entities/observer`의 `setHere`): 관측지 선택에서 '현재 위치'를 고르면 그때 브라우저 위치를 묻습니다. 정밀 측위를 쓰지 않고 좌표를 소수 둘째 자리(약 1 km)로 줄여 이 브라우저에만 저장합니다. 거부하거나 받지 못하면 이전 관측지를 그대로 씁니다. `Permissions-Policy`는 위치를 이 사이트에만 허용합니다.
+
 ## 우주 위협 자료
 
 관측 화면의 '우주 위협' 패널(`widgets/space-hazards`)은 두 자료를 씁니다. 둘 다 패널이 화면에 들어온 뒤에만 받습니다.
@@ -51,6 +57,7 @@ Histoire 1.0 beta가 Vite 7만 지원해 `vite`를 7.3으로 고정하고 `overr
 - OS의 동작 줄이기와 헤더의 모션 정지 버튼을 함께 반영합니다(KWCAG 6.2.2). 셰이더, CSS 애니메이션, Lenis, 프리로더가 모두 멈춥니다.
 - 글자를 쪼개는 연출은 원문을 `sr-only`로 두고 조각에 `aria-hidden`을 답니다.
 - 이징은 `shared/motion`의 `EASE`, CSS는 `--ease-out`으로 통일합니다.
+- 웹 글꼴은 첫 화면을 그린 뒤 받으므로 글꼴이 바뀌면 구역 높이가 달라집니다. `App.vue`의 `useRefreshOnFontsLoaded`가 글꼴 묶음을 다 받을 때마다(`document.fonts`의 `loadingdone`) ScrollTrigger 위치를 다시 계산해, 고정 구간과 등장 시점이 낡지 않게 합니다.
 - 캔버스를 매 프레임 그리는 곳(퀘이사 배경, 이벤트 무대, 홈 별자리)은 `useVisibleFrameLoop`를 씁니다. 화면에 보이고 탭이 열려 있고 모션이 허용될 때만 `requestAnimationFrame`을 돌리고, 아니면 정지 화면 한 장을 그립니다. 컴포넌트가 사라지면 함께 정리합니다.
 - WebGL을 직접 쓰는 곳(퀘이사 배경, 이벤트 무대)은 `webglcontextlost`에서 기본 동작을 막고 그리기를 멈췄다가, `webglcontextrestored`에서 셰이더를 다시 준비합니다. 휴대폰에서 탭을 오래 숨기거나 GPU가 초기화되면 맥락을 잃는데, 이 처리가 없으면 검은 화면으로 남습니다(Cypress `EventStage.cy.ts`가 확인).
 

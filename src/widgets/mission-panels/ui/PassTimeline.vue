@@ -5,7 +5,8 @@ import { useI18n } from 'vue-i18n'
 
 import { useMissionClock } from '@/entities/clock'
 import { useObserver } from '@/entities/observer'
-import { buildPassSchedule, useTracking, useWatchlist, type Pass, type Satellite } from '@/entities/satellite'
+import { buildPassSchedule, isVisiblePass, toSatrec, useTracking, useWatchlist, type Pass, type Satellite } from '@/entities/satellite'
+import { ExportPassesButton } from '@/features/export-passes'
 import { formatUtc } from '@/shared/lib'
 
 const props = defineProps<{ satellite: Satellite; satellites: Satellite[] }>()
@@ -29,6 +30,14 @@ const subjects = computed(() => {
   return (watched.some((item) => item.noradId === props.satellite.noradId) ? watched : [props.satellite, ...watched]).slice(0, MAX_ROWS)
 })
 const rows = computed(() => buildPassSchedule(subjects.value, observer.site, new Date(startMs.value), HOURS))
+
+/** 내려받을 일정. 맨눈으로 보일 수 있는 통과는 제목에 표시합니다. */
+const exportItems = computed(() =>
+  rows.value.map((row) => {
+    const satrec = toSatrec(row.satellite.line1, row.satellite.line2)
+    return { noradId: row.satellite.noradId, name: row.satellite.name, passes: row.passes.map((pass) => ({ ...pass, visible: isVisiblePass(satrec, pass, observer.site) })) }
+  }),
+)
 
 const scale = computed(() => scaleUtc().domain([new Date(startMs.value), new Date(startMs.value + HOURS * 3_600_000)]).range([0, 100]).clamp(true))
 const ticks = computed(() => scale.value.ticks(4).map((tick) => ({ left: scale.value(tick), label: `${String(tick.getUTCHours()).padStart(2, '0')}Z` })))
@@ -79,10 +88,16 @@ const nextLabel = (row: (typeof rows.value)[number]): string => {
       </li>
     </ul>
     <p v-if="!watchlist.ids.length" class="schedule__hint">{{ t('schedule.hint') }}</p>
+    <div class="schedule__actions">
+      <ExportPassesButton :items="exportItems" :site-name="siteName" filename="watchlist-passes.ics" />
+    </div>
   </div>
 </template>
 
 <style scoped>
+.schedule__actions {
+  padding: 0.25rem 1rem 0.75rem;
+}
 .schedule__caption {
   margin: 0;
   padding: 0.5rem 1rem;

@@ -5,7 +5,8 @@ import { useI18n } from 'vue-i18n'
 import { UplinkForm } from '@/features/send-command'
 import { useMissionClock } from '@/entities/clock'
 import { useObserver } from '@/entities/observer'
-import { lookAngleAt, predictPasses, separationKm, toSatrec, type Satellite } from '@/entities/satellite'
+import { isVisiblePass, lookAngleAt, predictPasses, separationKm, toSatrec, type Satellite } from '@/entities/satellite'
+import { ExportPassesButton } from '@/features/export-passes'
 import { formatDuration, formatNumber, formatUtc } from '@/shared/lib'
 
 import PassTimeline from './PassTimeline.vue'
@@ -28,7 +29,17 @@ const CONTACT_ELEVATION = 5
 
 /** 한 번 계산하면 1분(가상 시각 기준)마다 다시 계산합니다. */
 const minuteKey = computed(() => Math.floor(clock.now.getTime() / 60_000))
-const passes = computed(() => (props.satellite.orbit === 'GEO' ? [] : predictPasses(satrec.value, observer.site, new Date(minuteKey.value * 60_000))))
+const passes = computed(() =>
+  props.satellite.orbit === 'GEO'
+    ? []
+    : predictPasses(satrec.value, observer.site, new Date(minuteKey.value * 60_000)).map((pass) => ({
+        ...pass,
+        // 가장 높을 때 위성은 햇빛을 받고 하늘은 어두우면 맨눈으로 보일 수 있습니다.
+        visible: isVisiblePass(satrec.value, pass, observer.site),
+      })),
+)
+const hasVisible = computed(() => passes.value.some((pass) => pass.visible))
+const exportName = computed(() => `${props.satellite.name.replace(/[^A-Za-z0-9]+/g, '-').replace(/^-|-$/g, '').toLowerCase() || props.satellite.noradId}-passes.ics`)
 
 const contactRange = computed(() => {
   const look = lookAngleAt(satrec.value, clock.now, observer.site)
@@ -75,7 +86,7 @@ const nearest = computed(() => {
         <p v-if="satellite.orbit === 'GEO'" class="panels__note">{{ t('passes.geostationary') }}</p>
         <p v-else-if="!passes.length" class="panels__note">{{ t('passes.none') }}</p>
         <table v-else class="table">
-          <caption>{{ t('passes.caption', { site: siteName }) }}</caption>
+          <caption>{{ t('passes.caption', { site: siteName }) }}<template v-if="hasVisible"> · {{ t('passes.visibleNote') }}</template></caption>
           <thead>
             <tr>
               <th scope="col">{{ t('passes.aos') }}</th>
@@ -89,10 +100,13 @@ const nearest = computed(() => {
               <td>{{ formatUtc(pass.aos) }}</td>
               <td>{{ formatUtc(pass.los) }}</td>
               <td>{{ formatDuration((pass.los.getTime() - pass.aos.getTime()) / 1000) }}</td>
-              <td>{{ formatNumber(pass.maxElevation, 0) }}°</td>
+              <td>{{ formatNumber(pass.maxElevation, 0) }}°<span v-if="pass.visible" class="panels__visible">{{ t('passes.visible') }}</span></td>
             </tr>
           </tbody>
         </table>
+        <div v-if="passes.length" class="panels__actions">
+          <ExportPassesButton :items="[{ noradId: satellite.noradId, name: satellite.name, passes }]" :site-name="siteName" :filename="exportName" />
+        </div>
       </template>
 
       <PassTimeline v-else-if="tab === 'schedule'" :satellite="satellite" :satellites="satellites" />
@@ -192,5 +206,16 @@ const nearest = computed(() => {
 }
 .panels__mil {
   color: var(--alert);
+}
+.panels__visible {
+  margin-left: 0.375rem;
+  padding: 0 0.25rem;
+  border: 1px solid var(--signal-text);
+  color: var(--signal-text);
+  font-size: 0.625rem;
+}
+.panels__actions {
+  padding: 0.25rem 1rem 0.75rem;
+  border-top: 1px solid var(--line);
 }
 </style>
