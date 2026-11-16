@@ -98,6 +98,22 @@ describe('통과 예측', () => {
     expect(inProgress!.aos.getTime()).toBeLessThan(middle.getTime())
   })
 
+  it('내려가는 중에 예측을 시작해도 앞선 최고점을 찾는다', () => {
+    const [first] = predictPasses(satrec, DAEJEON, EPOCH, { hours: 24, stepSec: 30 })
+    // 최고점보다 3분(표본 간격의 여섯 배) 뒤에서 시작
+    const descending = new Date(first!.maxAt.getTime() + 180_000)
+    expect(descending.getTime()).toBeLessThan(first!.los.getTime())
+    const [inProgress] = predictPasses(satrec, DAEJEON, descending, { hours: 3, stepSec: 30 })
+    expect(Math.abs(inProgress!.maxAt.getTime() - first!.maxAt.getTime())).toBeLessThanOrEqual(2000)
+    expect(inProgress!.maxElevation).toBeCloseTo(first!.maxElevation, 2)
+  })
+
+  it('시작 시각에 밀리초가 있어도 경계는 같은 정수 초다', () => {
+    const exact = predictPasses(satrec, DAEJEON, EPOCH, { hours: 24, stepSec: 30 })
+    const shifted = predictPasses(satrec, DAEJEON, new Date(EPOCH.getTime() + 700), { hours: 24, stepSec: 30 })
+    expect(shifted.map((pass) => pass.aos.toISOString())).toEqual(exact.map((pass) => pass.aos.toISOString()))
+  })
+
   it('기준 고도를 넘지 못하면 비어 있다', () => {
     expect(predictPasses(satrec, DAEJEON, EPOCH, { hours: 3, minElevation: 89.9 })).toEqual([])
   })
