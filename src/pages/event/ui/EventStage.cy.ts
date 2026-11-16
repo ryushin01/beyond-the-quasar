@@ -81,4 +81,25 @@ describe('EventStage (실제 브라우저)', () => {
       cy.get('.stage__fallback').should('not.exist')
     })
   })
+
+  it('모션을 멈춘 채 맥락을 되찾아도 정지 화면을 다시 그린다', () => {
+    const motion = useMotionPreference()
+    if (!motion.userPaused.value) motion.toggle()
+    cy.mount(Framed, { props: { mix: 1 } })
+    cy.get('.stage__canvas').should(($canvas) => {
+      expect(($canvas[0] as HTMLCanvasElement).height).to.be.greaterThan(300)
+    })
+    cy.get('.stage__canvas').then(($canvas) => {
+      const gl = ($canvas[0] as HTMLCanvasElement).getContext('webgl')!
+      const lose = gl.getExtension('WEBGL_lose_context')!
+      lose.loseContext()
+      cy.wrap(null).should(() => expect(gl.isContextLost()).to.equal(true))
+      const draws = cy.spy(gl, 'drawArrays')
+      cy.wait(100).then(() => lose.restoreContext())
+      cy.wrap(null).should(() => expect(draws.callCount, '되찾은 뒤 그린 횟수').to.be.greaterThan(0))
+    })
+    cy.wrap(null).then(() => {
+      if (motion.userPaused.value) motion.toggle()
+    })
+  })
 })

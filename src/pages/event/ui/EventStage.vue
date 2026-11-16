@@ -115,8 +115,13 @@ useEventListener(canvas, 'webglcontextlost', (event: Event) => {
 })
 useEventListener(canvas, 'webglcontextrestored', () => {
   if (disposed) return
-  if (setup()) ready.value = true
-  else unsupported.value = true
+  if (!setup()) {
+    unsupported.value = true
+    return
+  }
+  ready.value = true
+  // 모션이 꺼져 있으면 활성 조건이 그대로라 루프가 다시 정해지지 않으므로, 직접 불러 정지 화면이라도 한 장 그립니다.
+  loop.play()
 })
 
 let idle = 0

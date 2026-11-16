@@ -412,10 +412,20 @@ test.describe('일식·월식 망원경 시야', () => {
 
 test.describe('배포 직후', () => {
   test('열어 둔 탭에서 사라진 화면 조각을 받지 못하면 가려던 주소로 한 번 새로고침한다', async ({ page }) => {
+    // 첫 화면에서 받은 JS(첫 화면 공통 조각)는 새 배포에도 있다고 보고, 그 뒤에 처음 받는 조각만 사라진 것으로 만듭니다.
+    const loaded = new Set<string>()
+    page.on('requestfinished', (request) => {
+      if (request.url().endsWith('.js')) loaded.add(request.url())
+    })
     await page.goto('/observatory')
     await expect(page.getByRole('heading', { level: 1 })).toBeVisible()
-    // 새 배포로 이전 빌드의 조각이 사라진 상황: 이후 JS 조각 요청을 모두 실패시킵니다.
-    await page.route(/\/assets\/.+\.js$/, (route) => route.abort())
+    await page.waitForLoadState('networkidle')
+    await page.route(/\/assets\/.+\.js$/, (route) => (loaded.has(route.request().url()) ? route.continue() : route.abort()))
+
+    const warnings: string[] = []
+    page.on('console', (message) => {
+      if (message.type() === 'warning') warnings.push(message.text())
+    })
     const reloaded = page.waitForEvent('load')
     // 메뉴 링크와 같은 앱 안 이동(모바일은 메뉴가 접혀 있어 주소 이동으로 대신함)
     await page.evaluate(() => {
@@ -424,8 +434,9 @@ test.describe('배포 직후', () => {
     })
     await reloaded
     await expect(page).toHaveURL(/\/catalog$/)
-    // 새로고침 뒤에도 실패하면 더 새로고침하지 않습니다(무한 새로고침 방지).
-    const again = page.waitForEvent('load', { timeout: 3000 }).then(() => true, () => false)
-    expect(await again).toBe(false)
+    // 새로고침 뒤 앱은 다시 뜨고, 카탈로그 조각을 또 받지 못하면 복구 처리까지 가지만 더 새로고침하지 않습니다(무한 새로고침 방지).
+    await expect.poll(() => warnings.some((text) => text.includes('[chunk-reload]')), { timeout: 5000 }).toBe(true)
+    const again = await page.waitForEvent('load', { timeout: 3000 }).then(() => true, () => false)
+    expect(again).toBe(false)
   })
 })
