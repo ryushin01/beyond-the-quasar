@@ -60,6 +60,16 @@ describe('parseKp', () => {
   it('배열이 아니면 예외를 던진다', () => {
     expect(() => parseKp({})).toThrow()
   })
+
+  it('값이 비어 있는 행(null·빈 글자·참거짓)은 0(조용함)으로 읽지 않고 건너뛴다', () => {
+    const samples = parseKp([
+      { time_tag: '2026-11-15T15:00:00', Kp: null },
+      { time_tag: '2026-11-15T18:00:00', Kp: '' },
+      { time_tag: '2026-11-15T21:00:00', Kp: false },
+      { time_tag: '2026-11-16T00:00:00', Kp: 0 },
+    ])
+    expect(samples.map((sample) => sample.kp)).toEqual([0])
+  })
 })
 
 it('Kp를 G 등급으로 바꾼다(Kp 5 = G1)', () => {

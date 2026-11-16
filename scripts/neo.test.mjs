@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { findNeoProblem, toApproaches } from './fetch-neo.mjs'
+import { findNeoProblem, toApproaches, TT_MINUS_UTC_S } from './fetch-neo.mjs'
 
 const response = {
   signature: { source: 'NASA/JPL SBDB Close Approach Data API', version: '1.5' },
@@ -13,18 +13,19 @@ const response = {
 }
 
 describe('toApproaches', () => {
-  it('율리우스일을 UTC로, 숫자 문자열을 숫자로, 이름의 앞뒤 공백을 지운다', () => {
+  it('율리우스일(TDB)을 UTC로(TT−UTC 69.184초를 빼고 초 단위 반올림), 숫자 문자열을 숫자로, 이름의 앞뒤 공백을 지운다', () => {
     const [first, apophis] = toApproaches(response)
     expect(first).toEqual({
       designation: '2026 VW15',
       name: '(2026 VW15)',
-      date: '2026-11-16T05:25:55.000Z',
+      // JD 2461360.726327889 TDB = 05:25:54.729 TDB → 05:24:45.545 UTC
+      date: '2026-11-16T05:24:46.000Z',
       distanceAu: 0.0131392541619584,
       velocityKmS: 6.06068543422993,
       absoluteMagnitude: 27.073,
     })
     expect(apophis.name).toBe('99942 Apophis (2004 MN4)')
-    expect(apophis.date).toBe('2029-04-13T21:46:00.000Z')
+    expect(apophis.date).toBe(new Date(Date.UTC(2029, 3, 13, 21, 46, 0) - Math.round(TT_MINUS_UTC_S) * 1000).toISOString())
   })
 
   it('필드 순서가 바뀌어도 이름으로 찾는다', () => {
@@ -48,6 +49,11 @@ describe('findNeoProblem', () => {
   })
   it('가까이 오는 천체가 없는 기간(0건)도 저장할 수 있다', () => {
     const empty = { ...response, count: '0', data: [] }
+    expect(findNeoProblem(empty, toApproaches(empty))).toBeNull()
+  })
+  it('0건이면 API가 fields·data 없이 보내는 응답도 받는다', () => {
+    const empty = { signature: response.signature, count: 0 }
+    expect(toApproaches(empty)).toEqual([])
     expect(findNeoProblem(empty, toApproaches(empty))).toBeNull()
   })
 })

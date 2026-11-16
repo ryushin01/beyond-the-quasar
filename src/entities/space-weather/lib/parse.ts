@@ -90,7 +90,8 @@ export function parseKp(raw: unknown): KpSample[] {
   for (const row of raw) {
     const [time, kp] = Array.isArray(row) ? [row[0], row[1]] : isObject(row) ? [row.time_tag, row.Kp] : [undefined, undefined]
     const at = toTime(time)
-    const value = Number(kp)
+    // null·빈 문자열·참거짓은 Number()가 0으로 바꿔 '조용함'으로 보이므로, 숫자나 숫자 글자만 받습니다.
+    const value = typeof kp === 'number' || (typeof kp === 'string' && kp.trim() !== '') ? Number(kp) : Number.NaN
     // 머리 행("time_tag", "Kp")과 깨진 행은 건너뜁니다.
     if (Number.isNaN(at) || !Number.isFinite(value) || value < 0 || value > 9) continue
     samples.push({ time: new Date(at), kp: value })

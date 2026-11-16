@@ -96,4 +96,31 @@ describe('SpaceHazards', () => {
     await flushPromises()
     expect(fetch).not.toHaveBeenCalled()
   })
+
+  it("예보 값이 없으면 'G0'이 아니라 '—'로 보인다", async () => {
+    const noForecast = { ...scales, '1': { ...scales['1'], G: { Scale: null } }, '2': { ...scales['2'], G: { Scale: null } } }
+    vi.stubGlobal('fetch', vi.fn(async (url: string) => (url.includes('noaa-scales') ? new Response(JSON.stringify(noForecast)) : respond(url))))
+    const wrapper = mountHazards()
+    await flushPromises()
+    expect(wrapper.text()).toContain('사흘 예보 최대 G—')
+  })
+
+  it('화면을 열어 둔 채 접근 시각이 지나면 목록에서 빠진다', async () => {
+    vi.useFakeTimers({ toFake: ['setInterval', 'clearInterval', 'Date'] })
+    vi.setSystemTime(new Date('2026-11-17T05:00:00Z'))
+    try {
+      vi.stubGlobal('fetch', vi.fn(async (url: string) => respond(url)))
+      const client = new QueryClient({ defaultOptions: { queries: { retry: false } } })
+      const wrapper = mount(SpaceHazards, { global: { plugins: [[VueQueryPlugin, { queryClient: client }]] } })
+      await vi.waitFor(() => expect(wrapper.findAll('tbody tr')).toHaveLength(2))
+      // 05:36Z 접근이 지나도록 40분 흘려 보냅니다(1분마다 시각 갱신).
+      vi.setSystemTime(new Date('2026-11-17T05:40:00Z'))
+      vi.advanceTimersByTime(60_000)
+      await flushPromises()
+      expect(wrapper.findAll('tbody tr')).toHaveLength(1)
+      expect(wrapper.find('tbody tr').text()).toContain('2026 XX1')
+    } finally {
+      vi.useRealTimers()
+    }
+  })
 })

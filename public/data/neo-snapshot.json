@@ -1,11 +1,11 @@
 {
-  "fetchedAt": "2026-11-16T02:23:42.447Z",
+  "fetchedAt": "2026-11-16T02:58:12.163Z",
   "source": "NASA/JPL SBDB Close Approach Data API",
   "approaches": [
     {
       "designation": "2026 VW15",
       "name": "(2026 VW15)",
-      "date": "2026-11-16T05:25:55.000Z",
+      "date": "2026-11-16T05:24:46.000Z",
       "distanceAu": 0.0131392541619584,
       "velocityKmS": 6.06068543422993,
       "absoluteMagnitude": 27.073
@@ -13,7 +13,7 @@
     {
       "designation": "2026 VM3",
       "name": "(2026 VM3)",
-      "date": "2026-11-16T16:46:30.000Z",
+      "date": "2026-11-16T16:45:21.000Z",
       "distanceAu": 0.0207275062037755,
       "velocityKmS": 3.69660977244505,
       "absoluteMagnitude": 27.318
@@ -21,7 +21,7 @@
     {
       "designation": "2026 VJ13",
       "name": "(2026 VJ13)",
-      "date": "2026-11-17T05:35:51.000Z",
+      "date": "2026-11-17T05:34:42.000Z",
       "distanceAu": 0.009006434046621,
       "velocityKmS": 10.4363954206411,
       "absoluteMagnitude": 27.249
@@ -29,7 +29,7 @@
     {
       "designation": "2023 VE6",
       "name": "(2023 VE6)",
-      "date": "2026-11-17T06:46:02.000Z",
+      "date": "2026-11-17T06:44:52.000Z",
       "distanceAu": 0.0470991947664407,
       "velocityKmS": 10.1012078051812,
       "absoluteMagnitude": 27.16
@@ -37,7 +37,7 @@
     {
       "designation": "2026 VB13",
       "name": "(2026 VB13)",
-      "date": "2026-11-17T11:45:31.000Z",
+      "date": "2026-11-17T11:44:22.000Z",
       "distanceAu": 0.0254136235770872,
       "velocityKmS": 20.4726551486594,
       "absoluteMagnitude": 25.262
@@ -45,7 +45,7 @@
     {
       "designation": "2022 VB2",
       "name": "(2022 VB2)",
-      "date": "2026-11-17T15:33:59.000Z",
+      "date": "2026-11-17T15:32:50.000Z",
       "distanceAu": 0.0198705194885519,
       "velocityKmS": 8.95050372614258,
       "absoluteMagnitude": 25.17
@@ -53,7 +53,7 @@
     {
       "designation": "2012 VF46",
       "name": "(2012 VF46)",
-      "date": "2026-11-18T06:49:22.000Z",
+      "date": "2026-11-18T06:48:13.000Z",
       "distanceAu": 0.0424689154574345,
       "velocityKmS": 11.2241187369889,
       "absoluteMagnitude": 23.6
@@ -61,7 +61,7 @@
     {
       "designation": "2026 VY18",
       "name": "(2026 VY18)",
-      "date": "2026-11-18T18:27:36.000Z",
+      "date": "2026-11-18T18:26:27.000Z",
       "distanceAu": 0.0257836438048416,
       "velocityKmS": 17.5265272293371,
       "absoluteMagnitude": 25.057
@@ -69,7 +69,7 @@
     {
       "designation": "2018 NE1",
       "name": "(2018 NE1)",
-      "date": "2026-11-19T02:16:28.000Z",
+      "date": "2026-11-19T02:15:19.000Z",
       "distanceAu": 0.0426855037095717,
       "velocityKmS": 13.2843078205714,
       "absoluteMagnitude": 23.4
@@ -77,7 +77,7 @@
     {
       "designation": "2026 VA11",
       "name": "(2026 VA11)",
-      "date": "2026-11-19T11:26:17.000Z",
+      "date": "2026-11-19T11:25:08.000Z",
       "distanceAu": 0.0224153130706679,
       "velocityKmS": 8.87490582219691,
       "absoluteMagnitude": 27.236
@@ -85,7 +85,7 @@
     {
       "designation": "2026 TB84",
       "name": "(2026 TB84)",
-      "date": "2026-11-19T22:19:35.000Z",
+      "date": "2026-11-19T22:18:26.000Z",
       "distanceAu": 0.0310536496326164,
       "velocityKmS": 9.87439602670158,
       "absoluteMagnitude": 23.64
@@ -93,7 +93,7 @@
     {
       "designation": "2026 VD6",
       "name": "(2026 VD6)",
-      "date": "2026-11-20T10:36:23.000Z",
+      "date": "2026-11-20T10:35:14.000Z",
       "distanceAu": 0.0268406380805425,
       "velocityKmS": 9.4479780955015,
       "absoluteMagnitude": 26.811
@@ -101,7 +101,7 @@
     {
       "designation": "2026 VN11",
       "name": "(2026 VN11)",
-      "date": "2026-11-21T06:47:29.000Z",
+      "date": "2026-11-21T06:46:20.000Z",
       "distanceAu": 0.013246067752751,
       "velocityKmS": 7.10350254394013,
       "absoluteMagnitude": 24.692
@@ -109,7 +109,7 @@
     {
       "designation": "2026 VD9",
       "name": "(2026 VD9)",
-      "date": "2026-11-21T21:14:36.000Z",
+      "date": "2026-11-21T21:13:26.000Z",
       "distanceAu": 0.0261094726141438,
       "velocityKmS": 4.67253186717404,
       "absoluteMagnitude": 25.235
@@ -117,7 +117,7 @@
     {
       "designation": "2026 VY15",
       "name": "(2026 VY15)",
-      "date": "2026-11-21T21:21:30.000Z",
+      "date": "2026-11-21T21:20:21.000Z",
       "distanceAu": 0.0245115633685496,
       "velocityKmS": 13.2454415599296,
       "absoluteMagnitude": 25.538
@@ -125,7 +125,7 @@
     {
       "designation": "2026 VF18",
       "name": "(2026 VF18)",
-      "date": "2026-11-23T10:15:14.000Z",
+      "date": "2026-11-23T10:14:04.000Z",
       "distanceAu": 0.0267859840919208,
       "velocityKmS": 7.50706667864159,
       "absoluteMagnitude": 26.64
@@ -133,7 +133,7 @@
     {
       "designation": "2026 VQ5",
       "name": "(2026 VQ5)",
-      "date": "2026-11-25T21:19:10.000Z",
+      "date": "2026-11-25T21:18:01.000Z",
       "distanceAu": 0.0134101711833108,
       "velocityKmS": 11.6727033357722,
       "absoluteMagnitude": 23.948
@@ -141,7 +141,7 @@
     {
       "designation": "2026 VV11",
       "name": "(2026 VV11)",
-      "date": "2026-11-25T21:22:29.000Z",
+      "date": "2026-11-25T21:21:20.000Z",
       "distanceAu": 0.0417833979605851,
       "velocityKmS": 8.78704330116148,
       "absoluteMagnitude": 24.727
@@ -149,7 +149,7 @@
     {
       "designation": "2025 CP1",
       "name": "(2025 CP1)",
-      "date": "2026-11-30T17:52:46.000Z",
+      "date": "2026-11-30T17:51:37.000Z",
       "distanceAu": 0.0329446831842558,
       "velocityKmS": 10.8186734875783,
       "absoluteMagnitude": 28.72
@@ -157,7 +157,7 @@
     {
       "designation": "2019 XF2",
       "name": "(2019 XF2)",
-      "date": "2026-12-04T00:35:10.000Z",
+      "date": "2026-12-04T00:34:01.000Z",
       "distanceAu": 0.00795386356544704,
       "velocityKmS": 10.2034308257869,
       "absoluteMagnitude": 27.1
@@ -165,7 +165,7 @@
     {
       "designation": "2023 XH3",
       "name": "(2023 XH3)",
-      "date": "2026-12-06T19:09:14.000Z",
+      "date": "2026-12-06T19:08:05.000Z",
       "distanceAu": 0.0478012298502166,
       "velocityKmS": 16.4857689880392,
       "absoluteMagnitude": 27.02
@@ -173,7 +173,7 @@
     {
       "designation": "2020 XC3",
       "name": "(2020 XC3)",
-      "date": "2026-12-08T00:43:43.000Z",
+      "date": "2026-12-08T00:42:34.000Z",
       "distanceAu": 0.0371477058612161,
       "velocityKmS": 14.2984535272132,
       "absoluteMagnitude": 22.55
@@ -181,7 +181,7 @@
     {
       "designation": "2016 NV",
       "name": "(2016 NV)",
-      "date": "2026-12-08T18:43:08.000Z",
+      "date": "2026-12-08T18:41:59.000Z",
       "distanceAu": 0.0366182473671146,
       "velocityKmS": 10.4160208457408,
       "absoluteMagnitude": 19.86
@@ -189,7 +189,7 @@
     {
       "designation": "2010 VQ",
       "name": "(2010 VQ)",
-      "date": "2026-12-12T04:55:21.000Z",
+      "date": "2026-12-12T04:54:12.000Z",
       "distanceAu": 0.011715191719348,
       "velocityKmS": 4.29956615577849,
       "absoluteMagnitude": 27.72
@@ -197,7 +197,7 @@
     {
       "designation": "2025 XN6",
       "name": "(2025 XN6)",
-      "date": "2026-12-12T22:26:02.000Z",
+      "date": "2026-12-12T22:24:53.000Z",
       "distanceAu": 0.0177433448411245,
       "velocityKmS": 12.2255754751232,
       "absoluteMagnitude": 29.2
@@ -205,7 +205,7 @@
     {
       "designation": "2026 QQ8",
       "name": "(2026 QQ8)",
-      "date": "2026-12-13T13:40:59.000Z",
+      "date": "2026-12-13T13:39:50.000Z",
       "distanceAu": 0.00903690120799281,
       "velocityKmS": 0.796699953573032,
       "absoluteMagnitude": 31.367
@@ -213,7 +213,7 @@
     {
       "designation": "2026 LZ1",
       "name": "(2026 LZ1)",
-      "date": "2026-12-14T15:25:56.000Z",
+      "date": "2026-12-14T15:24:47.000Z",
       "distanceAu": 0.0368973248377911,
       "velocityKmS": 11.1526534266355,
       "absoluteMagnitude": 24.995
@@ -221,7 +221,7 @@
     {
       "designation": "2025 YN",
       "name": "(2025 YN)",
-      "date": "2026-12-18T06:29:18.000Z",
+      "date": "2026-12-18T06:28:09.000Z",
       "distanceAu": 0.0468909929130219,
       "velocityKmS": 13.1099995333454,
       "absoluteMagnitude": 26.16
@@ -229,7 +229,7 @@
     {
       "designation": "2018 FQ4",
       "name": "(2018 FQ4)",
-      "date": "2026-12-19T00:36:05.000Z",
+      "date": "2026-12-19T00:34:56.000Z",
       "distanceAu": 0.0428612578924717,
       "velocityKmS": 10.4139120904863,
       "absoluteMagnitude": 27.08
@@ -237,7 +237,7 @@
     {
       "designation": "2021 PF7",
       "name": "(2021 PF7)",
-      "date": "2026-12-26T19:18:19.000Z",
+      "date": "2026-12-26T19:17:10.000Z",
       "distanceAu": 0.0397311205479323,
       "velocityKmS": 7.67157289378591,
       "absoluteMagnitude": 27.81
@@ -245,7 +245,7 @@
     {
       "designation": "2023 FP1",
       "name": "(2023 FP1)",
-      "date": "2027-01-05T02:23:01.000Z",
+      "date": "2027-01-05T02:21:52.000Z",
       "distanceAu": 0.0267143320417208,
       "velocityKmS": 2.72242018066942,
       "absoluteMagnitude": 26.55
@@ -253,7 +253,7 @@
     {
       "designation": "2014 BP",
       "name": "(2014 BP)",
-      "date": "2027-01-13T15:43:19.000Z",
+      "date": "2027-01-13T15:42:10.000Z",
       "distanceAu": 0.0221688007445832,
       "velocityKmS": 10.4181499474939,
       "absoluteMagnitude": 25.1
@@ -261,7 +261,7 @@
     {
       "designation": "2024 RR14",
       "name": "(2024 RR14)",
-      "date": "2027-01-13T19:24:08.000Z",
+      "date": "2027-01-13T19:22:59.000Z",
       "distanceAu": 0.0215582053114083,
       "velocityKmS": 8.0486951477986,
       "absoluteMagnitude": 22.02
