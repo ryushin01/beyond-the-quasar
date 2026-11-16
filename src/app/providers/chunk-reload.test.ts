@@ -42,6 +42,22 @@ describe('reloadOnce', () => {
     expect(assign).toHaveBeenLastCalledWith(here('/b'))
   })
 
+  it('실패가 10초보다 조금씩 늦게 되풀이돼도 10분 안에는 두 번까지만 새로고침한다', () => {
+    const assign = vi.fn()
+    expect(reloadOnce('/a', 1_000_000, assign)).toBe(true)
+    expect(reloadOnce('/a', 1_011_000, assign)).toBe(true)
+    expect(reloadOnce('/a', 1_022_000, assign)).toBe(false)
+    expect(reloadOnce('/a', 1_033_000, assign)).toBe(false)
+    // 10분이 지나면 다시 한 번 시도할 수 있습니다.
+    expect(reloadOnce('/a', 1_000_000 + 10 * 60_000 + 1, assign)).toBe(true)
+    expect(assign).toHaveBeenCalledTimes(3)
+  })
+
+  it('예전 형식(숫자 하나)으로 남은 기록도 읽는다', () => {
+    sessionStorage.setItem('btq:chunk-reload', '1000000')
+    expect(reloadOnce('/a', 1_005_000, vi.fn())).toBe(false)
+  })
+
   it('저장소를 쓸 수 없으면 반복을 막을 수 없으므로 새로고침하지 않는다', () => {
     const assign = vi.fn()
     vi.spyOn(Storage.prototype, 'getItem').mockImplementation(() => {
