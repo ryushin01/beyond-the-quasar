@@ -1,4 +1,5 @@
 import { FIXTURES } from '@/entities/satellite'
+import { useMotionPreference } from '@/shared/motion'
 
 import OrbitGlobe from './OrbitGlobe.vue'
 
@@ -49,6 +50,25 @@ describe('OrbitGlobe (실제 브라우저)', () => {
           expect(sceneFrames).to.have.length(0)
         })
       })
+    })
+  })
+
+  it('모션을 끄면 바뀐 것이 없을 때는 그리지 않고, 조작하면 그때만 그린다', () => {
+    const motion = useMotionPreference()
+    if (!motion.userPaused.value) motion.toggle()
+    cy.mount(OrbitGlobe, { props: { satellites: FIXTURES } })
+    cy.get('button[aria-label="가까이"]').should('be.enabled')
+    cy.window().then((win) => {
+      const frames = cy.spy(win, 'requestAnimationFrame')
+      const sceneFrames = () => frames.getCalls().filter((call) => (call.args[0] as { name?: string }).name === 'render').length
+      // 자리를 잡을 시간을 준 뒤에는 장면이 프레임을 예약하지 않습니다.
+      cy.wait(300).then(() => frames.resetHistory())
+      cy.wait(400).then(() => expect(sceneFrames(), '가만히 있을 때').to.equal(0))
+      cy.get('button[aria-label="가까이"]').click()
+      cy.wait(100).then(() => expect(sceneFrames(), '조작한 뒤').to.be.greaterThan(0))
+    })
+    cy.then(() => {
+      if (motion.userPaused.value) motion.toggle()
     })
   })
 })

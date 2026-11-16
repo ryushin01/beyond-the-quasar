@@ -17,6 +17,9 @@ export default defineConfig({
     VueI18nPlugin({
       include: fileURLToPath(new URL('./src/shared/i18n/locales/**', import.meta.url)),
       strictMessage: false,
+      // 메시지는 빌드 때 미리 컴파일하므로 런타임 컴파일러(약 17 kB)를 빼고, 쓰지 않는 전역 컴포넌트(i18n-t 등)·v-t도 설치하지 않습니다.
+      dropMessageCompiler: true,
+      fullInstall: false,
     }),
   ],
   resolve: { alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) } },

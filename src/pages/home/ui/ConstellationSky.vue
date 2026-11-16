@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useIntersectionObserver, useResizeObserver } from '@vueuse/core'
+import { useResizeObserver } from '@vueuse/core'
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
@@ -7,7 +7,7 @@ import { useObserver } from '@/entities/observer'
 import { bodyPosition, BRIGHT_STARS, CONSTELLATIONS, daysUntil, localSiderealHours, PLANETS, upcomingSkyEvents, type SkyBodyName, type SkyEvent } from '@/entities/sky'
 import { ROUTES } from '@/shared/config'
 import { formatLatitude, formatLongitude, formatUtc } from '@/shared/lib'
-import { gsap, useMotionPreference } from '@/shared/motion'
+import { gsap, useMotionPreference, useVisibleFrameLoop } from '@/shared/motion'
 
 import { busiestHeading, createFieldStars, projectToView, toAltAz, viewScale, type AltAz, type ViewFrame } from '../lib/sky-view'
 
@@ -42,9 +42,7 @@ let constellations: PlacedConstellation[] = []
 let stars: (AltAz & { name: string; magnitude: number })[] = []
 let field: (AltAz & { size: number; phase: number })[] = []
 let bodies: (AltAz & { name: SkyBodyName })[] = []
-let frame = 0
 let lastFrame = 0
-let inView = false
 let clockTimer: ReturnType<typeof setInterval> | undefined
 let skyTimer: ReturnType<typeof setInterval> | undefined
 let drag: { pointerId: number; x: number; heading: number } | null = null
@@ -161,7 +159,7 @@ function drawConstellations(ctx: CanvasRenderingContext2D, view: ViewFrame): Nam
 }
 
 function drawConstellationNames(ctx: CanvasRenderingContext2D, names: NameAnchor[], taken: DOMRectLike[]): void {
-  ctx.font = '500 11px "Roboto Mono Variable", "Nanum Gothic Coding", monospace'
+  ctx.font = '500 11px "Roboto Mono Variable", "BTQ Coding", "Nanum Gothic Coding", monospace'
   ctx.textAlign = 'left'
   ctx.fillStyle = 'rgb(200 212 255 / 0.74)'
   for (const name of names) {
@@ -195,7 +193,7 @@ function drawHorizon(ctx: CanvasRenderingContext2D, view: ViewFrame): void {
 
 function drawCompass(ctx: CanvasRenderingContext2D, view: ViewFrame, taken: DOMRectLike[]): void {
   ctx.fillStyle = '#fff'
-  ctx.font = '500 12px "Roboto Mono Variable", "Nanum Gothic Coding", monospace'
+  ctx.font = '500 12px "Roboto Mono Variable", "BTQ Coding", "Nanum Gothic Coding", monospace'
   ctx.textAlign = 'left'
   for (const [azimuth, key] of [[0, 'north'], [90, 'east'], [180, 'south'], [270, 'west']] as const) {
     const point = projectToView({ altitude: 0, azimuth }, view)
@@ -275,18 +273,11 @@ function resize(): void {
   draw(performance.now())
 }
 
-function loop(time: number): void {
-  frame = requestAnimationFrame(loop)
+/** 별 반짝임은 초당 24장이면 충분해 그 사이 프레임은 건너뜁니다. */
+function twinkle(time: number): void {
   if (time - lastFrame < TWINKLE_FRAME_MS) return
   lastFrame = time
   draw(time)
-}
-
-function updateLoop(): void {
-  cancelAnimationFrame(frame)
-  frame = 0
-  if (enabled.value && inView && !document.hidden) frame = requestAnimationFrame(loop)
-  else draw(performance.now())
 }
 
 function playReveal(): void {
@@ -324,18 +315,23 @@ function setInitialHeading(): void {
 }
 
 useResizeObserver(canvas, resize)
-useIntersectionObserver(root, ([entry]) => {
-  inView = entry?.isIntersecting ?? false
-  if (inView) playReveal()
-  updateLoop()
-}, { threshold: 0.2 })
+// 하늘이 화면에 들어오고 탭이 열려 있고 모션이 허용될 때만 반짝임을 돌립니다. 처음 들어올 때 별자리선을 그려 나갑니다.
+useVisibleFrameLoop(root, {
+  onFrame: twinkle,
+  onStill: draw,
+  initiallyVisible: false,
+  threshold: 0.2,
+  onVisible: (visible) => {
+    if (visible) playReveal()
+  },
+})
 
+// 모션을 끄면 그려 나가던 별자리선을 끝까지 펼친 정지 화면으로 둡니다(루프 정지는 useVisibleFrameLoop가 맡음).
 watch(enabled, (value) => {
-  if (!value) {
-    revealTween?.kill()
-    reveal.progress = 1
-  }
-  updateLoop()
+  if (value) return
+  revealTween?.kill()
+  reveal.progress = 1
+  draw(performance.now())
 })
 
 watch(
@@ -353,17 +349,14 @@ onMounted(() => {
   setInitialHeading()
   nextEvent.value = upcomingSkyEvents(now.value)[0]
   resize()
-  document.addEventListener('visibilitychange', updateLoop)
   clockTimer = setInterval(() => (now.value = new Date()), 1000)
   skyTimer = setInterval(refreshSky, RECOMPUTE_MS)
 })
 
 onBeforeUnmount(() => {
-  cancelAnimationFrame(frame)
   clearInterval(clockTimer)
   clearInterval(skyTimer)
   revealTween?.kill()
-  document.removeEventListener('visibilitychange', updateLoop)
 })
 </script>
 

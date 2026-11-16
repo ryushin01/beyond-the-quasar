@@ -1,7 +1,7 @@
 # 🔵 Beyond the Quasar
 
 [![CI](https://github.com/ryushin01/beyond-the-quasar/actions/workflows/ci.yml/badge.svg)](https://github.com/ryushin01/beyond-the-quasar/actions/workflows/ci.yml)
-![version](https://img.shields.io/badge/version-0.9.0-1a3fe0)
+![version](https://img.shields.io/badge/version-0.10.0-1a3fe0)
 ![Histoire](https://img.shields.io/badge/Histoire-1.0_beta-34D399)
 
 군사·항법·기상·통신 위성을 추적하고 오늘 밤의 하늘을 관측하는 위성 관제·천체 관측 웹 앱입니다.
@@ -139,9 +139,9 @@ src/
 | Gothic A1 | 영문·숫자 본문 (영문 글자만 받음) | 400·700 |
 | 에이투지체 (A2Z) | 한글 제목·본문 | 300·400·600·700·800 |
 | Roboto Mono | 좌표·시각 (영문·숫자) | 100~700 가변 |
-| 나눔고딕코딩 | 좌표·시각 (한글) | 400·700 |
+| 나눔고딕코딩 (화면 글자 파일은 BTQ Coding) | 좌표·시각 (한글) | 400·700 |
 
-저작자·라이선스·원본은 아래 출처 표에 있습니다. 모두 같은 사이트에서 제공하고(외부 글꼴 CDN 없음), 첫 화면을 막지 않게 화면을 그린 뒤 받습니다. 에이투지체는 화면에 쓰는 글자만 담은 작은 파일과 나머지 글자 조각으로 나눠, 조각은 그 글자를 쓸 때만 받습니다(`bun run fonts`로 다시 만듦, [개발 문서](docs/development.md)).
+저작자·라이선스·원본은 아래 출처 표에 있습니다. 모두 같은 사이트에서 제공하고(외부 글꼴 CDN 없음), 첫 화면을 막지 않게 화면을 그린 뒤 받습니다. 에이투지체와 나눔고딕코딩은 화면에 쓰는 글자만 담은 작은 파일을 먼저 쓰고, 나머지 글자 조각은 그 글자를 쓸 때만 받습니다(`bun run fonts`로 다시 만듦, [개발 문서](docs/development.md)). 나눔고딕코딩의 화면 글자 파일은 OFL 예약 글꼴 이름(Nanum) 때문에 'BTQ Coding'으로 이름을 바꿨습니다.
 
 ## 출처
 
@@ -156,5 +156,5 @@ src/
 | Oswald 글꼴 (font) | The Oswald Project Authors | SIL OFL 1.1 | [googlefonts/OswaldFont](https://github.com/googlefonts/OswaldFont) |
 | Roboto Mono 글꼴 (font) | The Roboto Mono Project Authors | SIL OFL 1.1 | [googlefonts/robotomono](https://github.com/googlefonts/robotomono) |
 | Gothic A1 글꼴 (font) | HanYang I&C | SIL OFL 1.1 | [Google Fonts](https://fonts.google.com/specimen/Gothic+A1) |
-| Nanum Gothic Coding (나눔고딕코딩) 글꼴 (font) | NHN (NAVER), designed by Sandoll Communications | SIL OFL 1.1 | [Google Fonts](https://fonts.google.com/specimen/Nanum+Gothic+Coding) |
+| Nanum Gothic Coding (나눔고딕코딩) 글꼴 (font; 화면 글자만 남기고 'BTQ Coding'으로 이름을 바꾼 파일 포함 / includes a subset renamed to 'BTQ Coding') | NHN (NAVER), designed by Sandoll Communications | SIL OFL 1.1 | [google/fonts](https://github.com/google/fonts/tree/main/ofl/nanumgothiccoding) |
 | 에이투지체 (A2Z) 글꼴 (font) | 이주임, 오토노머스에이투지 (PT&) | SIL OFL 1.1 | [눈누 (noonnu)](https://noonnu.cc/font_page/1778) |

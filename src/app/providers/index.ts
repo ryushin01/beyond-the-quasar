@@ -6,12 +6,14 @@ import type { App } from 'vue'
 
 import { i18n } from '@/shared/i18n'
 
+import { reloadOnChunkError } from './chunk-reload'
 import { router } from './router'
 
 export function installProviders(app: App): void {
   app.use(createPinia())
   app.use(i18n)
   app.use(router)
+  reloadOnChunkError(router)
   app.use(VueQueryPlugin)
   app.use(Quasar, { plugins: { Dark, Notify }, iconSet, config: { dark: true } })
 }

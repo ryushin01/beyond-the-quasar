@@ -57,4 +57,49 @@ describe('EventStage (실제 브라우저)', () => {
       if (motion.userPaused.value) motion.toggle()
     })
   })
+
+  it('WebGL 맥락을 잃었다 되찾으면 셰이더를 다시 준비해 이어 그린다', () => {
+    cy.mount(Framed, { props: { mix: 1 } })
+    cy.get('.stage__canvas').should(($canvas) => {
+      expect(($canvas[0] as HTMLCanvasElement).height).to.be.greaterThan(300)
+    })
+    cy.get('.stage__canvas').then(($canvas) => {
+      const gl = ($canvas[0] as HTMLCanvasElement).getContext('webgl')!
+      const lose = gl.getExtension('WEBGL_lose_context')!
+      // 휴대폰에서 탭을 오래 숨겼을 때처럼 맥락을 잃게 합니다.
+      lose.loseContext()
+      cy.wrap(null).should(() => expect(gl.isContextLost()).to.equal(true))
+      // 기본 동작을 막아 두었으므로 브라우저(여기서는 확장 API)가 맥락을 되돌려 줄 수 있습니다.
+      cy.wait(100).then(() => lose.restoreContext())
+      cy.wrap(null).should(() => expect(gl.isContextLost()).to.equal(false))
+      // 되찾은 맥락에 셰이더 프로그램을 다시 올리고 루프를 이어 갑니다.
+      cy.wrap(null).should(() => expect(gl.getParameter(gl.CURRENT_PROGRAM), '다시 준비한 셰이더').not.to.equal(null))
+      cy.window().then((win) => {
+        const frames = cy.spy(win, 'requestAnimationFrame')
+        cy.wait(300).then(() => expect(frames.getCalls().some(isLoop)).to.equal(true))
+      })
+      cy.get('.stage__fallback').should('not.exist')
+    })
+  })
+
+  it('모션을 멈춘 채 맥락을 되찾아도 정지 화면을 다시 그린다', () => {
+    const motion = useMotionPreference()
+    if (!motion.userPaused.value) motion.toggle()
+    cy.mount(Framed, { props: { mix: 1 } })
+    cy.get('.stage__canvas').should(($canvas) => {
+      expect(($canvas[0] as HTMLCanvasElement).height).to.be.greaterThan(300)
+    })
+    cy.get('.stage__canvas').then(($canvas) => {
+      const gl = ($canvas[0] as HTMLCanvasElement).getContext('webgl')!
+      const lose = gl.getExtension('WEBGL_lose_context')!
+      lose.loseContext()
+      cy.wrap(null).should(() => expect(gl.isContextLost()).to.equal(true))
+      const draws = cy.spy(gl, 'drawArrays')
+      cy.wait(100).then(() => lose.restoreContext())
+      cy.wrap(null).should(() => expect(draws.callCount, '되찾은 뒤 그린 횟수').to.be.greaterThan(0))
+    })
+    cy.wrap(null).then(() => {
+      if (motion.userPaused.value) motion.toggle()
+    })
+  })
 })
