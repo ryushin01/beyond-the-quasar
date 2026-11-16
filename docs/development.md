@@ -38,11 +38,12 @@ Histoire 1.0 beta가 Vite 7만 지원해 `vite`를 7.3으로 고정하고 `overr
 
 ## 모션 규칙
 
-- 모든 GSAP 코드는 `gsap.context` 안에 두고 `onBeforeUnmount`에서 되돌립니다.
+- 모든 GSAP 코드는 `gsap.context` 안에 두고 `onBeforeUnmount`에서 되돌립니다. 모션 설정이 바뀔 때 다시 만드는 연출은 `useGsapContext(root, setup, { watch, before, refresh })`를 씁니다(화면에 붙은 뒤 만들고, 바뀌면 되돌린 뒤 다시 만들고, 사라질 때 되돌림). 화면을 붙잡는(pin) 구역은 `refresh: true`로 만든 뒤 위치를 다시 계산합니다. 들어올 때 한 번만 도는 연출(카탈로그·관측 제목)과 홈 첫 화면은 따로 둡니다. E2E `스크롤 연출(모션 켬)`이 스크롤 전에는 숨어 있고 지나가면 드러나는지 확인합니다.
 - `useMotionPreference().enabled`가 거짓이면 연출을 만들지 않습니다. 기본 CSS는 **연출 없이도 완성된 화면**이어야 합니다. 시작 상태를 CSS로 숨기지 않습니다.
 - OS의 동작 줄이기와 헤더의 모션 정지 버튼을 함께 반영합니다(KWCAG 6.2.2). 셰이더, CSS 애니메이션, Lenis, 프리로더가 모두 멈춥니다.
 - 글자를 쪼개는 연출은 원문을 `sr-only`로 두고 조각에 `aria-hidden`을 답니다.
 - 이징은 `shared/motion`의 `EASE`, CSS는 `--ease-out`으로 통일합니다.
+- 웹 글꼴은 첫 화면을 그린 뒤 받으므로 글꼴이 바뀌면 구역 높이가 달라집니다. `App.vue`의 `useRefreshOnFontsLoaded`가 글꼴 묶음을 다 받을 때마다(`document.fonts`의 `loadingdone`) ScrollTrigger 위치를 다시 계산해, 고정 구간과 등장 시점이 낡지 않게 합니다.
 - 캔버스를 매 프레임 그리는 곳(퀘이사 배경, 이벤트 무대, 홈 별자리)은 `useVisibleFrameLoop`를 씁니다. 화면에 보이고 탭이 열려 있고 모션이 허용될 때만 `requestAnimationFrame`을 돌리고, 아니면 정지 화면 한 장을 그립니다. 컴포넌트가 사라지면 함께 정리합니다.
 - WebGL을 직접 쓰는 곳(퀘이사 배경, 이벤트 무대)은 `webglcontextlost`에서 기본 동작을 막고 그리기를 멈췄다가, `webglcontextrestored`에서 셰이더를 다시 준비합니다. 휴대폰에서 탭을 오래 숨기거나 GPU가 초기화되면 맥락을 잃는데, 이 처리가 없으면 검은 화면으로 남습니다(Cypress `EventStage.cy.ts`가 확인).
 
@@ -67,6 +68,14 @@ axe는 E2E에서 전 페이지, 밝은·어두운 화면, 데스크톱·모바�
 | 7.3.1 오류 정정 | 안전 모드 명령은 확인 대화상자, 일지는 입력 오류 안내 |
 
 이 앱에는 공식 KWCAG 심사를 거친 결과가 없습니다. 인증이 필요하면 공식 문서 기준으로 다시 점검합니다.
+
+## 저장 값
+
+`localStorage`의 값은 `shared/lib`의 `readStorage(key, fallback, isValid)`로 읽고 형식을 검사합니다. 값이 없거나, JSON이 아니거나, 형식이 다르면(손상, 이전 버전의 형식) 기본값을 씁니다. 목록(명령 기록·관측 일지·관심 위성)은 `readStorageList(key, isItem)`로 읽어 형식이 맞는 항목만 남깁니다. 저장 형식을 바꾸면 검사 함수(`isCommandResult`, `isObservationEntry` 등)도 함께 바꿉니다.
+
+## 보안 헤더
+
+`vercel.json`이 앱 화면(Histoire 문서 제외)에 CSP와 `Permissions-Policy`(카메라·마이크·결제·USB 막음, 위치는 이 사이트만)를 붙입니다. CSP는 스크립트를 같은 출처로만 받고, 외부 연결은 NOAA 우주 기상과 Sentry 전송 주소만 엽니다. 인라인 스타일은 Vue·Quasar·GSAP가 쓰므로 허용합니다. E2E `security.spec.ts`가 `vercel.json`의 CSP를 로컬 응답에 그대로 입혀 화면과 주요 조작에서 위반이 없는지 확인하므로, 외부 주소를 더하면 CSP에도 넣습니다.
 
 ## 주소 상태
 
@@ -101,7 +110,8 @@ E2E는 프로덕션 빌드(`bun run build`)를 대상으로 합니다. `4173` �
 - **i18n:** 메시지는 빌드 때 미리 컴파일하므로 런타임 메시지 컴파일러를 빼고(`dropMessageCompiler`), 쓰지 않는 전역 컴포넌트(`i18n-t` 등)와 `v-t`도 설치하지 않습니다(`fullInstall: false`). 템플릿에서 `$t`·`i18n-t`를 쓰지 말고 `useI18n()`의 `t`를 씁니다.
 - **번들 크기:** `bun run size`가 전체 JS 540 kB, 전체 CSS 140 kB(gzip)를 넘으면 실패합니다. 기준은 `.size-limit.json`에 있습니다.
 - **Vue 템플릿 접근성:** oxlint의 jsx-a11y는 Vue 템플릿을 보지 못해 `bun run lint`가 `eslint-plugin-vuejs-accessibility`도 돌립니다(`eslint.config.js`, 코드 규칙은 oxlint가 그대로 맡음). 지도·하늘 지도·분포도의 클릭과 검색 팔레트의 옵션은 위 키보드 대안이 있어 그 줄만 예외로 둡니다.
-- **Lighthouse:** `bun run lhci`가 첫 화면·카탈로그·관제·관측소가 데스크톱 기준 성능 90·접근성 100·권장 사항 95·SEO 90점, LCP 2.5초·TBT 200ms·CLS 0.1 이하인지 3번씩 재서 확인합니다. 기준은 `lighthouserc.json`에 있습니다.
+- **Lighthouse:** `bun run lhci`가 첫 화면·카탈로그·관제·관측소가 데스크톱 기준 성능 90·접근성 100·권장 사항 95·SEO 90점, LCP 2.5초·TBT 200ms·CLS 0.1 이하인지 3번씩 재서 확인합니다. 이벤트 화면은 권장 사항·SEO·CLS를 같은 기준으로 보고 성능은 경고만 남깁니다. 기준은 `lighthouserc.json`에 있습니다.
+- **Lighthouse 모바일:** `bun run lhci:mobile`이 다섯 화면을 모바일 설정(느린 4G, CPU 4배 느림)으로 한 번씩 재고, 기준선을 쌓는 중이라 모두 경고로만 남깁니다(`lighthouserc.mobile.json`). 0.9.0 기준 모바일 성능은 홈 60·관제 75·이벤트 78점이었습니다.
 
 ### GPU가 없는 CI에서의 측정
 

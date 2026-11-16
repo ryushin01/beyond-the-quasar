@@ -9,7 +9,7 @@ import { useQuasar } from 'quasar'
 import { computed, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import { readStorage, writeStorage } from '@/shared/lib'
+import { isOneOf, readStorage, writeStorage } from '@/shared/lib'
 import { useMotionPreference } from '@/shared/motion'
 
 const THEME_KEY = 'btq:theme'
@@ -19,7 +19,7 @@ const $q = useQuasar()
 const motion = useMotionPreference()
 
 const isDark = computed(() => $q.dark.isActive)
-$q.dark.set(readStorage(THEME_KEY, 'dark') === 'dark')
+$q.dark.set(readStorage(THEME_KEY, 'dark', isOneOf(['dark', 'light'] as const)) === 'dark')
 watch(
   isDark,
   (dark) => {

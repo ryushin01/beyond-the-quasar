@@ -10,7 +10,7 @@ import landTopology from 'world-atlas/land-110m.json'
 import { useMissionClock } from '@/entities/clock'
 import { SITES } from '@/entities/observer'
 import { stateAt, toSatrec, type Satellite } from '@/entities/satellite'
-import { gsap, ScrollTrigger, useMotionPreference } from '@/shared/motion'
+import { gsap, useGsapContext } from '@/shared/motion'
 
 import { landDots, projectToView } from '../lib/globe'
 
@@ -18,7 +18,6 @@ const props = defineProps<{ satellites: Satellite[] }>()
 
 const { t } = useI18n()
 const clock = useMissionClock()
-const { enabled } = useMotionPreference()
 
 const root = ref<HTMLElement>()
 const canvas = ref<HTMLCanvasElement>()
@@ -41,7 +40,6 @@ let dots: [number, number][] | null = null
 let positions: { longitude: number; latitude: number; military: boolean }[] = []
 let positionsAt = -1
 let frame = 0
-let context: gsap.Context | undefined
 
 /** 육지 판정은 지도를 한 번 그려 둔 픽셀로 합니다. 점마다 다각형을 검사하는 것보다 훨씬 빠릅니다. */
 function buildDots(): [number, number][] {
@@ -163,13 +161,10 @@ function requestDraw(): void {
   if (!frame) frame = requestAnimationFrame(draw)
 }
 
-function build(): void {
-  context?.revert()
-  context = undefined
-  Object.assign(view, HOME_VIEW)
-  requestDraw()
-  if (!enabled.value) return
-  context = gsap.context(() => {
+// 모션이 꺼져 있어도 지구본은 기본 시점으로 한 장 그립니다. 화면을 붙잡는 구역이라 만든 뒤 위치를 다시 계산합니다.
+useGsapContext(
+  root,
+  () => {
     const media = gsap.matchMedia()
     // 큰 화면에서는 화면을 붙잡고, 좁은 화면에서는 스크롤을 막지 않고 지나가며 움직입니다.
     media.add({ wide: '(min-width: 900px)', narrow: '(max-width: 899px)' }, (self) => {
@@ -192,22 +187,24 @@ function build(): void {
         // 다 모인 모습을 잠시 보여 줍니다.
         .to({}, { duration: 0.25 })
     })
-  }, root.value)
-  ScrollTrigger.refresh()
-}
+  },
+  {
+    before: () => {
+      Object.assign(view, HOME_VIEW)
+      requestDraw()
+    },
+    refresh: true,
+  },
+)
 
 useResizeObserver(canvas, requestDraw)
 watch([second, visible, satrecs], requestDraw)
 watch(satrecs, () => (positionsAt = -1))
 
-onMounted(() => {
-  clock.start()
-  watch(enabled, build, { immediate: true, flush: 'post' })
-})
+onMounted(() => clock.start())
 onBeforeUnmount(() => {
   clock.stop()
   cancelAnimationFrame(frame)
-  context?.revert()
 })
 </script>
 

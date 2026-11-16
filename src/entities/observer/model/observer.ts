@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { computed, ref, watch } from 'vue'
 
-import { readStorage, writeStorage } from '@/shared/lib'
+import { isOneOf, readStorage, writeStorage } from '@/shared/lib'
 
 export interface Site {
   id: string
@@ -24,7 +24,8 @@ export const SITES: Site[] = [
 const STORAGE_KEY = 'btq:site'
 
 export const useObserver = defineStore('observer', () => {
-  const siteId = ref(readStorage(STORAGE_KEY, 'daejeon'))
+  // 없어진 관측지 번호가 저장돼 있으면 기본 관측지로 돌아갑니다(이름 번역 키가 없어 화면에 키가 보이지 않게).
+  const siteId = ref(readStorage<string>(STORAGE_KEY, 'daejeon', isOneOf(SITES.map((item) => item.id))))
   const site = computed<Site>(() => SITES.find((item) => item.id === siteId.value) ?? SITES[0]!)
 
   watch(siteId, (id) => writeStorage(STORAGE_KEY, id))

@@ -2,7 +2,7 @@ import { useMutation } from '@tanstack/vue-query'
 import { defineStore } from 'pinia'
 import { ref, watch } from 'vue'
 
-import { readStorage, writeStorage } from '@/shared/lib'
+import { isDateString, isFiniteNumber, isInteger, isOneOf, isRecordOf, isString, orNull, readStorageList, writeStorage } from '@/shared/lib'
 
 export const COMMANDS = ['ping', 'downlink', 'attitude-hold', 'safe-mode'] as const
 export type CommandType = (typeof COMMANDS)[number]
@@ -22,6 +22,19 @@ export interface CommandResult extends CommandRequest {
   state: 'ack' | 'queued'
   latencyMs: number | null
 }
+
+/** 저장된 명령 기록 한 줄의 형식. 깨졌거나 이전 버전 형식인 줄은 버립니다. */
+export const isCommandResult = isRecordOf<CommandResult>({
+  id: isString,
+  sentAt: isDateString,
+  state: isOneOf(['ack', 'queued'] as const),
+  latencyMs: orNull(isFiniteNumber),
+  noradId: isInteger,
+  satelliteName: isString,
+  command: isOneOf(COMMANDS),
+  note: isString,
+  rangeKm: orNull(isFiniteNumber),
+})
 
 const SPEED_OF_LIGHT_KM_S = 299_792
 const STORAGE_KEY = 'btq:command-log'
@@ -48,7 +61,7 @@ export async function simulateUplink(request: CommandRequest, wait = (ms: number
 }
 
 export const useCommandLog = defineStore('command-log', () => {
-  const entries = ref<CommandResult[]>(readStorage(STORAGE_KEY, []))
+  const entries = ref<CommandResult[]>(readStorageList(STORAGE_KEY, isCommandResult).slice(0, LOG_LIMIT))
   watch(entries, (value) => writeStorage(STORAGE_KEY, value), { deep: true })
 
   function add(entry: CommandResult): void {

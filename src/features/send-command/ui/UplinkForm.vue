@@ -26,8 +26,15 @@ const confirming = ref(false)
 
 const options = computed(() => COMMANDS.map((value) => ({ value, label: t(`commands.${value}`) })))
 
+/**
+ * 같은 틱의 두 번째 제출(빠른 더블 클릭·엔터)을 막는 동기 잠금. 지금의 Vue Query는 isPending을 바로 바꾸지만,
+ * 그 동작에 기대지 않도록 함께 둡니다. 폼이 화면에 남으므로 성공·실패와 상관없이 끝나면 풉니다.
+ */
+let sending = false
+
 function send(): void {
-  if (isPending.value) return
+  if (sending || isPending.value) return
+  sending = true
   const name = props.satelliteName
   const type = command.value
   mutate(
@@ -42,6 +49,9 @@ function send(): void {
           position: 'bottom-right',
           timeout: 4000,
         })
+      },
+      onSettled: () => {
+        sending = false
       },
     },
   )

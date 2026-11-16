@@ -25,6 +25,31 @@ describe('UplinkForm', () => {
     expect(mountForm().text()).toContain('실제 위성으로 전송되지 않습니다')
   })
 
+  it('같은 틱에 연달아 제출해도(빠른 더블 클릭·엔터) 한 번만 보낸다', async () => {
+    const wrapper = mountForm()
+    const log = useCommandLog()
+    const form = wrapper.getComponent({ name: 'QForm' })
+    // isPending은 다음 렌더에야 바뀌므로 그 사이의 두 번째 제출은 동기 잠금으로 막아야 합니다.
+    form.vm.$emit('submit', new Event('submit'))
+    form.vm.$emit('submit', new Event('submit'))
+    await vi.advanceTimersByTimeAsync(5000)
+    await flushPromises()
+    expect(log.entries).toHaveLength(1)
+  })
+
+  it('보낸 뒤에는 잠금이 풀려 다시 보낼 수 있다', async () => {
+    const wrapper = mountForm()
+    const log = useCommandLog()
+    const form = wrapper.getComponent({ name: 'QForm' })
+    form.vm.$emit('submit', new Event('submit'))
+    await vi.advanceTimersByTimeAsync(5000)
+    await flushPromises()
+    form.vm.$emit('submit', new Event('submit'))
+    await vi.advanceTimersByTimeAsync(5000)
+    await flushPromises()
+    expect(log.entries).toHaveLength(2)
+  })
+
   it('전송 중에는 다시 제출해도 한 번만 처리한다', async () => {
     const wrapper = mountForm()
     const log = useCommandLog()

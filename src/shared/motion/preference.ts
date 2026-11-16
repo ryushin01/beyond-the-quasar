@@ -1,10 +1,10 @@
 import { usePreferredReducedMotion } from '@vueuse/core'
 import { computed, ref, watchEffect } from 'vue'
 
-import { readStorage, writeStorage } from '../lib/storage'
+import { isBoolean, readStorage, writeStorage } from '../lib/storage'
 
 const STORAGE_KEY = 'btq:motion-paused'
-const userPaused = ref(readStorage(STORAGE_KEY, false))
+const userPaused = ref(readStorage(STORAGE_KEY, false, isBoolean))
 let synced = false
 
 /** OS의 동작 줄이기 설정과 사용자의 정지 버튼을 합친 모션 허용 상태 */

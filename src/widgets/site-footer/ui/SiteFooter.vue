@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { ROUTES } from '@/shared/config'
-import { EASE, gsap, useMotionPreference } from '@/shared/motion'
+import { EASE, gsap, useGsapContext, useMotionPreference } from '@/shared/motion'
 
 const { t } = useI18n()
 const { enabled } = useMotionPreference()
@@ -13,7 +13,6 @@ const WORD = 'QUASAR'
 const SOURCES_URL = 'https://github.com/ryushin01/beyond-the-quasar#출처'
 const root = ref<HTMLElement>()
 const giant = ref<HTMLElement>()
-let context: gsap.Context | undefined
 let letters: HTMLElement[] = []
 
 /** 포인터에 가까운 글자일수록 넓어지고 굵어져, 글자들이 파도처럼 자리를 내줍니다. */
@@ -37,12 +36,9 @@ function onLeave(): void {
   gsap.to(letters, { fontStretch: '92%', fontWeight: 800, duration: 0.8, ease: EASE.out, overwrite: 'auto' })
 }
 
-function build(): void {
-  context?.revert()
-  context = undefined
-  letters = giant.value ? [...giant.value.querySelectorAll<HTMLElement>('.footer__letter')] : []
-  if (!enabled.value) return
-  context = gsap.context(() => {
+useGsapContext(
+  root,
+  () => {
     gsap.from(letters, {
       yPercent: 105,
       duration: 1.2,
@@ -50,13 +46,10 @@ function build(): void {
       stagger: 0.05,
       scrollTrigger: { trigger: giant.value, start: 'top 95%' },
     })
-  }, root.value)
-}
-
-onMounted(() => {
-  watch(enabled, build, { immediate: true, flush: 'post' })
-})
-onBeforeUnmount(() => context?.revert())
+  },
+  // 포인터 반응(onMove)은 모션과 따로 동작하므로 글자 목록은 모션이 꺼져 있어도 모아 둡니다.
+  { before: () => (letters = giant.value ? [...giant.value.querySelectorAll<HTMLElement>('.footer__letter')] : []) },
+)
 </script>
 
 <template>

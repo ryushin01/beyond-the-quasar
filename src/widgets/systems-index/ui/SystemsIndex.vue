@@ -1,13 +1,12 @@
 <script setup lang="ts">
 import { symSharpArrowOutward } from '@quasar/extras/material-symbols-sharp'
-import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { ROUTES } from '@/shared/config'
-import { EASE, gsap, useMotionPreference } from '@/shared/motion'
+import { EASE, gsap, useGsapContext } from '@/shared/motion'
 
 const { t } = useI18n()
-const { enabled } = useMotionPreference()
 const root = ref<HTMLElement>()
 
 const systems = [
@@ -16,28 +15,16 @@ const systems = [
   { to: ROUTES.observatory, title: 'home.systemObservatory', desc: 'home.systemObservatoryDesc', code: 'OBS' },
 ]
 
-let context: gsap.Context | undefined
-
-function build(): void {
-  context?.revert()
-  context = undefined
-  if (!enabled.value) return
-  context = gsap.context(() => {
-    gsap.from('.systems__row', {
-      yPercent: 30,
-      autoAlpha: 0,
-      duration: 1,
-      ease: EASE.out,
-      stagger: 0.12,
-      scrollTrigger: { trigger: root.value, start: 'top 75%' },
-    })
-  }, root.value)
-}
-
-onMounted(() => {
-  watch(enabled, build, { immediate: true, flush: 'post' })
+useGsapContext(root, () => {
+  gsap.from('.systems__row', {
+    yPercent: 30,
+    autoAlpha: 0,
+    duration: 1,
+    ease: EASE.out,
+    stagger: 0.12,
+    scrollTrigger: { trigger: root.value, start: 'top 75%' },
+  })
 })
-onBeforeUnmount(() => context?.revert())
 </script>
 
 <template>
