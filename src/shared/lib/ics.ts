@@ -43,7 +43,10 @@ export function toIcs(events: CalendarEvent[], { productId, now = new Date() }: 
       `UID:${event.uid}`,
       `DTSTAMP:${icsDate(now)}`,
       `DTSTART:${icsDate(event.start)}`,
-      `DTEND:${icsDate(event.end)}`,
+    )
+    // 끝이 시작보다 늦어야 하므로(RFC 5545), 길이가 0인 일정은 DTEND 없이 순간 일정으로 둡니다.
+    if (event.end.getTime() > event.start.getTime()) lines.push(`DTEND:${icsDate(event.end)}`)
+    lines.push(
       `SUMMARY:${icsText(event.title)}`,
     )
     if (event.description) lines.push(`DESCRIPTION:${icsText(event.description)}`)

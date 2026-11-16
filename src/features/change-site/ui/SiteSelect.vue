@@ -12,6 +12,8 @@ const { t } = useI18n()
 const $q = useQuasar()
 const observer = useObserver()
 const locating = ref(false)
+/** 위치 요청 번호. 기다리는 사이 다른 관측지를 고르면 번호가 바뀌어, 늦게 온 위치가 그 선택을 덮어쓰지 않습니다. */
+let request = 0
 
 const options = computed(() => [
   ...SITES.map((site) => ({ value: site.id, label: t(`sites.${site.id}`) })),
@@ -24,13 +26,16 @@ function locate(): void {
     $q.notify({ message: t('sites.hereUnsupported'), position: 'bottom', timeout: 3500 })
     return
   }
+  const id = ++request
   locating.value = true
   navigator.geolocation.getCurrentPosition(
     (position) => {
+      if (id !== request) return
       locating.value = false
       observer.setHere({ latitude: position.coords.latitude, longitude: position.coords.longitude })
     },
     () => {
+      if (id !== request) return
       locating.value = false
       $q.notify({ message: t('sites.hereError'), position: 'bottom', timeout: 3500 })
     },
@@ -42,8 +47,11 @@ function locate(): void {
 const model = computed({
   get: () => observer.siteId,
   set: (value: string) => {
-    if (value === HERE_ID) locate()
-    else observer.siteId = value
+    if (value === HERE_ID) return locate()
+    // 기다리던 위치 요청이 있으면 버립니다.
+    request += 1
+    locating.value = false
+    observer.siteId = value
   },
 })
 </script>

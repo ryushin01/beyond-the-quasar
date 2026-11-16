@@ -108,7 +108,12 @@ export function orbitalPeriodMin(line2: string): number {
   return 1440 / Number(line2.slice(52, 63))
 }
 
-/** 관측지 상공 통과를 예측합니다. 정지궤도처럼 지평선을 넘지 않으면 빈 배열입니다. */
+/**
+ * 관측지 상공 통과를 예측합니다. 정지궤도처럼 지평선을 넘지 않으면 빈 배열입니다.
+ * `stepSec` 간격으로 훑은 뒤, 시작·끝은 고도각 기준을 넘는 정수 초를 이분 탐색으로, 최고 고도는 1초 단위로 다듬습니다.
+ * 그래서 훑는 간격이 달라도(통과 표 30초, 일정 60초) 같은 통과는 같은 시작 시각을 얻습니다.
+ * 이미 진행 중인 통과는 실제 시작 시각까지 거슬러 찾습니다(시작이 `from`보다 앞일 수 있음).
+ */
 export function predictPasses(
   satrec: SatRec,
   observer: { latitude: number; longitude: number; elevationM: number },
@@ -116,29 +121,90 @@ export function predictPasses(
   { hours = 24, minElevation = 10, stepSec = 30, limit = 6 } = {},
 ): Pass[] {
   const passes: Pass[] = []
+  const stepMs = stepSec * 1000
   const end = from.getTime() + hours * 3_600_000
-  let current: Pass | null = null
+  const lookAt = (time: number) => lookAngleAt(satrec, new Date(time), observer)
+  const isAbove = (second: number) => (lookAt(second * 1000)?.elevation ?? -90) >= minElevation
 
-  for (let t = from.getTime(); t <= end && passes.length < limit; t += stepSec * 1000) {
-    const date = new Date(t)
-    const look = lookAngleAt(satrec, date, observer)
-    if (!look) continue
-    const above = look.elevation >= minElevation
-    if (above && !current) {
-      current = { aos: date, los: date, maxElevation: look.elevation, maxAt: date, aosAzimuth: look.azimuth, losAzimuth: look.azimuth }
-    } else if (above && current) {
-      current.los = date
-      current.losAzimuth = look.azimuth
-      if (look.elevation > current.maxElevation) {
-        current.maxElevation = look.elevation
-        current.maxAt = date
-      }
-    } else if (!above && current) {
-      passes.push(current)
-      current = null
+  /** below초는 기준 아래, above초는 기준 이상일 때 둘 사이에서 처음 기준 이상이 되는 정수 초 */
+  const firstAbove = (below: number, above: number): number => {
+    while (above - below > 1) {
+      const mid = Math.floor((below + above) / 2)
+      if (isAbove(mid)) above = mid
+      else below = mid
+    }
+    return above
+  }
+  /** above초는 기준 이상, below초는 기준 아래일 때 둘 사이에서 마지막으로 기준 이상인 정수 초 */
+  const lastAbove = (above: number, below: number): number => {
+    while (below - above > 1) {
+      const mid = Math.floor((above + below) / 2)
+      if (isAbove(mid)) above = mid
+      else below = mid
+    }
+    return above
+  }
+  /** [start, finish] 초 안에서 고도각이 가장 높은 정수 초(삼분 탐색) */
+  const peak = (start: number, finish: number): number => {
+    const elevation = (second: number) => lookAt(second * 1000)?.elevation ?? -90
+    while (finish - start > 2) {
+      const left = start + Math.floor((finish - start) / 3)
+      const right = finish - Math.floor((finish - start) / 3)
+      if (elevation(left) < elevation(right)) start = left
+      else finish = right
+    }
+    let best = start
+    for (let second = start + 1; second <= finish; second++) if (elevation(second) > elevation(best)) best = second
+    return best
+  }
+  const toPass = (aos: number, los: number, sampledMax: number): Pass => {
+    const aosLook = lookAt(aos * 1000)
+    const losLook = lookAt(los * 1000)
+    const maxSecond = peak(Math.max(aos, sampledMax - stepSec), Math.min(los, sampledMax + stepSec))
+    return {
+      aos: new Date(aos * 1000),
+      los: new Date(los * 1000),
+      maxAt: new Date(maxSecond * 1000),
+      maxElevation: lookAt(maxSecond * 1000)?.elevation ?? minElevation,
+      aosAzimuth: aosLook?.azimuth ?? 0,
+      losAzimuth: losLook?.azimuth ?? 0,
     }
   }
-  if (current && passes.length < limit) passes.push(current)
+
+  let aos: number | null = null
+  let sampledMax = 0
+  let sampledMaxElevation = -90
+  let previous: number | null = null
+  for (let t = from.getTime(); t <= end && passes.length < limit; t += stepMs) {
+    const look = lookAt(t)
+    if (!look) continue
+    const second = Math.floor(t / 1000)
+    const above = look.elevation >= minElevation
+    if (above && aos === null) {
+      if (previous === null) {
+        // 첫 표본부터 위에 있으면 진행 중인 통과입니다. 기준 아래가 나올 때까지 거슬러 올라가 시작을 찾습니다(최대 2시간).
+        let back = second
+        while (isAbove(back) && second - back < 7200) back -= stepSec
+        aos = isAbove(back) ? second : firstAbove(back, back + stepSec)
+      } else {
+        aos = firstAbove(previous, second)
+      }
+      sampledMax = second
+      sampledMaxElevation = look.elevation
+    } else if (above && aos !== null) {
+      if (look.elevation > sampledMaxElevation) {
+        sampledMax = second
+        sampledMaxElevation = look.elevation
+      }
+    } else if (!above && aos !== null) {
+      passes.push(toPass(aos, lastAbove(previous ?? second - stepSec, second), sampledMax))
+      aos = null
+      sampledMaxElevation = -90
+    }
+    previous = second
+  }
+  // 예측 끝에서도 위에 있으면 마지막 표본을 끝으로 둡니다.
+  if (aos !== null && passes.length < limit && previous !== null) passes.push(toPass(aos, previous, sampledMax))
   return passes
 }
 

@@ -70,6 +70,34 @@ describe('통과 예측', () => {
     }
   })
 
+  it('시작·끝은 고도각 10°를 넘는 경계의 정수 초다', () => {
+    const passes = predictPasses(satrec, DAEJEON, EPOCH, { hours: 24, minElevation: 10, stepSec: 30 })
+    const elevation = (ms: number) => lookAngleAt(satrec, new Date(ms), DAEJEON)!.elevation
+    for (const pass of passes.slice(1)) {
+      expect(pass.aos.getTime() % 1000).toBe(0)
+      expect(elevation(pass.aos.getTime())).toBeGreaterThanOrEqual(10)
+      expect(elevation(pass.aos.getTime() - 1000)).toBeLessThan(10)
+      expect(elevation(pass.los.getTime())).toBeGreaterThanOrEqual(10)
+      expect(elevation(pass.los.getTime() + 1000)).toBeLessThan(10)
+    }
+  })
+
+  it('훑는 간격이 달라도(30초·60초) 같은 통과는 같은 시작·끝 시각이다(달력 일정이 겹치지 않게)', () => {
+    const fine = predictPasses(satrec, DAEJEON, EPOCH, { hours: 24, stepSec: 30, limit: 20 })
+    const coarse = predictPasses(satrec, DAEJEON, EPOCH, { hours: 24, stepSec: 60, limit: 20 })
+    const key = (pass: { aos: Date; los: Date }) => `${pass.aos.toISOString()}~${pass.los.toISOString()}`
+    expect(coarse.length).toBeGreaterThan(0)
+    for (const pass of coarse) expect(fine.map(key)).toContain(key(pass))
+  })
+
+  it('이미 진행 중인 통과는 실제 시작 시각까지 거슬러 찾는다', () => {
+    const [first] = predictPasses(satrec, DAEJEON, EPOCH, { hours: 24, stepSec: 30 })
+    const middle = new Date((first!.aos.getTime() + first!.los.getTime()) / 2)
+    const [inProgress] = predictPasses(satrec, DAEJEON, middle, { hours: 3, stepSec: 30 })
+    expect(inProgress!.aos.toISOString()).toBe(first!.aos.toISOString())
+    expect(inProgress!.aos.getTime()).toBeLessThan(middle.getTime())
+  })
+
   it('기준 고도를 넘지 못하면 비어 있다', () => {
     expect(predictPasses(satrec, DAEJEON, EPOCH, { hours: 3, minElevation: 89.9 })).toEqual([])
   })

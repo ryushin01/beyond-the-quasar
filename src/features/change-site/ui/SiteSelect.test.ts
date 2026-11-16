@@ -43,6 +43,21 @@ describe('SiteSelect', () => {
     expect(JSON.parse(localStorage.getItem('btq:here')!)).toEqual({ latitude: 37.57, longitude: 126.98 })
   })
 
+  it('위치를 기다리는 사이 다른 관측지를 고르면, 늦게 온 위치가 그 선택을 덮어쓰지 않는다', async () => {
+    let answer!: PositionCallback
+    Object.defineProperty(navigator, 'geolocation', {
+      configurable: true,
+      value: { getCurrentPosition: (success: PositionCallback) => (answer = success) },
+    })
+    const wrapper = mount(SiteSelect, { props: { label: '지상국' } })
+    const select = wrapper.getComponent({ name: 'QSelect' })
+    select.vm.$emit('update:modelValue', 'here')
+    select.vm.$emit('update:modelValue', 'seoul')
+    answer({ coords: { latitude: 10, longitude: 20 } } as unknown as GeolocationPosition)
+    await flushPromises()
+    expect(useObserver().siteId).toBe('seoul')
+  })
+
   it('위치를 거부하면 이전 관측지를 그대로 두고 알린다', async () => {
     stubGeolocation('denied')
     const wrapper = mount(SiteSelect, { props: { label: '지상국' }, attachTo: document.body })

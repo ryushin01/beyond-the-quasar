@@ -59,7 +59,8 @@ function save(): void {
     </q-form>
 
     <p v-if="!log.entries.length" class="log__empty">{{ t('log.empty') }}</p>
-    <template v-else>
+    <!-- 넓은 화면에서 .log는 두 칸 격자라, 내보내기와 목록을 한 칸에 함께 둡니다. -->
+    <div v-else class="log__records">
     <div class="log__actions">
       <button type="button" class="log__export" @click="exportCsv">{{ t('log.exportCsv') }}</button>
     </div>
@@ -73,7 +74,7 @@ function save(): void {
         <q-btn flat dense square :icon="symSharpClose" :aria-label="t('log.remove', { name: entry.targetName })" class="log__remove" @click="log.remove(entry.id)" />
       </li>
     </ol>
-    </template>
+    </div>
   </div>
 </template>
 

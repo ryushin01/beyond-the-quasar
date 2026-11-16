@@ -36,8 +36,19 @@ describe('iCalendar', () => {
   })
 })
 
+it('길이가 0인 일정은 DTEND 없이 순간 일정으로 둔다', () => {
+  const at = new Date('2026-11-16T05:26:00Z')
+  const ics = toIcs([{ uid: 'x', start: at, end: at, title: 't' }], { productId: 'p', now: at })
+  expect(ics).toContain('DTSTART:20261116T052600Z')
+  expect(ics).not.toContain('DTEND')
+})
+
 describe('CSV', () => {
   it('BOM을 붙이고 쉼표·따옴표·줄바꿈이 든 칸만 감싼다', () => {
     expect(toCsv([['대상', '메모'], ['M42', '맑음, "투명도" 좋음\n바람']])).toBe('\uFEFF대상,메모\r\nM42,"맑음, ""투명도"" 좋음\n바람"\r\n')
+  })
+
+  it('수식처럼 보이는 글은 작은따옴표를 붙여 글자로 둔다(수식 주입 방지), 숫자 값은 그대로', () => {
+    expect(toCsv([['=1+2', '+SUM(A1)', '-x', '@cmd', '보통 글', -3, 4]])).toBe("\uFEFF'=1+2,'+SUM(A1),'-x,'@cmd,보통 글,-3,4\r\n")
   })
 })
