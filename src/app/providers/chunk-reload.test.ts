@@ -100,16 +100,22 @@ describe('reloadOnce 목적지', () => {
 describe('reloadOnChunkError', () => {
   const chunkError = () => new TypeError('Failed to fetch dynamically imported module: /assets/index-abc.js')
   const Blank = { render: () => null }
+  const stops: (() => void)[] = []
+  const watchChunks = (router: Parameters<typeof reloadOnChunkError>[0], assign: (to: string) => void) => stops.push(reloadOnChunkError(router, assign))
   beforeEach(() => {
     sessionStorage.clear()
     vi.spyOn(console, 'warn').mockImplementation(() => {})
   })
-  afterEach(() => vi.restoreAllMocks())
+  afterEach(() => {
+    // 테스트마다 붙인 window 리스너를 떼어 서로 간섭하지 않게 합니다.
+    while (stops.length) stops.pop()!()
+    vi.restoreAllMocks()
+  })
 
   it('화면 조각을 받지 못하면 가려던 주소로 새로고침한다', async () => {
     const router = createRouter({ history: createMemoryHistory(), routes: [{ path: '/', component: Blank }, { path: '/catalog', component: () => Promise.reject(chunkError()) }] })
     const assign = vi.fn()
-    reloadOnChunkError(router, assign)
+    watchChunks(router, assign)
     await router.push('/')
     await router.push('/catalog').catch(() => {})
     expect(assign).toHaveBeenCalledWith(here('/catalog'))
@@ -133,7 +139,7 @@ describe('reloadOnChunkError', () => {
       ],
     })
     const assign = vi.fn()
-    reloadOnChunkError(router, assign)
+    watchChunks(router, assign)
     await router.push('/')
     const abandoned = router.push('/catalog').catch(() => {})
     // 카탈로그 조각을 받기 시작한 뒤에 지금 화면(/)으로 다시 갑니다.
@@ -142,5 +148,39 @@ describe('reloadOnChunkError', () => {
     fail(chunkError())
     await abandoned
     expect(assign).not.toHaveBeenCalled()
+  })
+
+  it('화면 이동 중이 아닐 때의 조각 미리 받기 실패(버려진 이동·3D 장면 등)는 새로고침하지 않는다', async () => {
+    const router = createRouter({ history: createMemoryHistory(), routes: [{ path: '/', component: Blank }] })
+    const assign = vi.fn()
+    watchChunks(router, assign)
+    await router.push('/')
+    window.dispatchEvent(new Event('vite:preloadError'))
+    expect(assign).not.toHaveBeenCalled()
+  })
+
+  it('화면 이동 중 조각 미리 받기가 실패하면 그 목적지로 새로고침한다', async () => {
+    let markStarted!: () => void
+    const started = new Promise<void>((resolve) => (markStarted = resolve))
+    const router = createRouter({
+      history: createMemoryHistory(),
+      routes: [
+        { path: '/', component: Blank },
+        {
+          path: '/catalog',
+          component: () => {
+            markStarted()
+            return new Promise(() => {})
+          },
+        },
+      ],
+    })
+    const assign = vi.fn()
+    watchChunks(router, assign)
+    await router.push('/')
+    void router.push('/catalog')
+    await started
+    window.dispatchEvent(new Event('vite:preloadError'))
+    expect(assign).toHaveBeenCalledWith(here('/catalog'))
   })
 })
