@@ -62,7 +62,7 @@ export function createWarpField(canvas: HTMLCanvasElement, random: () => number 
       const radius = reach * (0.2 + glow * 1.6)
       const gradient = context.createRadialGradient(centerX, centerY, 0, centerX, centerY, radius)
       gradient.addColorStop(0, `rgb(235 241 255 / ${glow})`)
-      gradient.addColorStop(0.35, `rgb(74 120 255 / ${glow * 0.7})`)
+      gradient.addColorStop(0.35, `rgb(26 63 224 / ${glow * 0.7})`)
       gradient.addColorStop(1, 'rgb(0 0 0 / 0)')
       context.fillStyle = gradient
       context.fillRect(0, 0, width, height)

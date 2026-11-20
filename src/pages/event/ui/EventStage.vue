@@ -177,8 +177,8 @@ onBeforeUnmount(() => {
   width: 100%;
   height: 100%;
   background:
-    radial-gradient(circle at 50% 42%, transparent 0 14%, rgb(74 120 255 / 0.9) 15%, transparent 19%),
-    radial-gradient(ellipse 80% 30% at 50% 70%, rgb(20 60 180 / 0.5), transparent 70%),
+    radial-gradient(circle at 50% 42%, transparent 0 14%, rgb(26 63 224 / 0.9) 15%, transparent 19%),
+    radial-gradient(ellipse 80% 30% at 50% 70%, rgb(20 48 170 / 0.5), transparent 70%),
     #00030c;
 }
 </style>

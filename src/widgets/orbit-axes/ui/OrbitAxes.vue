@@ -93,8 +93,8 @@ function draw(): void {
   // 대기 빛이 번질 자리를 남겨 둡니다.
   const radius = size / 2.5
   const style = getComputedStyle(element)
-  const signal = style.getPropertyValue('--signal').trim() || '#4a78ff'
-  const signalText = style.getPropertyValue('--signal-text').trim() || '#8aa8ff'
+  const signal = style.getPropertyValue('--signal').trim() || '#1a3fe0'
+  const signalText = style.getPropertyValue('--signal-text').trim() || '#1a3fe0'
   const alert = style.getPropertyValue('--alert').trim() || '#ffb224'
 
   const glow = context2d.createRadialGradient(center, center, radius * 0.92, center, center, size / 2)

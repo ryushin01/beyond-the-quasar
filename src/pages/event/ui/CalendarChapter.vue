@@ -113,7 +113,7 @@ const tiles = computed(() =>
   text-underline-offset: 0.25em;
 }
 .tile__link:hover {
-  color: #8aa8ff;
+  color: var(--signal-text);
 }
 .tile__date {
   color: var(--hud-dim);

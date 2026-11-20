@@ -78,7 +78,8 @@ void main() {
   vec2 lines = abs(fract(uv * grid) - 0.5);
   float gridLine = smoothstep(0.485, 0.5, max(lines.x, lines.y));
 
-  vec3 blue = vec3(0.24, 0.42, 1.0);
+  // 사이트 강조색(#1a3fe0)과 같은 색조입니다.
+  vec3 blue = vec3(0.116, 0.281, 1.0);
   vec3 color = vec3(0.0);
   color += blue * smoothstep(0.0, 0.9, value) * 0.95;
   color += vec3(1.0) * pow(max(value - 0.35, 0.0), 1.6);

@@ -27,9 +27,9 @@
   --muted: #a3a3a3;
   --line: rgb(255 255 255 / 0.14);
   --line-strong: rgb(255 255 255 / 0.32);
-  --signal: #4a78ff;
-  --signal-text: #8aa8ff;
-  --on-signal: #000;
+  --signal: #1a3fe0;
+  --signal-text: #1a3fe0;
+  --on-signal: #fff;
   --alert: #ffb224;
   --night: rgb(0 0 0 / 0.45);
   color-scheme: dark;
@@ -71,9 +71,9 @@
   --muted: #a3a3a3;
   --line: rgb(255 255 255 / 0.14);
   --line-strong: rgb(255 255 255 / 0.32);
-  --signal: #4a78ff;
-  --signal-text: #8aa8ff;
-  --on-signal: #000;
+  --signal: #1a3fe0;
+  --signal-text: #1a3fe0;
+  --on-signal: #fff;
   --alert: #ffb224;
 }
 
@@ -125,12 +125,6 @@ a {
 ::selection {
   background: var(--signal);
   color: var(--on-signal);
-}
-
-/* 어두운 화면에서는 진한 파랑의 명도 대비가 부족해 밝은 파랑으로 올립니다 */
-[data-theme='dark'] .q-slider,
-[data-theme='dark'] .q-spinner {
-  --q-primary: #8aa8ff;
 }
 .q-btn.bg-primary {
   box-shadow: 0 0 0 1px var(--signal-text);

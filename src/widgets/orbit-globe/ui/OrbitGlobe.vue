@@ -42,7 +42,7 @@ function readColors(): GlobeColors {
     line: read('--line-strong', '#888'),
     lineStrong: read('--ink', '#fff'),
     paper: read('--paper', '#000'),
-    signal: read('--signal-text', '#8aa8ff'),
+    signal: read('--signal-text', '#1a3fe0'),
     alert: read('--alert', '#ffb224'),
   }
 }
