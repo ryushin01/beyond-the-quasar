@@ -55,7 +55,7 @@ Histoire 1.0 beta가 Vite 7만 지원해 `vite`를 7.3으로 고정하고 `overr
 
 ## 모션 규칙
 
-- 모든 GSAP 코드는 `gsap.context` 안에 두고 `onBeforeUnmount`에서 되돌립니다. 모션 설정이 바뀔 때 다시 만드는 연출은 `useGsapContext(root, setup, { watch, before, refresh })`를 씁니다(화면에 붙은 뒤 만들고, 바뀌면 되돌린 뒤 다시 만들고, 사라질 때 되돌림). 화면을 붙잡는(pin) 구역은 `refresh: true`로 만든 뒤 위치를 다시 계산합니다. 들어올 때 한 번만 도는 연출(카탈로그·관측 제목)과 홈 첫 화면은 따로 둡니다. E2E `스크롤 연출(모션 켬)`이 스크롤 전에는 숨어 있고 지나가면 드러나는지 확인합니다.
+- 모든 GSAP 코드는 `gsap.context` 안에 두고 `onBeforeUnmount`에서 되돌립니다. 모션 설정이 바뀔 때 다시 만드는 연출은 `useGsapContext(root, setup, { watch, before, refresh })`를 씁니다(화면에 붙은 뒤 만들고, 바뀌면 되돌린 뒤 다시 만들고, 사라질 때 되돌림). 화면을 붙잡는(pin) 구역은 `refresh: true`로 만든 뒤 위치를 다시 계산합니다. 들어올 때 한 번만 도는 연출(카탈로그·관측 제목)과 홈 첫 화면은 따로 둡니다. E2E `스크롤 연출(모션 켬)`이 스크롤 전에는 숨어 있고 지나가면 드러나는지 확인합니다(이 묶음은 WebGL을 막고 대체 화면으로 돌림: GPU가 있는 로컬에서 여러 창이 셰이더를 동시에 그리면 메인 스레드가 막혀 시간이 초과됨).
 - `useMotionPreference().enabled`가 거짓이면 연출을 만들지 않습니다. 기본 CSS는 **연출 없이도 완성된 화면**이어야 합니다. 시작 상태를 CSS로 숨기지 않습니다.
 - OS의 동작 줄이기와 헤더의 모션 정지 버튼을 함께 반영합니다(KWCAG 6.2.2). 셰이더, CSS 애니메이션, Lenis, 프리로더가 모두 멈춥니다.
 - 글자를 쪼개는 연출은 원문을 `sr-only`로 두고 조각에 `aria-hidden`을 답니다.

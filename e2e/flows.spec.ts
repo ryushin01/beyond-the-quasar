@@ -271,6 +271,17 @@ test.describe('스크롤 연출(모션 켬)', () => {
   test.describe.configure({ timeout: 90_000 })
   test.beforeEach(async ({ page }) => {
     await page.addInitScript(() => sessionStorage.setItem('btq:intro-seen', '1'))
+    // 스크롤 연출만 확인하므로 WebGL을 막아 셰이더 대신 정적 대체 화면으로 돌립니다. GPU가 있는 로컬에서 여러 창이
+    // 동시에 무거운 셰이더를 그리면 메인 스레드가 막혀 시간이 초과되므로, GPU가 없는 CI와 같은 조건으로 맞춥니다.
+    await page.addInitScript(() => {
+      const getContext = HTMLCanvasElement.prototype.getContext as unknown as (this: HTMLCanvasElement, type: string, ...args: unknown[]) => RenderingContext | null
+      Object.defineProperty(HTMLCanvasElement.prototype, 'getContext', {
+        configurable: true,
+        value(this: HTMLCanvasElement, type: string, ...args: unknown[]) {
+          return type.includes('webgl') ? null : getContext.call(this, type, ...args)
+        },
+      })
+    })
   })
 
   const opacity = (locator: import('@playwright/test').Locator) => locator.evaluate((node) => Number(getComputedStyle(node).opacity))
