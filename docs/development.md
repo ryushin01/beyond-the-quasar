@@ -47,7 +47,7 @@ Histoire 1.0 beta가 Vite 7만 지원해 `vite`를 7.3으로 고정하고 `overr
 - 구조: 홈 별자리는 하늘 배치(`lib/sky-scene.ts`), 캔버스 그리기(`lib/sky-paint.ts`), 끌어서 방위 돌리기(`lib/heading-drag.ts`), 화면 글자(`SkyOverlay.vue`)로, 지상 궤적 지도(`widgets/ground-track-map`)는 투영·회전(`lib/projection.ts`), 그리기(`lib/paint.ts`), 궤적(`lib/track.ts`), 확대(`lib/zoom.ts`), 도구·범례 컴포넌트로 나눴습니다. 이벤트 화면은 장마다 컴포넌트(`SignalChapter` 등)를 두고, 장의 배치(`.chapter*`)와 여러 장이 함께 쓰는 글자·링크 모양은 `EventPage.vue`에 남겼습니다(자식의 바깥 요소에도 부모의 범위 지정 스타일이 적용됨).
 - 이벤트 일정(`entities/sky`의 `upcomingSkyEvents`): 실제 행사가 아니라 계산된 천문 현상입니다.
 - 일식·월식(`entities/sky`의 `eclipseWindow`, `eyepieceScene`): 일식은 관측지 기준(`SearchLocalSolarEclipse`), 월식은 반영식 시작~끝입니다. 망원경 시야는 작은 각도라 평면으로 근사하고, 지구 그림자는 지구 중심 벡터(`GeoVector`)로 구해 대기 효과로 2% 키웁니다. `Observer(0, 0, 0)`은 지구 중심이 아니라 적도 위 지점이므로 쓰지 않습니다.
-- 블랙홀(`pages/event/lib/shader.ts`): 슈바르츠실트 반지름을 1로 둔 광선 적분 근사입니다. 원반의 색과 무늬는 연출이고, 프레임이 밀리면 내부 해상도를 낮춥니다. 셰이더 컴파일이 첫 글자 표시를 늦추지 않게 한가할 때(`requestIdleCallback`) 켜고, GPU 가속이 없는 기기(`failIfMajorPerformanceCaveat`)에서는 정적 대체 화면을 씁니다. Cypress는 CI에 GPU가 없어 `allowSoftware`로 컴파일만 확인합니다. 참고 사이트의 이미지나 코드는 쓰지 않았습니다.
+- 블랙홀(`pages/event/lib/shader.ts`): 슈바르츠실트 반지름을 1로 둔 광선 적분 근사입니다. 원반의 색과 무늬는 연출로, 영화 Interstellar의 가르강튀아 색감(식은 바깥의 어두운 호박색 → 금빛 → 안쪽의 크림빛 백색)을 따르고, 다가오는 쪽이 밝아지는 빛몰이도 영화처럼 약하게만 둡니다(1.1.0, 그 전에는 보라·흰빛). 입구 장면의 푸른 고리는 그대로입니다. 원반 그림을 바꾸면 README 사진을 `ONLY=event-horizon,mobile-event bun run screenshots`로 다시 찍습니다. 프레임이 밀리면 내부 해상도를 낮춥니다. 셰이더 컴파일이 첫 글자 표시를 늦추지 않게 한가할 때(`requestIdleCallback`) 켜고, GPU 가속이 없는 기기(`failIfMajorPerformanceCaveat`)에서는 정적 대체 화면을 씁니다. Cypress는 CI에 GPU가 없어 `allowSoftware`로 컴파일만 확인합니다. 참고 사이트의 이미지나 코드는 쓰지 않았습니다.
 
 ## Histoire 배포와 바로가기
 
