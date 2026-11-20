@@ -82,7 +82,7 @@
     "eslint": "^10.15.0",
     "eslint-plugin-vue": "^10.12.1",
     "eslint-plugin-vuejs-accessibility": "^2.6.3",
-    "fontverter": "2.0.0",
+    "fontverter": "2.1.0",
     "harfbuzzjs": "1.6.4",
     "histoire": "^1.0.0-beta.1",
     "jsdom": "^31.0.1",
