@@ -1,38 +1,25 @@
 <script setup lang="ts">
 import { useEventListener } from '@vueuse/core'
-import { computed, onBeforeUnmount, ref } from 'vue'
-import { useI18n } from 'vue-i18n'
+import { onBeforeUnmount, ref } from 'vue'
 
-import { daysUntil, isEclipseId, upcomingSkyEvents, type SkyEvent } from '@/entities/sky'
-import { ROUTES } from '@/shared/config'
-import { formatUtc } from '@/shared/lib'
-import { EASE, goToSection, gsap, introDone, useGsapContext, useMotionPreference, useSmoothScroll } from '@/shared/motion'
+import { EASE, gsap, introDone, useGsapContext, useMotionPreference, useSmoothScroll } from '@/shared/motion'
 
+import { CHAPTERS, sectionId } from '../lib/chapters'
 import { readScene, type SceneState } from '../lib/scene'
+import CalendarChapter from './CalendarChapter.vue'
+import EventHud from './EventHud.vue'
+import EventRail from './EventRail.vue'
 import EventStage from './EventStage.vue'
-
-const CHAPTERS = ['signal', 'calendar', 'horizon', 'return'] as const
-const FACT_COUNT = 3
+import HorizonChapter from './HorizonChapter.vue'
+import ReturnChapter from './ReturnChapter.vue'
+import SignalChapter from './SignalChapter.vue'
 
 useSmoothScroll()
-const { t } = useI18n()
 const { enabled } = useMotionPreference()
 
 const root = ref<HTMLElement>()
 const scene = ref<SceneState>({ mix: 0, fall: 0, dim: 0, active: 0 })
-const now = new Date()
-const events = ref<SkyEvent[]>(upcomingSkyEvents(now))
 let frame = 0
-
-const activeNumber = computed(() => String(scene.value.active + 1).padStart(2, '0'))
-const tiles = computed(() =>
-  events.value.map((event) => {
-    const days = daysUntil(event.date, now)
-    return { ...event, count: days === 0 ? t('event.calendar.today') : `D-${days}`, when: formatUtc(event.date, true) }
-  }),
-)
-
-const sectionId = (chapter: string): string => `event-${chapter}`
 
 function measure(): void {
   frame = 0
@@ -72,105 +59,13 @@ onBeforeUnmount(() => cancelAnimationFrame(frame))
     <div class="event__sticky">
       <EventStage :mix="scene.mix" :fall="scene.fall" :dim="scene.dim" />
     </div>
-    <div class="event__sticky event__sticky--hud">
-      <div class="event__frame" aria-hidden="true" />
-      <div class="event__bar" aria-hidden="true">
-        <span>{{ t('event.simulation') }}</span>
-        <span class="event__bar-center">{{ t('event.scroll') }}</span>
-        <span>{{ activeNumber }} / 04</span>
-      </div>
-    </div>
+    <EventHud :active="scene.active" />
+    <EventRail :active="scene.active" />
 
-    <nav class="event__rail" :aria-label="t('event.chaptersLabel')">
-      <ol class="event__rail-list">
-        <li v-for="(chapter, index) in CHAPTERS" :key="chapter">
-          <a
-            class="event__rail-link"
-            :class="{ 'event__rail-link--active': scene.active === index }"
-            :href="`#${sectionId(chapter)}`"
-            :aria-current="scene.active === index ? 'location' : undefined"
-            @click.prevent="goToSection(sectionId(chapter))"
-          >
-            <span class="event__rail-mark" aria-hidden="true" />
-            {{ t(`event.chapters.${chapter}`) }}
-          </a>
-        </li>
-      </ol>
-    </nav>
-
-    <section :id="sectionId('signal')" class="chapter chapter--signal" tabindex="-1">
-      <div class="signal">
-        <p class="eyebrow" data-reveal>{{ t('event.signal.eyebrow') }}</p>
-        <h1 class="signal__title" data-reveal>
-          <span>{{ t('event.signal.titleA') }}</span>
-          <span>{{ t('event.signal.titleB') }}</span>
-        </h1>
-        <p class="signal__body" data-reveal>{{ t('event.signal.body') }}</p>
-        <a :href="`#${sectionId('calendar')}`" class="cut-link" data-reveal @click.prevent="goToSection(sectionId('calendar'))">
-          <span class="cut-link__mark" aria-hidden="true" />{{ t('event.signal.cta') }}
-        </a>
-      </div>
-    </section>
-
-    <section :id="sectionId('calendar')" class="chapter chapter--calendar" tabindex="-1" aria-labelledby="event-calendar-title">
-      <div class="calendar">
-        <p class="eyebrow" data-reveal>{{ t('event.calendar.eyebrow') }}</p>
-        <h2 id="event-calendar-title" class="headline" data-reveal>
-          <span>{{ t('event.calendar.titleA') }}</span>
-          <span>{{ t('event.calendar.titleB') }}</span>
-        </h2>
-        <ul class="tiles">
-          <li v-for="tile in tiles" :key="tile.id" class="tile" data-reveal>
-            <p class="tile__kind">{{ t(`event.names.${tile.id}`) }} · {{ t(`event.kinds.${tile.kind}`) }}</p>
-            <p class="tile__count">{{ tile.count }}</p>
-            <p class="tile__date"><time :datetime="tile.date.toISOString()">{{ tile.when }}</time></p>
-            <RouterLink :to="{ path: ROUTES.observatory, query: { at: tile.date.toISOString(), ...(isEclipseId(tile.id) ? { event: tile.id } : {}) } }" class="tile__link">
-              <span class="sr-only">{{ t(`event.names.${tile.id}`) }}, </span>{{ t('event.calendar.viewSky') }}
-            </RouterLink>
-          </li>
-        </ul>
-        <p class="calendar__note" data-reveal>{{ t('event.calendar.note') }}</p>
-      </div>
-    </section>
-
-    <section :id="sectionId('horizon')" class="chapter chapter--horizon" tabindex="-1" aria-labelledby="event-horizon-title">
-      <div class="horizon">
-        <div class="horizon__copy">
-          <p class="horizon__kicker" data-reveal>{{ t('event.horizon.kicker') }}</p>
-          <h2 id="event-horizon-title" class="horizon__title" data-reveal>
-            <span>{{ t('event.horizon.titleA') }}</span>
-            <span>{{ t('event.horizon.titleB') }}</span>
-          </h2>
-        </div>
-        <aside class="facts" :aria-label="t('event.horizon.factsLabel')" data-reveal>
-          <p class="eyebrow">{{ t('event.horizon.eyebrow') }}</p>
-          <dl class="facts__list">
-            <div v-for="index in FACT_COUNT" :key="index" class="facts__item">
-              <dt>{{ t(`event.horizon.facts[${index - 1}].name`) }}</dt>
-              <dd>
-                <strong>{{ t(`event.horizon.facts[${index - 1}].value`) }}</strong>
-                <span>{{ t(`event.horizon.facts[${index - 1}].detail`) }}</span>
-              </dd>
-            </div>
-          </dl>
-          <p class="facts__render">{{ t('event.horizon.render') }}</p>
-        </aside>
-      </div>
-    </section>
-
-    <section :id="sectionId('return')" class="chapter chapter--return" tabindex="-1" aria-labelledby="event-return-title">
-      <div class="return">
-        <p class="eyebrow" data-reveal>{{ t('event.return.eyebrow') }}</p>
-        <h2 id="event-return-title" class="horizon__title" data-reveal>
-          <span>{{ t('event.return.titleA') }}</span>
-          <span>{{ t('event.return.titleB') }}</span>
-        </h2>
-        <div class="return__links" data-reveal>
-          <RouterLink :to="ROUTES.observatory" class="cut-link"><span class="cut-link__mark" aria-hidden="true" />{{ t('event.return.toObservatory') }}</RouterLink>
-          <RouterLink :to="ROUTES.control" class="cut-link"><span class="cut-link__mark" aria-hidden="true" />{{ t('event.return.toControl') }}</RouterLink>
-        </div>
-      </div>
-    </section>
+    <SignalChapter />
+    <CalendarChapter />
+    <HorizonChapter />
+    <ReturnChapter />
   </div>
 </template>
 
@@ -200,92 +95,11 @@ onBeforeUnmount(() => cancelAnimationFrame(frame))
   z-index: 3;
   pointer-events: none;
 }
-/* 모서리를 깎은 관제 화면 테두리 */
-.event__frame {
-  position: absolute;
-  inset: calc(var(--chrome-height) + 0.5rem) var(--frame-inset) var(--frame-inset);
-  background: var(--hud-line);
-  clip-path: polygon(
-    evenodd,
-    var(--cut) 0,
-    calc(100% - var(--cut)) 0,
-    100% var(--cut),
-    100% calc(100% - var(--cut)),
-    calc(100% - var(--cut)) 100%,
-    var(--cut) 100%,
-    0 calc(100% - var(--cut)),
-    0 var(--cut),
-    var(--cut) 0,
-    var(--cut) 1px,
-    calc(var(--cut) + 0.4px) 1px,
-    1px calc(var(--cut) + 0.4px),
-    1px calc(100% - var(--cut) - 0.4px),
-    calc(var(--cut) + 0.4px) calc(100% - 1px),
-    calc(100% - var(--cut) - 0.4px) calc(100% - 1px),
-    calc(100% - 1px) calc(100% - var(--cut) - 0.4px),
-    calc(100% - 1px) calc(var(--cut) + 0.4px),
-    calc(100% - var(--cut) - 0.4px) 1px,
-    var(--cut) 1px
-  );
-}
-.event__bar {
-  position: absolute;
-  left: var(--frame-inset);
-  right: var(--frame-inset);
-  bottom: var(--frame-inset);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  height: 3rem;
-  padding: 0 calc(var(--cut) + 0.75rem);
-  border-top: 1px solid var(--hud-line);
-  /* 스크롤되는 본문이 지나가도 글자가 겹쳐 읽히지 않게 합니다 */
-  background: rgb(0 3 12 / 0.86);
-  color: var(--hud-text);
-  font: 500 0.75rem var(--font-mono);
-  text-transform: uppercase;
-}
-.event__rail {
-  position: sticky;
-  top: 50%;
-  z-index: 3;
-  width: fit-content;
-  height: 0;
-  margin-left: calc(var(--frame-inset) + 1rem);
-}
-.event__rail-list {
-  display: grid;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  transform: translateY(-50%);
-}
-.event__rail-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.625rem;
-  min-height: 2.25rem;
-  color: var(--hud-dim);
-  font: 500 0.75rem var(--font-mono);
-  text-decoration: none;
-  text-transform: uppercase;
-  transition: color 0.25s ease;
-}
-.event__rail-link:hover,
-.event__rail-link--active {
-  color: #fff;
-}
-.event__rail-mark {
-  width: 0.4375rem;
-  height: 0.4375rem;
-  border: 1px solid currentColor;
-  transition: background-color 0.25s ease;
-}
-.event__rail-link--active .event__rail-mark {
-  background: #fff;
-}
 
+/*
+ * 장(章) 컴포넌트의 바깥 요소(section)에는 이 화면의 범위 지정 스타일도 함께 적용됩니다.
+ * 여러 장이 함께 쓰는 여백 설정의 우선순위가 바뀌지 않도록 장의 배치는 여기 한곳에 둡니다.
+ */
 .chapter {
   position: relative;
   z-index: 2;
@@ -303,39 +117,39 @@ onBeforeUnmount(() => cancelAnimationFrame(frame))
   justify-items: center;
   text-align: center;
 }
-.eyebrow {
+.chapter--calendar {
+  align-items: center;
+}
+.chapter--horizon {
+  align-items: end;
+}
+.chapter--return {
+  align-items: center;
+  justify-items: center;
+  text-align: center;
+  background: linear-gradient(to bottom, transparent, #000 80%);
+}
+
+/* 여러 장이 함께 쓰는 글자·링크 모양 */
+.event :deep(.eyebrow) {
   margin: 0 0 0.75rem;
   color: var(--hud-text);
   font: 500 0.75rem/1.5 var(--font-mono);
   letter-spacing: 0.14em;
   text-transform: uppercase;
 }
-.signal {
-  position: relative;
-  isolation: isolate;
-  max-width: 44rem;
-  padding-bottom: 1rem;
-}
-.signal__title span,
-.headline span,
-.horizon__title span {
+.event :deep(.horizon__title span) {
   display: block;
 }
-.signal__title {
+.event :deep(.horizon__title) {
   margin: 0;
-  color: #eef2ff;
-  font: 700 clamp(2rem, 4.2vw, 3.5rem) / 1.12 var(--font-display);
-  font-stretch: 105%;
+  color: #fff;
+  font: 200 clamp(2.125rem, 5.4vw, 4.75rem) / 1.14 var(--font-display);
+  font-stretch: 118%;
+  letter-spacing: 0.06em;
 }
-.signal__body {
-  max-width: 34rem;
-  margin: 1rem auto 1.5rem;
-  color: var(--hud-body);
-  font-size: 1.0625rem;
-}
-
 /* 깎인 모서리는 장식 층에만 적용해 초점 표시가 잘리지 않게 합니다 */
-.cut-link {
+.event :deep(.cut-link) {
   position: relative;
   isolation: isolate;
   display: inline-flex;
@@ -348,219 +162,40 @@ onBeforeUnmount(() => cancelAnimationFrame(frame))
   text-decoration: none;
   text-transform: uppercase;
 }
-.cut-link::before,
-.cut-link::after {
+.event :deep(.cut-link::before),
+.event :deep(.cut-link::after) {
   content: '';
   position: absolute;
   z-index: -1;
   clip-path: polygon(0.75rem 0, 100% 0, 100% calc(100% - 0.75rem), calc(100% - 0.75rem) 100%, 0 100%, 0 0.75rem);
   transition: background-color 0.25s ease;
 }
-.cut-link::before {
+.event :deep(.cut-link::before) {
   inset: 0;
   background: var(--hud-line);
 }
-.cut-link::after {
+.event :deep(.cut-link::after) {
   inset: 1px;
   background: #06102f;
 }
-.cut-link:hover::after {
+.event :deep(.cut-link:hover::after) {
   background: #1a3fe0;
 }
-.cut-link__mark {
+.event :deep(.cut-link__mark) {
   width: 0.4375rem;
   height: 0.4375rem;
   background: #8aa8ff;
 }
 
-.chapter--calendar {
-  align-items: center;
-}
-.calendar {
-  width: 100%;
-  max-width: 76rem;
-  margin-inline: auto;
-}
-.headline {
-  margin: 0 0 2.5rem;
-  color: #eef2ff;
-  font: 700 clamp(2.25rem, 6vw, 5rem) / 1.04 var(--font-display);
-  font-stretch: 112%;
-}
-.headline span:last-child {
-  margin-left: clamp(2rem, 10vw, 9rem);
-}
-.tiles {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 1rem;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-.tile {
-  position: relative;
-  isolation: isolate;
-  padding: 1.5rem 1.25rem;
-}
-.tile::before,
-.tile::after {
-  content: '';
-  position: absolute;
-  z-index: -1;
-  clip-path: polygon(var(--cut) 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%, 0 var(--cut));
-}
-.tile::before {
-  inset: 0;
-  background: var(--hud-line);
-}
-.tile::after {
-  inset: 1px;
-  background: rgb(4 10 34 / 0.88);
-}
-.tile p {
-  margin: 0;
-}
-.tile__kind {
-  min-height: 2.5rem;
-  color: var(--hud-text);
-  font: 500 0.8125rem/1.5 var(--font-mono);
-}
-.tile__count {
-  margin-block: 0.75rem !important;
-  color: #fff;
-  font: 700 clamp(2.25rem, 4.2vw, 3.75rem) / 1 var(--font-display);
-  font-variant-numeric: tabular-nums;
-}
-.tile__link {
-  display: inline-flex;
-  align-items: center;
-  min-height: 2.75rem;
-  margin-top: 0.5rem;
-  color: #fff;
-  font: 600 0.8125rem var(--font-mono);
-  text-underline-offset: 0.25em;
-}
-.tile__link:hover {
-  color: #8aa8ff;
-}
-.tile__date {
-  color: var(--hud-dim);
-  font: 400 0.8125rem var(--font-mono);
-}
-.calendar__note {
-  max-width: 44rem;
-  margin: 1.5rem 0 0;
-  color: var(--hud-body);
-  font-size: 0.9375rem;
-}
-
-.chapter--horizon {
-  align-items: end;
-}
-.horizon {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(16rem, 23rem);
-  align-items: end;
-  gap: 2rem;
-  width: 100%;
-}
-.horizon__kicker {
-  margin: 0 0 0.5rem;
-  color: #b9bbc8;
-  font-size: 1rem;
-}
-.horizon__title {
-  margin: 0;
-  color: #fff;
-  font: 200 clamp(2.125rem, 5.4vw, 4.75rem) / 1.14 var(--font-display);
-  font-stretch: 118%;
-  letter-spacing: 0.06em;
-}
-.facts {
-  padding: 1.25rem;
-  background: rgb(10 10 16 / 0.5);
-  border: 1px solid rgb(255 255 255 / 0.22);
-  backdrop-filter: blur(10px);
-  color: #b9bbc8;
-}
-.facts__list {
-  margin: 0;
-}
-.facts__item {
-  padding-block: 0.625rem;
-  border-top: 1px solid rgb(255 255 255 / 0.16);
-}
-.facts dt {
-  font: 500 0.75rem var(--font-mono);
-  color: #8b8d9c;
-}
-.facts dd {
-  display: grid;
-  margin: 0.125rem 0 0;
-  font-size: 0.875rem;
-  line-height: 1.45;
-}
-.facts strong {
-  color: #fff;
-  font-weight: 700;
-}
-.facts__render {
-  margin: 0.5rem 0 0;
-  padding-top: 0.625rem;
-  border-top: 1px solid rgb(255 255 255 / 0.16);
-  color: #8b8d9c;
-  font-size: 0.8125rem;
-  line-height: 1.45;
-}
-
-.chapter--return {
-  align-items: center;
-  justify-items: center;
-  text-align: center;
-  background: linear-gradient(to bottom, transparent, #000 80%);
-}
-.return__links {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 0.75rem;
-  margin-top: 2rem;
-}
-
 @media (max-width: 1000px) {
-  .tiles {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-  .horizon {
-    grid-template-columns: minmax(0, 1fr);
-  }
   /* 세로로 쌓이면 글이 블랙홀을 덮지 않도록 첫 화면 위쪽을 비웁니다 */
   .chapter--horizon {
     padding-top: 48svh;
   }
 }
-/* 좁은 화면에서는 왼쪽 목차가 본문을 가리므로 순서대로 스크롤해 읽습니다 */
 @media (max-width: 899px) {
-  .event__rail {
-    display: none;
-  }
   .chapter {
     padding-inline: 1.75rem;
-  }
-  .event__bar-center {
-    display: none;
-  }
-}
-@media (max-width: 480px) {
-  .tiles {
-    grid-template-columns: minmax(0, 1fr);
-  }
-  .tile {
-    padding: 1rem 1.25rem;
-  }
-  .tile__kind {
-    min-height: 0;
   }
 }
 </style>

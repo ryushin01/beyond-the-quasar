@@ -1,0 +1,92 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`EventPage 구조 > 같은 날에는 같은 문서 구조와 글을 그린다 1`] = `
+"<div class="event scope-dark">
+  <div class="event__sticky">
+    <div class="stage" aria-hidden="true"><canvas class="stage__canvas"></canvas>
+      <!--v-if-->
+    </div>
+  </div>
+  <div class="event__sticky event__sticky--hud">
+    <div class="event__frame" aria-hidden="true"></div>
+    <div class="event__bar" aria-hidden="true"><span>계산 기반 시뮬레이션</span><span class="event__bar-center">아래로 스크롤</span><span>01 / 04</span></div>
+  </div>
+  <nav class="event__rail" aria-label="이벤트 구역">
+    <ol class="event__rail-list">
+      <li><a class="event__rail-link event__rail-link--active" href="#event-signal" aria-current="location"><span class="event__rail-mark" aria-hidden="true"></span> 신호</a></li>
+      <li><a class="event__rail-link" href="#event-calendar"><span class="event__rail-mark" aria-hidden="true"></span> 일정</a></li>
+      <li><a class="event__rail-link" href="#event-horizon"><span class="event__rail-mark" aria-hidden="true"></span> 지평선</a></li>
+      <li><a class="event__rail-link" href="#event-return"><span class="event__rail-mark" aria-hidden="true"></span> 귀환</a></li>
+    </ol>
+  </nav>
+  <section id="event-signal" class="chapter chapter--signal" tabindex="-1">
+    <div class="signal">
+      <p class="eyebrow" data-reveal="" style="opacity: 0; visibility: hidden; transform: translate(0px, 36px);">Event 01 — 사건의 지평선</p>
+      <h1 class="signal__title" data-reveal="" style="opacity: 0; visibility: hidden; transform: translate(0px, 36px);"><span>사건의 지평선으로</span><span>내려가는 밤</span></h1>
+      <p class="signal__body" data-reveal="" style="opacity: 0; visibility: hidden; transform: translate(0px, 36px);">다가오는 하늘의 사건을 계산으로 짚고, 빛이 돌아오지 못하는 경계까지 내려갑니다.</p><a href="#event-calendar" class="cut-link" data-reveal="" style="opacity: 0; visibility: hidden; transform: translate(0px, 36px);"><span class="cut-link__mark" aria-hidden="true"></span>일정 보기</a>
+    </div>
+  </section>
+  <section id="event-calendar" class="chapter chapter--calendar" tabindex="-1" aria-labelledby="event-calendar-title">
+    <div class="calendar">
+      <p class="eyebrow" data-reveal="" style="opacity: 0; visibility: hidden; transform: translate(0px, 36px);">일정</p>
+      <h2 id="event-calendar-title" class="headline" data-reveal="" style="opacity: 0; visibility: hidden; transform: translate(0px, 36px);"><span>다음 네 번의</span><span>하늘</span></h2>
+      <ul class="tiles">
+        <li class="tile" data-reveal="" style="opacity: 0; visibility: hidden; transform: translate(0px, 36px);">
+          <p class="tile__kind">보름달 · 다음 보름</p>
+          <p class="tile__count">D-4</p>
+          <p class="tile__date"><time datetime="2026-11-24T14:54:04.191Z">2026-11-24 14:54:04Z</time></p><a class="tile__link"><span class="sr-only">보름달, </span>그날 하늘 보기</a>
+        </li>
+        <li class="tile" data-reveal="" style="opacity: 0; visibility: hidden; transform: translate(0px, 36px);">
+          <p class="tile__kind">절기 · 동지</p>
+          <p class="tile__count">D-31</p>
+          <p class="tile__date"><time datetime="2026-12-21T20:50:22.187Z">2026-12-21 20:50:22Z</time></p><a class="tile__link"><span class="sr-only">절기, </span>그날 하늘 보기</a>
+        </li>
+        <li class="tile" data-reveal="" style="opacity: 0; visibility: hidden; transform: translate(0px, 36px);">
+          <p class="tile__kind">일식 · 금환식</p>
+          <p class="tile__count">D-78</p>
+          <p class="tile__date"><time datetime="2027-02-06T15:59:32.957Z">2027-02-06 15:59:32Z</time></p><a class="tile__link"><span class="sr-only">일식, </span>그날 하늘 보기</a>
+        </li>
+        <li class="tile" data-reveal="" style="opacity: 0; visibility: hidden; transform: translate(0px, 36px);">
+          <p class="tile__kind">월식 · 반영월식</p>
+          <p class="tile__count">D-92</p>
+          <p class="tile__date"><time datetime="2027-02-20T23:12:44.142Z">2027-02-20 23:12:44Z</time></p><a class="tile__link"><span class="sr-only">월식, </span>그날 하늘 보기</a>
+        </li>
+      </ul>
+      <p class="calendar__note" data-reveal="" style="opacity: 0; visibility: hidden; transform: translate(0px, 36px);">실제 행사가 아니라 astronomy-engine으로 계산한 천문 현상입니다. 시각은 절정 기준 UTC이며, 월식과 일식은 관측지에 따라 보이지 않을 수 있습니다.</p>
+    </div>
+  </section>
+  <section id="event-horizon" class="chapter chapter--horizon" tabindex="-1" aria-labelledby="event-horizon-title">
+    <div class="horizon">
+      <div class="horizon__copy">
+        <p class="horizon__kicker" data-reveal="" style="opacity: 0; visibility: hidden; transform: translate(0px, 36px);">탈출 속도가 광속에 닿는 곳</p>
+        <h2 id="event-horizon-title" class="horizon__title" data-reveal="" style="opacity: 0; visibility: hidden; transform: translate(0px, 36px);"><span>빛이 돌아오지</span><span>않는 경계</span></h2>
+      </div>
+      <aside class="facts" aria-label="알려진 블랙홀" data-reveal="" style="opacity: 0; visibility: hidden; transform: translate(0px, 36px);">
+        <p class="eyebrow">지평선</p>
+        <dl class="facts__list">
+          <div class="facts__item">
+            <dt>궁수자리 A*</dt>
+            <dd><strong>태양 질량의 약 400만 배</strong><span>우리 은하의 중심, 약 2만 7천 광년</span></dd>
+          </div>
+          <div class="facts__item">
+            <dt>M87*</dt>
+            <dd><strong>태양 질량의 약 65억 배</strong><span>2019년 사건의 지평선 망원경이 그림자를 처음 공개, 약 5,500만 광년</span></dd>
+          </div>
+          <div class="facts__item">
+            <dt>가이아 BH1</dt>
+            <dd><strong>태양 질량의 약 10배</strong><span>확인된 블랙홀 중 가까운 편, 약 1,560광년</span></dd>
+          </div>
+        </dl>
+        <p class="facts__render">이 그림은 슈바르츠실트 블랙홀 주변의 빛 경로를 근사해 실시간으로 그린 것입니다. 원반의 색과 무늬는 연출입니다.</p>
+      </aside>
+    </div>
+  </section>
+  <section id="event-return" class="chapter chapter--return" tabindex="-1" aria-labelledby="event-return-title">
+    <div class="return">
+      <p class="eyebrow" data-reveal="" style="opacity: 0; visibility: hidden; transform: translate(0px, 36px);">귀환</p>
+      <h2 id="event-return-title" class="horizon__title" data-reveal="" style="opacity: 0; visibility: hidden; transform: translate(0px, 36px);"><span>빛을 따라</span><span>다시 궤도로</span></h2>
+      <div class="return__links" data-reveal="" style="opacity: 0; visibility: hidden; transform: translate(0px, 36px);"><a class="cut-link"><span class="cut-link__mark" aria-hidden="true"></span>천체 관측으로</a><a class="cut-link"><span class="cut-link__mark" aria-hidden="true"></span>위성 관제로</a></div>
+    </div>
+  </section>
+</div>"
+`;

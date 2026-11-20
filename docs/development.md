@@ -44,6 +44,7 @@ Histoire 1.0 beta가 Vite 7만 지원해 `vite`를 7.3으로 고정하고 `overr
 ## 별자리와 이벤트
 
 - 홈 별자리(`pages/home`): 별자리선과 밝은 별은 공개 좌표를 근사식(`sky-view.ts`)으로 30초마다 다시 계산하고, 달과 행성은 Astronomy Engine을 씁니다. 어두운 배경 별은 장식이며 화면의 설명 패널에도 그렇게 적습니다.
+- 구조: 홈 별자리는 하늘 배치(`lib/sky-scene.ts`), 캔버스 그리기(`lib/sky-paint.ts`), 끌어서 방위 돌리기(`lib/heading-drag.ts`), 화면 글자(`SkyOverlay.vue`)로, 지상 궤적 지도(`widgets/ground-track-map`)는 투영·회전(`lib/projection.ts`), 그리기(`lib/paint.ts`), 궤적(`lib/track.ts`), 확대(`lib/zoom.ts`), 도구·범례 컴포넌트로 나눴습니다. 이벤트 화면은 장마다 컴포넌트(`SignalChapter` 등)를 두고, 장의 배치(`.chapter*`)와 여러 장이 함께 쓰는 글자·링크 모양은 `EventPage.vue`에 남겼습니다(자식의 바깥 요소에도 부모의 범위 지정 스타일이 적용됨).
 - 이벤트 일정(`entities/sky`의 `upcomingSkyEvents`): 실제 행사가 아니라 계산된 천문 현상입니다.
 - 일식·월식(`entities/sky`의 `eclipseWindow`, `eyepieceScene`): 일식은 관측지 기준(`SearchLocalSolarEclipse`), 월식은 반영식 시작~끝입니다. 망원경 시야는 작은 각도라 평면으로 근사하고, 지구 그림자는 지구 중심 벡터(`GeoVector`)로 구해 대기 효과로 2% 키웁니다. `Observer(0, 0, 0)`은 지구 중심이 아니라 적도 위 지점이므로 쓰지 않습니다.
 - 블랙홀(`pages/event/lib/shader.ts`): 슈바르츠실트 반지름을 1로 둔 광선 적분 근사입니다. 원반의 색과 무늬는 연출이고, 프레임이 밀리면 내부 해상도를 낮춥니다. 셰이더 컴파일이 첫 글자 표시를 늦추지 않게 한가할 때(`requestIdleCallback`) 켜고, GPU 가속이 없는 기기(`failIfMajorPerformanceCaveat`)에서는 정적 대체 화면을 씁니다. Cypress는 CI에 GPU가 없어 `allowSoftware`로 컴파일만 확인합니다. 참고 사이트의 이미지나 코드는 쓰지 않았습니다.
@@ -110,6 +111,7 @@ Vercel 프로젝트 `beyond-the-quasar`가 GitHub 저장소와 연결되어 있�
 | 범위 | 위치 | 내용 |
 |---|---|---|
 | 단위·컴포넌트 | `src/**/*.test.ts` | 궤도·천체 계산, 필터, 명령 지연, 각 컴포넌트 |
+| 그리기 지문 | `*.paint.test.ts`, `EventPage.structure.test.ts` | 캔버스 2D 호출을 순서대로 적는 가짜 문맥(`shared/lib/test/recording-canvas.ts`)의 호출 수·해시로 별자리·지상 궤적 지도가 같은 그림을 그리는지, 이벤트 화면이 같은 문서 구조인지 지킵니다. 그림을 일부러 바꿨다면 `bunx vitest -u`로 갱신합니다 |
 | 컴포넌트(실제 브라우저) | `src/**/*.cy.ts` | Cypress 컴포넌트 테스트. jsdom이 그리지 못하는 지상 궤적 지도(2D 캔버스)와 3D 궤도(WebGL)가 실제로 그려지는지, 확대·전환 버튼이 그림을 바꾸는지, 닫으면 그리기를 멈추는지 확인합니다. `bun run test:component` |
 | 스토리 | `src/**/*.story.vue` | 컴포넌트별 상태 (`bun run story:build`로 CI에서 빌드 확인) |
 | E2E | `e2e/` | 넘침, 프리로더, 모션 정지, 관제·카탈로그·관측 흐름, axe |
