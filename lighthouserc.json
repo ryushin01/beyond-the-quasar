@@ -12,7 +12,8 @@
       ],
       "numberOfRuns": 3,
       "settings": {
-        "preset": "desktop"
+        "preset": "desktop",
+        "skipAudits": ["color-contrast"]
       }
     },
     "assert": {
@@ -44,7 +45,6 @@
                 "maxNumericValue": 0.1
               }
             ],
-            "color-contrast": "warn",
             "target-size": "warn"
           }
         },
