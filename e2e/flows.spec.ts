@@ -57,7 +57,8 @@ test.describe('위성 관제', () => {
 test.describe('위성 카탈로그', () => {
   test('홈의 분류 링크로 들어오면 그 분류만 보이고 상세에서 관제로 이어진다', async ({ page }) => {
     await page.goto('/catalog?category=military')
-    const count = page.getByRole('status').first()
+    // 궤도 데이터가 오래되면 앞에 경고(status)가 하나 더 붙으므로 개수 안내만 집습니다.
+    const count = page.getByRole('status').filter({ hasText: /기 표시/ })
     await expect(count).toHaveText(/\d+기 표시/)
     await page.getByRole('button', { name: /SBIRS GEO-1 .* 상세 정보/ }).click()
     const dialog = page.getByRole('dialog', { name: '위성 정보' })
@@ -73,7 +74,7 @@ test.describe('위성 카탈로그', () => {
     await page.getByLabel('위성 검색').fill('존재하지않는위성')
     await expect(page.getByText('조건에 맞는 위성이 없습니다')).toBeVisible()
     await page.getByRole('button', { name: '필터 초기화' }).click()
-    await expect(page.getByRole('status').first()).toHaveText(/1\d\d기 표시/)
+    await expect(page.getByRole('status').filter({ hasText: /기 표시/ })).toHaveText(/1\d\d기 표시/)
   })
 })
 
@@ -379,8 +380,8 @@ test.describe('Histoire 바로가기', () => {
     await page.waitForURL('**/histoire/index.html')
   })
 
-  test('동작 줄이기에서는 연출 없이 바로 이동한다', async ({ browser }) => {
-    const context = await browser.newContext({ reducedMotion: 'reduce', locale: 'ko-KR', baseURL: 'http://localhost:4173' })
+  test('동작 줄이기에서는 연출 없이 바로 이동한다', async ({ browser, baseURL }) => {
+    const context = await browser.newContext({ reducedMotion: 'reduce', locale: 'ko-KR', baseURL })
     const page = await context.newPage()
     await stubDocs(page)
     await page.goto('/catalog')

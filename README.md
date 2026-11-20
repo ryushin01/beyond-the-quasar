@@ -79,9 +79,9 @@
 
 | 구분 | 사용 기술 |
 |---|---|
-| 프레임워크 | Vue 3.5, Quasar 2, TypeScript 5.9, Vite 7, Vue Router 5 |
+| 프레임워크 | Vue 3.5, Quasar 2, TypeScript 6, Vite 7, Vue Router 5 |
 | 상태·데이터 | Pinia 4, TanStack Query 5, VueUse |
-| 궤도·천체 | satellite.js 6(SGP4), Astronomy Engine, d3-geo, world-atlas, three.js(3D 궤도) |
+| 궤도·천체 | satellite.js 7(SGP4), Astronomy Engine, d3-geo, world-atlas, three.js(3D 궤도) |
 | 스타일·다국어 | UnoCSS, vue-i18n 11, 웹 폰트 Oswald·Gothic A1(영문)·에이투지체(한글)·Roboto Mono·Nanum Gothic Coding |
 | 모션 | GSAP 3(ScrollTrigger), Lenis, WebGL 셰이더 |
 | 품질 | oxlint, eslint-plugin-vuejs-accessibility, vue-tsc, Vitest, Vue Test Utils, Cypress(컴포넌트), Playwright, axe, size-limit, Lighthouse CI |

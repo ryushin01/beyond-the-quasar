@@ -26,7 +26,9 @@
 
 ## Vite 버전
 
-Histoire 1.0 beta가 Vite 7만 지원해 `vite`를 7.3으로 고정하고 `overrides`로 하나로 맞췄습니다. Dependabot은 `devDependencies`만 올리고 `overrides`는 그대로 두므로, Vite를 올릴 때는 `overrides`도 같은 버전으로 맞춥니다. 둘이 어긋나면 `scripts/vite-pin.test.mjs`가 실패합니다. 같은 이유로 `@quasar/vite-plugin`은 1.x, `vitest`는 4, Cypress는 15를 씁니다(Cypress 16의 컴포넌트 테스트는 Vite 8만 지원). `satellite.js`는 7의 WASM 빌드가 Vite 빌드와 충돌해 6을 씁니다.
+Histoire 1.0 beta가 Vite 7만 지원해 `vite`를 7.3으로 고정하고 `overrides`로 하나로 맞췄습니다. Dependabot은 `devDependencies`만 올리고 `overrides`는 그대로 두므로, Vite를 올릴 때는 `overrides`도 같은 버전으로 맞춥니다. 둘이 어긋나면 `scripts/vite-pin.test.mjs`가 실패합니다. 같은 이유로 `@quasar/vite-plugin`은 1.x, Cypress는 15를 씁니다(Cypress 16의 컴포넌트 테스트는 Vite 8만 지원). Histoire의 Vite 8 지원은 저장소 main에만 있고 아직 배포 전이라(2026-11 기준), 배포되면 Vite 8·`@quasar/vite-plugin` 2·Cypress 16을 함께 올립니다. `vitest` 5는 Vite 7을 지원해 올렸습니다.
+
+`satellite.js` 7은 하나뿐인 진입점에서 WASM 대량 계산 모듈(pthreads 워커·최상위 await)까지 내보내, 그대로 두면 Vite가 워커를 iife로 묶다가 빌드가 실패합니다. 앱은 `propagate` 같은 JS 계산만 쓰므로 `vite.config.ts`의 `satelliteJsWithoutWasm` 플러그인이 그 모듈을 빈 모듈로 바꾸고, 개발 서버의 의존성 미리 묶기(`optimizeDeps`)에서도 뺍니다. 대량 계산이 필요해지면 플러그인을 빼고 `worker.format`을 `'es'`로 바꿉니다.
 
 ## 3D 궤도
 
@@ -162,9 +164,8 @@ Lighthouse가 첫 화면에서 두 가지를 찾았습니다. 디자인을 바�
 
 | 패키지 | 머무는 버전 | 이유 |
 | --- | --- | --- |
-| `vite`, `@quasar/vite-plugin`, `vitest`, `cypress` | 7, 1, 4, 15 | Histoire 1.0 베타가 Vite 7만 지원. 나머지는 다음 주 버전이 Vite 8을 요구 |
-| `typescript` | 5 | typescript-eslint가 TypeScript 7을 지원하지 않음 |
-| `satellite.js` | 6 | 7이 함께 싣는 WASM 대량 계산의 pthreads 워커가 최상위 await를 써서 워커(iife) 빌드가 실패. JS 계산만 쓰므로 6에 둠 |
+| `vite`, `@quasar/vite-plugin`, `cypress` | 7, 1, 15 | Histoire 1.0 베타가 Vite 7만 지원. 나머지는 다음 주 버전이 Vite 8을 요구 |
+| `typescript` | 6 | TypeScript 7은 JS API가 없어 vue-tsc·typescript-eslint가 아직 지원하지 않음 |
 
 ## PR 미리보기 배포
 
