@@ -15,8 +15,7 @@
     "verbatimModuleSyntax": true,
     "useDefineForClassFields": true,
     "types": ["vite/client", "node", "quasar", "@intlify/unplugin-vue-i18n/messages"],
-    "baseUrl": ".",
-    "paths": { "@/*": ["src/*"] }
+    "paths": { "@/*": ["./src/*"] }
   },
   "include": ["src/**/*.ts", "src/**/*.vue", "e2e/**/*.ts", "*.ts"],
   "exclude": ["src/**/*.cy.ts", "cypress.config.ts"]
