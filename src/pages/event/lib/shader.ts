@@ -121,6 +121,13 @@ vec3 entrance(vec2 p, float t) {
 const float DISK_INNER = 2.5;
 const float DISK_OUTER = 17.0;
 
+// 영화 Interstellar의 Gargantua 색감: 식은 바깥은 어두운 호박색, 안쪽으로 갈수록 금빛을 지나 크림빛 백색이 됩니다.
+vec3 diskColor(float glow) {
+  vec3 color = mix(vec3(0.42, 0.11, 0.02), vec3(0.96, 0.44, 0.1), smoothstep(0.0, 0.3, glow));
+  color = mix(color, vec3(1.0, 0.74, 0.36), smoothstep(0.25, 0.65, glow));
+  return mix(color, vec3(1.0, 0.94, 0.8), smoothstep(0.6, 1.0, glow));
+}
+
 vec3 diskEmission(vec3 hit, vec3 rayDir, float t, inout float opacity) {
   float r = length(hit.xz);
   if (r < DISK_INNER || r > DISK_OUTER) return vec3(0.0);
@@ -132,14 +139,14 @@ vec3 diskEmission(vec3 hit, vec3 rayDir, float t, inout float opacity) {
   float density = smoothstep(DISK_INNER, DISK_INNER + 0.55, r) * smoothstep(DISK_OUTER, 7.5, r);
   float heat = pow(3.0 / r, 1.45);
 
-  // 다가오는 쪽이 밝아 보이는 상대론적 빛몰이
+  // 다가오는 쪽이 밝아 보이는 상대론적 빛몰이. 영화처럼 고리 전체가 고르게 빛나도록 약하게만 남깁니다.
   vec3 orbital = normalize(vec3(-hit.z, 0.0, hit.x));
   float beta = sqrt(0.5 / r);
   float doppler = 1.0 / (sqrt(1.0 / (1.0 - beta * beta)) * (1.0 - beta * dot(orbital, -rayDir)));
-  float intensity = density * heat * streaks * pow(doppler, 2.4);
+  float intensity = density * heat * streaks * pow(doppler, 0.6);
 
   float cover = clamp(density * (0.5 + streaks * 0.5), 0.0, 0.92);
-  vec3 tint = mix(vec3(0.46, 0.42, 0.78), vec3(1.0, 0.97, 1.0), clamp(intensity * 0.72, 0.0, 1.0));
+  vec3 tint = diskColor(clamp(intensity * 0.62, 0.0, 1.0));
   vec3 emitted = tint * intensity * 1.7 * (1.0 - opacity);
   opacity += (1.0 - opacity) * cover;
   return emitted;
@@ -185,7 +192,7 @@ vec3 blackHole(vec2 p, float t, float aspect) {
   // 그림자 가장자리처럼 끝까지 계산하지 못한 광선에는 별을 찍지 않습니다.
   if (escaped) {
     vec2 lensed = screen * (1.0 + 0.2 / max(dot(screen, screen), 0.04));
-    color += (1.0 - opacity) * stars(lensed + 3.0, 30.0) * vec3(0.8, 0.86, 1.0) * 0.9;
+    color += (1.0 - opacity) * stars(lensed + 3.0, 30.0) * vec3(0.98, 0.92, 0.84) * 0.85;
   }
 
   // 떨어지는 동안 사방으로 찢어지는 빛줄기
@@ -193,7 +200,7 @@ vec3 blackHole(vec2 p, float t, float aspect) {
     float radius = length(p);
     vec2 around = p / max(radius, 0.001);
     float rays = pow(noise3(vec3(around * 9.0, radius * 1.4 - t * 2.6)), 5.0);
-    color += vec3(0.42, 0.56, 1.0) * rays * 7.0 * sin(uFall * 3.14159) * smoothstep(0.08, 0.9, radius);
+    color += vec3(1.0, 0.62, 0.26) * rays * 6.0 * sin(uFall * 3.14159) * smoothstep(0.08, 0.9, radius);
     color *= 1.0 - smoothstep(0.72, 1.0, uFall);
   }
   return color;

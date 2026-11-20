@@ -1,10 +1,13 @@
 // README 화면(docs/images/*.jpg)과 링크 공유 미리보기(public/og.jpg)를 다시 찍습니다.
 // 먼저 사이트를 빌드해 띄워 두세요: bun run build:site && bun run preview
 // 사용: BASE_URL=http://localhost:4173 bun run screenshots
+// 일부만: ONLY=event-horizon,mobile-event bun run screenshots (이름은 docs/images의 파일 이름, 공유 미리보기는 og)
 import { chromium } from '@playwright/test'
 
 const BASE = process.env.BASE_URL ?? 'http://localhost:4173'
 const OUT = 'docs/images'
+const ONLY = process.env.ONLY ? new Set(process.env.ONLY.split(',')) : null
+const wanted = (name) => !ONLY || ONLY.has(name)
 // WebGL(블랙홀·궤도 지구본)이 그려지도록 소프트웨어 렌더러를 켭니다.
 const browser = await chromium.launch({ args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] })
 
@@ -24,6 +27,7 @@ async function open(path, device = DESKTOP, site) {
 }
 
 const shot = async (target, name) => {
+  if (!wanted(name)) return
   await target.screenshot({ path: `${OUT}/${name}.jpg`, type: 'jpeg', quality: 82 })
   console.log('저장', name)
 }
@@ -52,7 +56,7 @@ async function chapter(page, id) {
 
 // 링크 공유 미리보기(public/og.jpg): 홈 첫 화면을 README와 같은 1440×900 배치 그대로 1200×750으로 줄여 찍습니다.
 // README 화면과 함께 다시 찍어, 로고나 첫 화면이 바뀌어도 미리보기에 옛 모습이 남지 않게 합니다.
-{
+if (wanted('og')) {
   const { page, context } = await open('/', { ...DESKTOP, deviceScaleFactor: 1200 / 1440 })
   await page.screenshot({ path: 'public/og.jpg', type: 'jpeg', quality: 82 })
   console.log('저장', 'og')
@@ -152,13 +156,15 @@ for (const [name, query, site] of [
   // 탭부터 내보내기 링크까지만 담습니다(아래 빈 칸 제외).
   const top = await page.locator('.panels').boundingBox()
   const bottom = await page.locator('.panels__actions').boundingBox()
-  await page.screenshot({
-    path: `${OUT}/control-passes.jpg`,
-    type: 'jpeg',
-    quality: 82,
-    clip: { x: top.x, y: top.y, width: top.width, height: bottom.y + bottom.height + 8 - top.y },
-  })
-  console.log('저장', 'control-passes')
+  if (wanted('control-passes')) {
+    await page.screenshot({
+      path: `${OUT}/control-passes.jpg`,
+      type: 'jpeg',
+      quality: 82,
+      clip: { x: top.x, y: top.y, width: top.width, height: bottom.y + bottom.height + 8 - top.y },
+    })
+    console.log('저장', 'control-passes')
+  }
   await context.close()
 }
 
