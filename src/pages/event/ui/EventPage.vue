@@ -72,10 +72,10 @@ onBeforeUnmount(() => cancelAnimationFrame(frame))
 <style scoped>
 .event {
   --cut: 1.125rem;
-  --hud-text: #d9e2ff;
-  --hud-dim: #5d6a96;
-  --hud-body: #8f9abf;
-  --hud-line: rgb(170 190 255 / 0.3);
+  --hud-text: #e2e2e2;
+  --hud-dim: #6b6b6b;
+  --hud-body: #9c9c9c;
+  --hud-line: rgb(191 191 191 / 0.3);
   --frame-inset: 1rem;
   position: relative;
   /* 반투명 헤더 뒤로 장면이 이어지도록 본문 여백을 되돌립니다 */
@@ -184,7 +184,7 @@ onBeforeUnmount(() => cancelAnimationFrame(frame))
 .event :deep(.cut-link__mark) {
   width: 0.4375rem;
   height: 0.4375rem;
-  background: #8aa8ff;
+  background: var(--signal-text);
 }
 
 @media (max-width: 1000px) {

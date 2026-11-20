@@ -62,7 +62,7 @@ float ridgeHeight(float x) {
 vec3 aboveWater(vec2 p, float t, float reflected) {
   float lift = max(p.y - HORIZON, 0.0);
   vec3 color = mix(vec3(0.012, 0.075, 0.24), vec3(0.0, 0.008, 0.04), smoothstep(0.0, 1.1, lift));
-  color += stars(p + 8.0, 34.0) * vec3(0.7, 0.8, 1.0);
+  color += stars(p + 8.0, 34.0) * vec3(0.9, 0.9, 0.92);
 
   vec2 c = p - vec2(0.0, 0.24);
   float sway = 0.86 + 0.14 * sin(t * 0.32);
@@ -70,7 +70,8 @@ vec3 aboveWater(vec2 p, float t, float reflected) {
   float r = length(c);
   float d = abs(r - 0.3);
   float glow = 0.016 / (d + 0.014) + 0.05 / (d * 6.0 + 0.2);
-  color += vec3(0.1, 0.42, 1.0) * glow * 0.6;
+  // 고리 빛은 사이트 강조색(#1a3fe0)과 같은 색조입니다.
+  color += vec3(0.116, 0.281, 1.0) * glow * 0.6;
 
   // 고리 몸통의 격자 무늬. 각도를 직접 쓰지 않고 좌표로 끊어 이음매를 없앱니다.
   float band = smoothstep(0.03, 0.022, d);
@@ -78,8 +79,8 @@ vec3 aboveWater(vec2 p, float t, float reflected) {
   float cells = smoothstep(0.42, 0.2, max(abs(tiles.x), abs(tiles.y)));
   float shimmer = 0.7 + 0.3 * sin(t * 1.3 + (c.x - c.y) * 16.0);
   // 물에 비친 고리는 무늬 없이 빛덩이로만 남깁니다.
-  color += band * vec3(0.3, 0.72, 1.0) * mix(0.55 + 0.75 * cells * shimmer, 0.8, reflected);
-  color += smoothstep(0.012, 0.0, d - 0.021) * vec3(0.75, 0.92, 1.0) * 0.5 * (1.0 - reflected);
+  color += band * vec3(0.116, 0.281, 1.0) * mix(0.55 + 0.75 * cells * shimmer, 0.8, reflected);
+  color += smoothstep(0.012, 0.0, d - 0.021) * vec3(0.78, 0.84, 1.0) * 0.5 * (1.0 - reflected);
 
   // 고리 안쪽은 건너편 어둠이 보입니다.
   color *= mix(0.55, 1.0, smoothstep(0.24, 0.3, r));
@@ -90,7 +91,7 @@ vec3 aboveWater(vec2 p, float t, float reflected) {
     float toRing = exp(-abs(p.x) * 1.5);
     float grain = fbm(p * vec2(9.0, 22.0));
     float lit = smoothstep(ridge - 0.42, ridge, p.y) * toRing;
-    vec3 rock = vec3(0.004, 0.012, 0.045) + vec3(0.04, 0.26, 0.8) * lit * grain * 3.4;
+    vec3 rock = vec3(0.004, 0.012, 0.045) + vec3(0.093, 0.225, 0.8) * lit * grain * 3.4;
     color = mix(rock, color, smoothstep(0.0, 0.006, p.y - ridge));
   }
   return color;
@@ -111,8 +112,8 @@ vec3 entrance(vec2 p, float t) {
 
   float path = exp(-p.x * p.x * (5.0 + 1.2 / (depth + 0.05)));
   float streak = smoothstep(0.54, 0.8, noise(vec2(p.x * 3.0 + ripple * 2.0, row * 0.73)));
-  color += vec3(0.06, 0.36, 1.0) * path * streak * 1.25;
-  color += stars(vec2(p.x, scale * 0.42) + t * 0.008, 26.0) * vec3(0.5, 0.72, 1.0) * smoothstep(0.9, 0.05, depth);
+  color += vec3(0.116, 0.281, 1.0) * path * streak * 1.25;
+  color += stars(vec2(p.x, scale * 0.42) + t * 0.008, 26.0) * vec3(0.8, 0.82, 0.88) * smoothstep(0.9, 0.05, depth);
   return color;
 }
 

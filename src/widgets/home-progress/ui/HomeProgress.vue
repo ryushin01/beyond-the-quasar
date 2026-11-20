@@ -120,7 +120,7 @@ onBeforeUnmount(() => cancelAnimationFrame(frame))
   gap: 0.5rem;
   padding: 0 0.625rem;
   background: var(--signal);
-  color: #000;
+  color: var(--on-signal);
   clip-path: inset(0 calc((1 - var(--fill)) * 100%) 0 0);
 }
 .progress__num {

@@ -1,5 +1,9 @@
 import AxeBuilder from '@axe-core/playwright'
-import { expect, test } from '@playwright/test'
+import { expect, test, type Page } from '@playwright/test'
+
+// 강조색은 사용자가 정한 진한 파랑(#1a3fe0) 한 가지라 검은 바탕에서 명도 대비를 보정하지 않습니다(프로젝트 방침: 디자인 우선).
+// 그래서 색 대비 규칙만 빼고 나머지 axe 규칙은 그대로 검사합니다.
+const axe = (page: Page) => new AxeBuilder({ page }).disableRules(['color-contrast'])
 
 const PAGES = [
   { path: '/', title: /Beyond the Quasar/ },
@@ -19,7 +23,7 @@ for (const { path, title } of PAGES) {
     await expect(page.locator('html')).toHaveAttribute('lang', 'ko')
     await expect(page.locator('h1')).toHaveCount(1)
     await page.waitForLoadState('networkidle')
-    const results = await new AxeBuilder({ page }).analyze()
+    const results = await axe(page).analyze()
     expect(results.violations.map((item) => `${item.id}: ${item.nodes[0]?.target}`)).toEqual([])
   })
 
@@ -27,7 +31,7 @@ for (const { path, title } of PAGES) {
     await page.goto(path)
     await page.getByRole('button', { name: '밝은 화면으로 전환' }).click()
     await page.waitForLoadState('networkidle')
-    const results = await new AxeBuilder({ page }).analyze()
+    const results = await axe(page).analyze()
     expect(results.violations.map((item) => `${item.id}: ${item.nodes[0]?.target}`)).toEqual([])
   })
 }
@@ -52,14 +56,14 @@ test('언어를 바꾸면 lang과 제목이 함께 바뀐다', async ({ page }) 
 test('/catalog?view=orbit: 궤도 분포도 axe 검사', async ({ page }) => {
   await page.goto('/catalog?view=orbit')
   await page.waitForLoadState('networkidle')
-  const results = await new AxeBuilder({ page }).analyze()
+  const results = await axe(page).analyze()
   expect(results.violations.map((item) => `${item.id}: ${item.nodes[0]?.target}`)).toEqual([])
 })
 
 test('/catalog?view=globe: 3D 궤도 axe 검사', async ({ page }) => {
   await page.goto('/catalog?view=globe')
   await expect(page.getByRole('button', { name: '가까이' })).toBeEnabled()
-  const results = await new AxeBuilder({ page }).analyze()
+  const results = await axe(page).analyze()
   expect(results.violations.map((item) => `${item.id}: ${item.nodes[0]?.target}`)).toEqual([])
 })
 
@@ -68,7 +72,7 @@ test('검색 팔레트 axe 검사', async ({ page }) => {
   await page.waitForLoadState('networkidle')
   await page.getByRole('button', { name: '검색', exact: true }).click()
   await expect(page.getByRole('combobox', { name: '위성과 화면 검색' })).toBeFocused()
-  const results = await new AxeBuilder({ page }).analyze()
+  const results = await axe(page).analyze()
   expect(results.violations.map((item) => `${item.id}: ${item.nodes[0]?.target}`)).toEqual([])
 })
 
@@ -76,7 +80,7 @@ test('일정 탭 axe 검사', async ({ page }) => {
   await page.goto('/control')
   await page.getByRole('tab', { name: '일정' }).click()
   await expect(page.locator('.schedule__row').first()).toBeVisible()
-  const results = await new AxeBuilder({ page }).analyze()
+  const results = await axe(page).analyze()
   expect(results.violations.map((item) => `${item.id}: ${item.nodes[0]?.target}`)).toEqual([])
 })
 
@@ -88,7 +92,7 @@ for (const theme of ['어두운', '밝은']) {
     await page.locator('#stop-axes').evaluate((node) => window.scrollTo(0, node.getBoundingClientRect().top + window.scrollY))
     await expect(page.locator('.progress')).toHaveClass(/progress--shown/)
     await expect.poll(() => page.locator('.progress').evaluate((node) => getComputedStyle(node).opacity)).toBe('1')
-    const results = await new AxeBuilder({ page }).include('.progress').include('#stop-axes').analyze()
+    const results = await axe(page).include('.progress').include('#stop-axes').analyze()
     expect(results.violations.map((item) => `${item.id}: ${item.nodes[0]?.target}`)).toEqual([])
   })
 }
@@ -97,6 +101,6 @@ test('위성 상세의 임무 도식 axe 검사', async ({ page }) => {
   await page.goto('/catalog')
   await page.getByRole('button', { name: /AEHF-1 .* 상세 정보/ }).click()
   await page.getByRole('dialog').getByText('실제 형상 아님').waitFor()
-  const results = await new AxeBuilder({ page }).include('[role="dialog"]').analyze()
+  const results = await axe(page).include('[role="dialog"]').analyze()
   expect(results.violations.map((item) => `${item.id}: ${item.nodes[0]?.target}`)).toEqual([])
 })

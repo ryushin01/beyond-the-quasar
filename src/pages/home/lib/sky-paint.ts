@@ -29,8 +29,9 @@ interface NameAnchor {
   y: number
 }
 
-const LINE = 'rgb(138 168 255 / 0.62)'
-const PLANET = '#8aa8ff'
+// 캔버스라 CSS 변수를 못 써서 --signal(#1a3fe0) 값을 그대로 적습니다.
+const LINE = 'rgb(26 63 224 / 0.62)'
+const PLANET = '#1a3fe0'
 const MONO = '"Roboto Mono Variable", "BTQ Coding", "Nanum Gothic Coding", monospace'
 const DISPLAY = '"Oswald Variable", "Orbit", system-ui, sans-serif'
 const COMPASS_POINTS: readonly (readonly [number, Compass])[] = [
@@ -126,7 +127,7 @@ function paintConstellations(ctx: CanvasRenderingContext2D, scene: SkyScene, vie
 function paintConstellationNames(ctx: CanvasRenderingContext2D, names: NameAnchor[], taken: LabelBox[], width: number): void {
   ctx.font = `500 11px ${MONO}`
   ctx.textAlign = 'left'
-  ctx.fillStyle = 'rgb(200 212 255 / 0.74)'
+  ctx.fillStyle = 'rgb(213 213 213 / 0.74)'
   for (const name of names) {
     const labelWidth = ctx.measureText(name.text).width
     const left = name.x - labelWidth / 2

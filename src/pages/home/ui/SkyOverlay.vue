@@ -106,6 +106,7 @@ const nextEventDays = computed(() => (props.nextEvent ? daysUntil(props.nextEven
 }
 .sky__chip:hover {
   background: var(--signal-text);
+  color: var(--on-signal);
 }
 .sky__panel {
   width: min(22rem, calc(100vw - 2 * var(--margin)));

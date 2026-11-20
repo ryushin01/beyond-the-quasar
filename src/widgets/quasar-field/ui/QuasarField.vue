@@ -132,7 +132,7 @@ onBeforeUnmount(() => {
   width: 100%;
   height: 100%;
   background:
-    radial-gradient(ellipse 45% 12% at 68% 50%, #4a78ff, transparent 70%),
+    radial-gradient(ellipse 45% 12% at 68% 50%, #1a3fe0, transparent 70%),
     radial-gradient(circle at 68% 50%, #fff 0, transparent 6%);
 }
 </style>

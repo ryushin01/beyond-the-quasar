@@ -102,8 +102,8 @@ useGsapContext(
   transition: background-color 0.25s ease, color 0.25s ease, transform 0.5s var(--ease-out);
 }
 .footer__cta:hover {
-  background: #4a78ff;
-  color: #000;
+  background: var(--signal);
+  color: var(--on-signal);
   transform: scale(1.05);
 }
 .footer__giant {

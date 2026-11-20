@@ -40,7 +40,7 @@ describe('ConstellationSky 그리기', () => {
     expect(fingerprint(calls)).toMatchInlineSnapshot(`
       {
         "calls": 1299,
-        "sha256": "62004b33549c1211",
+        "sha256": "b3ab5df81441a3b3",
       }
     `)
 
@@ -53,7 +53,7 @@ describe('ConstellationSky 그리기', () => {
     expect(fingerprint(calls)).toMatchInlineSnapshot(`
       {
         "calls": 1348,
-        "sha256": "df258cbe91eed36a",
+        "sha256": "c397beacab33d40e",
       }
     `)
     wrapper.unmount()

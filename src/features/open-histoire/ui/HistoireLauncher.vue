@@ -128,20 +128,20 @@ onBeforeUnmount(() => timeline?.kill())
   border-radius: 999px;
   color: #fff;
   text-decoration: none;
-  box-shadow: 0 0 1.75rem rgb(74 120 255 / 0.4);
+  box-shadow: 0 0 1.75rem color-mix(in srgb, var(--signal) 40%, transparent);
   transition: box-shadow 0.4s ease, border-color 0.25s ease;
 }
 .launcher:hover,
 .launcher:focus-visible {
-  border-color: #8aa8ff;
-  box-shadow: 0 0 2.75rem rgb(74 120 255 / 0.75);
+  border-color: var(--signal-text);
+  box-shadow: 0 0 2.75rem color-mix(in srgb, var(--signal) 75%, transparent);
 }
 .launcher__orbit {
   position: absolute;
   left: 0.3125rem;
   width: 2.75rem;
   height: 2.75rem;
-  border: 1px solid rgb(138 168 255 / 0.5);
+  border: 1px solid color-mix(in srgb, var(--signal-text) 50%, transparent);
   border-radius: 50%;
   animation: launcher-spin 5s linear infinite;
 }
@@ -230,7 +230,7 @@ onBeforeUnmount(() => timeline?.kill())
   display: block;
   width: min(36rem, 76vw);
   height: 1px;
-  background: #8aa8ff;
+  background: var(--signal-text);
 }
 .warp__meta {
   margin: 0;
@@ -245,7 +245,7 @@ onBeforeUnmount(() => timeline?.kill())
 }
 .warp__shutter {
   margin-right: -1px;
-  background: #4a78ff;
+  background: var(--signal);
   transform: scaleY(0);
   transform-origin: bottom;
 }
