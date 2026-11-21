@@ -5,6 +5,7 @@ import { useRoute, useRouter } from 'vue-router'
 
 import { StaleSnapshotNotice, useSatelliteCatalog, type Satellite } from '@/entities/satellite'
 import { SatelliteFilterPanel, useFilterUrlSync } from '@/features/filter-satellites'
+import { isOneOf } from '@/shared/lib'
 import { EASE, gsap, useMotionPreference, useSmoothScroll } from '@/shared/motion'
 import { ToggleChip } from '@/shared/ui'
 import { OrbitGlobe } from '@/widgets/orbit-globe'
@@ -29,7 +30,11 @@ useFilterUrlSync()
 // 주소의 보기 값은 허용 목록으로만 받습니다. 플레이트가 기본이라 주소에 쓰지 않습니다.
 const VIEWS = ['plates', 'orbit', 'globe'] as const
 type View = (typeof VIEWS)[number]
-const view = computed<View>(() => (VIEWS as readonly unknown[]).includes(route.query.view) ? (route.query.view as View) : 'plates')
+const isView = isOneOf(VIEWS)
+const view = computed<View>(() => {
+  const requested = route.query.view
+  return isView(requested) ? requested : 'plates'
+})
 function setView(next: View): void {
   const { view: _view, ...query } = route.query
   void router.replace({ query: next === 'plates' ? query : { ...query, view: next } })
