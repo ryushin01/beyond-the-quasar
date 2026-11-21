@@ -62,6 +62,8 @@ export default defineConfig({
   },
   test: {
     environment: 'jsdom',
+    // 파일마다 격리는 유지하면서 jsdom 환경을 작업자마다 한 번만 만듭니다.
+    pool: 'vmThreads',
     include: ['src/**/*.test.ts', 'scripts/**/*.test.mjs'],
     setupFiles: ['./src/shared/lib/test/setup.ts'],
     server: { deps: { inline: ['quasar'] } },

@@ -22,6 +22,7 @@ export interface SkyScene {
 
 type Site = Parameters<typeof bodyPosition>[2]
 
+const BODIES: readonly SkyBodyName[] = ['Moon', ...PLANETS]
 const FIELD_STARS = createFieldStars(1100)
 const LABELLED_MAGNITUDE = 2.1
 
@@ -35,7 +36,7 @@ export function placeSky(date: Date, site: Site): SkyScene {
     constellations,
     stars: BRIGHT_STARS.filter((star) => star.magnitude < LABELLED_MAGNITUDE).map((star) => ({ ...place(star.ra, star.dec), name: star.name, magnitude: star.magnitude })),
     field: FIELD_STARS.map((star) => ({ ...place(star.ra, star.dec), size: star.size, phase: star.phase })),
-    bodies: (['Moon', ...PLANETS] as SkyBodyName[]).map((name) => ({ ...bodyPosition(name, date, site), name })),
+    bodies: BODIES.map((name) => ({ ...bodyPosition(name, date, site), name })),
     visibleNames: constellations
       .filter((item) => {
         const points = item.paths.flat()

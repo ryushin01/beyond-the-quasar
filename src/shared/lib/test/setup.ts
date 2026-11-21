@@ -29,6 +29,11 @@ window.matchMedia ||= ((query: string) => ({
   dispatchEvent: () => false,
 })) as unknown as typeof window.matchMedia
 
+// jsdom은 스크롤·캔버스를 구현하지 않아 부를 때마다 경고를 남깁니다. 테스트에서는 아무 일도 하지 않게 하고,
+// 그림을 확인하는 테스트는 각자 getContext를 기록용 캔버스로 바꿉니다.
+window.scrollTo = () => {}
+HTMLCanvasElement.prototype.getContext = () => null
+
 globalThis.ResizeObserver ||= class {
   observe() {}
   unobserve() {}
