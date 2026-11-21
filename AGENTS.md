@@ -55,10 +55,13 @@
 - 브랜치 이름: `feat/…`, `fix/…`, `refactor/…`, `docs/…`, `test/…`, `chore/…`, `release/…`(예: `release/1.0.0`)
 - 커밋 메시지: Conventional Commits `<타입>: <한국어 요약>`, 타입은 `feat`, `fix`, `refactor`, `perf`, `docs`, `test`, `style`, `chore`, `ci`, `build`. 버전을 올린 커밋은 끝에 `(x.y.z)`를 붙입니다. 호환이 깨지면 본문에 `BREAKING CHANGE:`를 적습니다.
   - 실제 예) `feat: 강조색을 코발트 #1a3fe0 한 가지로 (1.2.0)`, `fix: 공유 미리보기 이미지의 옛 로고를 쿼사르 사진으로 (1.0.1)`
-  - 본문에 무엇을 왜 바꿨는지와 확인 결과를 적고, 끝에 `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>`를 붙입니다.
+  - 본문에 무엇을 왜 바꿨는지와 확인 결과를 적고.
+- 기여자는 ryushin01만 남깁니다(2026-11-21 사용자 결정). 커밋 작성자는 항상 `ryushin0 <141554987+ryushin01@users.noreply.github.com>`이고, 이 저장소는 백엔드 코드가 없어 `Co-Authored-By` 줄을 넣지 않습니다.
+  - GitHub Actions가 커밋하는 워크플로는 작성자를 ryushin01로 설정합니다(`github-actions[bot]` 금지). 표준과 다른 점: 지금 `refresh-tle.yml`의 스냅샷 갱신 커밋은 `github-actions[bot]`으로 되어 있어 ryushin01로 바꿔야 합니다.
+  - Dependabot PR은 그대로 병합하지 않습니다. 변경 내역을 확인하고 같은 변경을 ryushin01 커밋으로 다시 만들어 병합합니다(병합 커밋 작성자가 dependabot이 되지 않게).
 - 버전: Semantic Versioning(주.부.수). 기능·수정 PR은 `package.json`의 `version`과 README의 version 배지를 함께 맞춥니다. 문서만 바뀐 PR은 버전을 올리지 않습니다.
 - 변경 기록: `CHANGELOG.md`(제목 "버전 기록"), 최신 버전을 위에 두고 `## x.y.z (YYYY-MM-DD)` 아래 한 줄 요약과 `-` 목록으로 적습니다. 표준(Keep a Changelog)과 다른 점: 날짜를 괄호로 쓰고, `[Unreleased]` 절과 추가·변경·수정·제거 소제목이 없습니다.
-- 병합은 merge commit(`Merge pull request #N from ...`). CI가 통과하면 바로 병합하고 CodeRabbit 리뷰는 기다리지 않습니다. Dependabot 주 버전 PR은 변경 내역을 확인하고 CI가 통과할 때만 병합합니다.
+- 병합은 merge commit(`Merge pull request #N from ...`). CI가 통과하면 바로 병합하고 CodeRabbit 리뷰는 기다리지 않습니다.
 
 ## 7. 배포·릴리스
 
