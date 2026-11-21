@@ -36,20 +36,28 @@
 
 - CI(`.github/workflows/ci.yml`) 순서: install → lint → typecheck → test → build → story:build → Playwright 설치 → test:e2e → size → lhci → lhci:mobile → `bunx cypress install` → test:component
 - 그림을 일부러 바꿨다면 그리기 지문 스냅샷을 `bunx vitest -u`로 갱신합니다.
+- 테스트 원칙: 구현 세부가 아니라 사용자가 보는 동작을 검사하고, 요소는 되도록 역할·이름으로 찾습니다(Playwright `getByRole`). 표준과 다른 점: 컴포넌트 단위 테스트는 Testing Library가 아니라 Vue Test Utils(`@vue/test-utils`) + Vitest(jsdom)를 쓰고, 캔버스·WebGL은 Cypress 컴포넌트 테스트로 봅니다. 화면 흐름은 Playwright E2E, 접근성은 axe(`@axe-core/playwright`)로 검사합니다. 버그를 고치면 고치기 전에 실패하는 테스트를 함께 넣습니다.
 
 ## 5. 코드 스타일
 
-- oxlint + `eslint-plugin-vuejs-accessibility`(`eslint.config.js`). 별도 포매터 스크립트는 없으니 주변 코드 서식을 따릅니다.
+- oxlint + `eslint-plugin-vuejs-accessibility`(`eslint.config.js`).
 - 모션: GSAP 코드는 `gsap.context` 안에 두고 언마운트 때 되돌립니다(`useGsapContext`). `useMotionPreference().enabled`가 거짓이면 연출을 만들지 않고, 기본 CSS는 연출 없이도 완성된 화면이어야 합니다. 이징은 `shared/motion`의 `EASE`, CSS는 `--ease-out`. 매 프레임 그리는 캔버스는 `useVisibleFrameLoop`, WebGL은 context lost/restored를 처리합니다.
 - i18n: 템플릿에서 `$t`·`i18n-t`를 쓰지 않고 `useI18n()`의 `t`를 씁니다. 새 Quasar 컴포넌트를 쓰면 `src/app/styles/quasar.sass`에 그 `.sass`를 더하고, 글꼴은 `src/app/styles/fonts.css`에 넣습니다.
 - `localStorage`는 `readStorage`·`readStorageList`로 읽고, 저장 형식을 바꾸면 검사 함수도 함께 바꿉니다. 주소 상태는 허용 목록으로 걸러 `router.replace`로 씁니다.
 - 접근성: **2026-11-10부터 이 프로젝트는 접근성을 기준에서 뺍니다**(사용자 결정, 공통 규칙보다 우선). 참고 디자인과 부딪히는 접근성 보정은 하지 않고, 디자인과 충돌하는 axe 규칙은 끕니다(1.2.0에서 `color-contrast`를 axe·Lighthouse 데스크톱에서 끔). 기존 구현(본문 바로가기, 키보드 대안, 모션 정지, 화면 전환 뒤 `main` 초점, `html[lang]` 등)은 유지하고 남은 axe 검사는 통과시킵니다.
+- TypeScript strict(`tsconfig.json`의 `"strict": true`, `noUncheckedIndexedAccess`)를 유지하고 `any`·`as` 단언·`@ts-ignore`를 피합니다. 외부 입력(주소 값, `localStorage`, 받은 스냅샷)은 허용 목록·검사 함수로 걸러 받습니다.
+- 서식: Prettier·Biome 설정이 없습니다(표준과 다른 점). oxlint·ESLint와 주변 코드 서식을 따릅니다.
+- 접근성 표준은 WCAG 2.2와 KWCAG 2.2, 자동 검사 도구는 `eslint-plugin-vuejs-accessibility`(Vue 템플릿)와 axe(E2E)입니다. 다만 위 예외 방침(2026-11-10)에 따라 디자인과 부딪히는 항목은 기준에서 뺍니다.
 
 ## 6. Git·PR
 
-- `main`에 직접 커밋·푸시하지 않습니다(주간 스냅샷 갱신 워크플로의 봇 커밋만 예외). 최신 `main`에서 `feat/...`, `fix/...`, `docs/...`, `chore/...`, `refactor/...`, `test/...` 브랜치를 만듭니다.
-- 커밋 메시지: `<type>: <한국어 요약> (x.y.z)` 예) `feat: 강조색을 코발트 #1a3fe0 한 가지로 (1.2.0)`. 버전이 바뀌지 않는 커밋은 괄호 없이 씁니다. 본문에 무엇을 왜 바꿨는지와 확인 결과를 적고, 끝에 `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>`를 붙입니다.
-- 기능·수정 PR은 `package.json` 버전, README 배지, `CHANGELOG.md`(`## x.y.z (YYYY-MM-DD)`, 한 줄 요약 + `-` 목록)를 함께 올립니다. 문서만 바뀐 PR은 버전을 올리지 않습니다.
+- 흐름: GitHub Flow. `main`에 직접 커밋·푸시하지 않고(주간 스냅샷 갱신 워크플로의 봇 커밋 `궤도·소행성 스냅샷 갱신`만 예외), 최신 `main`에서 브랜치를 만들어 PR로만 병합합니다. PR은 목적 하나로 작게 만들고 본문에 무엇·왜·검사 결과를 적습니다.
+- 브랜치 이름: `feat/…`, `fix/…`, `refactor/…`, `docs/…`, `test/…`, `chore/…`, `release/…`(예: `release/1.0.0`)
+- 커밋 메시지: Conventional Commits `<타입>: <한국어 요약>`, 타입은 `feat`, `fix`, `refactor`, `perf`, `docs`, `test`, `style`, `chore`, `ci`, `build`. 버전을 올린 커밋은 끝에 `(x.y.z)`를 붙입니다. 호환이 깨지면 본문에 `BREAKING CHANGE:`를 적습니다.
+  - 실제 예) `feat: 강조색을 코발트 #1a3fe0 한 가지로 (1.2.0)`, `fix: 공유 미리보기 이미지의 옛 로고를 쿼사르 사진으로 (1.0.1)`
+  - 본문에 무엇을 왜 바꿨는지와 확인 결과를 적고, 끝에 `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>`를 붙입니다.
+- 버전: Semantic Versioning(주.부.수). 기능·수정 PR은 `package.json`의 `version`과 README의 version 배지를 함께 맞춥니다. 문서만 바뀐 PR은 버전을 올리지 않습니다.
+- 변경 기록: `CHANGELOG.md`(제목 "버전 기록"), 최신 버전을 위에 두고 `## x.y.z (YYYY-MM-DD)` 아래 한 줄 요약과 `-` 목록으로 적습니다. 표준(Keep a Changelog)과 다른 점: 날짜를 괄호로 쓰고, `[Unreleased]` 절과 추가·변경·수정·제거 소제목이 없습니다.
 - 병합은 merge commit(`Merge pull request #N from ...`). CI가 통과하면 바로 병합하고 CodeRabbit 리뷰는 기다리지 않습니다. Dependabot 주 버전 PR은 변경 내역을 확인하고 CI가 통과할 때만 병합합니다.
 
 ## 7. 배포·릴리스
