@@ -72,7 +72,31 @@ describe('SpaceHazards', () => {
     expect(wrapper.find('.hazards__value--alert').exists()).toBe(true)
   })
 
-  it('우주 기상을 받지 못하면 그 영역에만 안내와 다시 시도 버튼을 보이고, 소행성 표는 그대로 둔다', async () => {
+  it('NOAA에 닿지 못하면 저장소의 스냅샷을 보여 주고 오프라인 자료라고 알린다', async () => {
+    const snapshot = { fetchedAt: '2026-11-14T03:17:00.000Z', source: 'NOAA SWPC', scales, kp }
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async (url: string) => {
+        if (url.includes('space-weather-snapshot')) return new Response(JSON.stringify(snapshot))
+        if (url.includes('noaa')) throw new TypeError('Failed to fetch')
+        return respond(url)
+      }),
+    )
+    const wrapper = mountHazards()
+    await flushPromises()
+    expect(wrapper.find('[role="alert"]').exists()).toBe(false)
+    expect(wrapper.find('.hazards__offline[role="status"]').text()).toContain('오프라인 데이터로 표시 중 · NOAA 스냅샷 2026-11-14 기준')
+    expect(wrapper.text()).toContain('G2')
+  })
+
+  it('실시간 값을 받으면 오프라인 안내를 보이지 않는다', async () => {
+    vi.stubGlobal('fetch', vi.fn(async (url: string) => respond(url)))
+    const wrapper = mountHazards()
+    await flushPromises()
+    expect(wrapper.find('.hazards__offline').exists()).toBe(false)
+  })
+
+  it('우주 기상(실시간·스냅샷 모두)을 받지 못하면 그 영역에만 안내와 다시 시도 버튼을 보이고, 소행성 표는 그대로 둔다', async () => {
     vi.stubGlobal('fetch', vi.fn(async (url: string) => (url.includes('noaa') ? new Response('', { status: 503 }) : respond(url))))
     const wrapper = mountHazards()
     // 우주 기상은 한 번 다시 시도(1초 뒤)한 뒤에 실패로 봅니다.

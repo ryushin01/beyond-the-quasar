@@ -1,7 +1,7 @@
 # 🔵 Beyond the Quasar
 
 [![CI](https://github.com/ryushin01/beyond-the-quasar/actions/workflows/ci.yml/badge.svg)](https://github.com/ryushin01/beyond-the-quasar/actions/workflows/ci.yml)
-![version](https://img.shields.io/badge/version-1.0.1-1a3fe0)
+![version](https://img.shields.io/badge/version-1.3.0-1a3fe0)
 ![Histoire](https://img.shields.io/badge/Histoire-1.0_beta-34D399)
 
 군사·항법·기상·통신 위성을 추적하고 오늘 밤의 하늘을 관측하는 위성 관제·천체 관측 웹 앱입니다.
@@ -98,6 +98,12 @@ bun install
 bun run dev    # http://localhost:5173
 ```
 
+`.env` 없이 바로 동작합니다. 궤도(TLE)·소행성 접근·우주 기상 모두 저장소의 스냅샷(`public/data/`)이 있고 글꼴도 저장소·패키지에 들어 있어, 인터넷이 끊겨도 모든 화면이 내용과 함께 뜹니다. 실행 중 외부로 나가는 요청은 우주 기상(NOAA)과 Sentry(`VITE_SENTRY_DSN`이 있을 때만) 둘뿐이고, NOAA에 닿지 못하면(오프라인·차단·8초 시간 초과) 스냅샷으로 대신 보여 주며 "오프라인 데이터로 표시 중"이라고 알립니다.
+
+```bash
+bun run build && bun run preview   # 오프라인에서도 http://localhost:4173
+```
+
 | 명령 | 설명 |
 |---|---|
 | `bun run build` / `preview` | 타입 검사 후 프로덕션 빌드 / 빌드 결과 실행 (`:4173`) |
@@ -106,8 +112,10 @@ bun run dev    # http://localhost:5173
 | `bun run lint` / `typecheck` | oxlint와 Vue 템플릿 접근성 / vue-tsc |
 | `bun run test` | 단위·컴포넌트 테스트 |
 | `bun run test:e2e` | 프로덕션 빌드의 레이아웃·접근성·업무 흐름 검사 (먼저 `build` 필요) |
+| `bun run test:offline` | localhost 밖 요청을 모두 끊은 상태에서 모든 화면이 내용과 함께 뜨는지와 axe 검사 (`test:e2e`에도 포함) |
 | `bun run size` / `lhci` | 번들 크기 예산 / Lighthouse 기준 검사 (먼저 `build` 필요) |
 | `bun run data:tle` | CelesTrak에서 궤도 스냅샷 갱신 |
+| `bun run data:neo` / `data:space-weather` | NASA/JPL 소행성 접근 / NOAA 우주 기상 스냅샷 갱신 (주간 워크플로가 함께 받음) |
 | `bun run screenshots` | README 화면과 링크 공유 미리보기(`public/og.jpg`) 다시 찍기 (먼저 `build:site` 뒤 `preview` 실행) |
 
 ## 프로젝트 구조

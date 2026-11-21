@@ -1,0 +1,151 @@
+{
+  "fetchedAt": "2026-11-21T07:49:58.035Z",
+  "source": "NOAA SWPC",
+  "scales": {
+    "0": {
+      "DateStamp": "2026-11-21",
+      "TimeStamp": "07:48:00",
+      "R": {
+        "Scale": "0",
+        "Text": "none",
+        "MinorProb": null,
+        "MajorProb": null
+      },
+      "S": {
+        "Scale": "0",
+        "Text": "none",
+        "Prob": null
+      },
+      "G": {
+        "Scale": "0",
+        "Text": "none"
+      }
+    },
+    "1": {
+      "DateStamp": "2026-11-21",
+      "TimeStamp": "07:48:00",
+      "R": {
+        "Scale": null,
+        "Text": null,
+        "MinorProb": "10",
+        "MajorProb": "5"
+      },
+      "S": {
+        "Scale": null,
+        "Text": null,
+        "Prob": "1"
+      },
+      "G": {
+        "Scale": "0",
+        "Text": "none"
+      }
+    },
+    "2": {
+      "DateStamp": "2026-11-22",
+      "TimeStamp": "00:00:00",
+      "R": {
+        "Scale": null,
+        "Text": null,
+        "MinorProb": "10",
+        "MajorProb": "5"
+      },
+      "S": {
+        "Scale": null,
+        "Text": null,
+        "Prob": "1"
+      },
+      "G": {
+        "Scale": "0",
+        "Text": "none"
+      }
+    },
+    "3": {
+      "DateStamp": "2026-11-23",
+      "TimeStamp": "00:00:00",
+      "R": {
+        "Scale": null,
+        "Text": null,
+        "MinorProb": "10",
+        "MajorProb": "5"
+      },
+      "S": {
+        "Scale": null,
+        "Text": null,
+        "Prob": "1"
+      },
+      "G": {
+        "Scale": "0",
+        "Text": "none"
+      }
+    },
+    "-1": {
+      "DateStamp": "2026-11-20",
+      "TimeStamp": "07:48:00",
+      "R": {
+        "Scale": "0",
+        "Text": "none",
+        "MinorProb": null,
+        "MajorProb": null
+      },
+      "S": {
+        "Scale": "0",
+        "Text": "none",
+        "Prob": null
+      },
+      "G": {
+        "Scale": "0",
+        "Text": "none"
+      }
+    }
+  },
+  "kp": [
+    {
+      "time_tag": "2026-11-20T06:00:00",
+      "Kp": 1.33,
+      "a_running": 5,
+      "station_count": 8
+    },
+    {
+      "time_tag": "2026-11-20T09:00:00",
+      "Kp": 0.67,
+      "a_running": 3,
+      "station_count": 8
+    },
+    {
+      "time_tag": "2026-11-20T12:00:00",
+      "Kp": 0.33,
+      "a_running": 2,
+      "station_count": 8
+    },
+    {
+      "time_tag": "2026-11-20T15:00:00",
+      "Kp": 0.33,
+      "a_running": 2,
+      "station_count": 8
+    },
+    {
+      "time_tag": "2026-11-20T18:00:00",
+      "Kp": 1.67,
+      "a_running": 6,
+      "station_count": 8
+    },
+    {
+      "time_tag": "2026-11-20T21:00:00",
+      "Kp": 0.67,
+      "a_running": 3,
+      "station_count": 8
+    },
+    {
+      "time_tag": "2026-11-21T00:00:00",
+      "Kp": 2.67,
+      "a_running": 12,
+      "station_count": 8
+    },
+    {
+      "time_tag": "2026-11-21T03:00:00",
+      "Kp": 0.33,
+      "a_running": 2,
+      "station_count": 8
+    }
+  ]
+}
