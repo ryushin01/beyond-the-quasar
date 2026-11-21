@@ -20,7 +20,7 @@
 
 관측 화면의 '우주 위협' 패널(`widgets/space-hazards`)은 두 자료를 씁니다. 둘 다 패널이 화면에 들어온 뒤에만 받습니다.
 
-- 우주 기상(`entities/space-weather`): NOAA SWPC 공개 JSON(`noaa-scales.json`, `noaa-planetary-k-index.json`)을 브라우저에서 바로 받습니다(CORS 허용, CSP `connect-src`에 등록). 10분 동안은 다시 받지 않고, 보고 있는 동안 15분마다 갱신합니다. 응답 형식이 바뀌면 `parseScales`·`parseKp`가 예외를 던지고 패널은 그 영역에만 안내와 '다시 시도'를 보입니다. Kp 응답은 객체 배열(현재)과 머리 행이 있는 배열의 배열(이전 형식)을 모두 읽습니다.
+- 우주 기상(`entities/space-weather`): NOAA SWPC 공개 JSON(`noaa-scales.json`, `noaa-planetary-k-index.json`)을 브라우저에서 바로 받습니다(CORS 허용, CSP `connect-src`에 등록). 10분 동안은 다시 받지 않고, 보고 있는 동안 15분마다 갱신합니다. 받지 못하면(오프라인·차단·8초 시간 초과·형식 오류) 저장소의 스냅샷 `public/data/space-weather-snapshot.json`(`bun run data:space-weather`, 주간 워크플로가 함께 갱신, 실패하면 기존 스냅샷 유지)을 보여 주고 패널 위에 `role="status"`로 "오프라인 데이터로 표시 중 · NOAA 스냅샷 날짜"를 알립니다. 15분 뒤 다시 받을 때 NOAA에 닿으면 실시간 값으로 바뀝니다. 실시간과 스냅샷을 모두 받지 못하거나 형식이 바뀌어 `parseScales`·`parseKp`가 예외를 던지면 패널은 그 영역에만 안내와 '다시 시도'를 보입니다. Kp 응답은 객체 배열(현재)과 머리 행이 있는 배열의 배열(이전 형식)을 모두 읽습니다.
 - 근지구 소행성 접근(`entities/asteroid`): NASA/JPL SBDB Close Approach Data API는 브라우저에서 부를 수 없어(CORS 없음) `bun run data:neo`가 `public/data/neo-snapshot.json`으로 받습니다. 주간 갱신 워크플로가 TLE와 함께 받되, 실패해도 궤도 갱신은 막지 않습니다. 앞으로 60일 안에 0.05 AU 안으로 오는 접근을 받고, 화면은 지금 이후의 접근만 날짜순으로 보입니다. 거리는 달 거리(LD) 배수이고 달보다 가까우면 앰버로, 크기는 절대 등급과 반사율 0.05~0.25로 어림한 범위입니다.
 - 경보 서비스가 아니며 공개 자료를 그대로 보여 줍니다.
 
@@ -115,6 +115,7 @@ Vercel 프로젝트 `beyond-the-quasar`가 GitHub 저장소와 연결되어 있�
 | 컴포넌트(실제 브라우저) | `src/**/*.cy.ts` | Cypress 컴포넌트 테스트. jsdom이 그리지 못하는 지상 궤적 지도(2D 캔버스)와 3D 궤도(WebGL)가 실제로 그려지는지, 확대·전환 버튼이 그림을 바꾸는지, 닫으면 그리기를 멈추는지 확인합니다. `bun run test:component` |
 | 스토리 | `src/**/*.story.vue` | 컴포넌트별 상태 (`bun run story:build`로 CI에서 빌드 확인) |
 | E2E | `e2e/` | 넘침, 프리로더, 모션 정지, 관제·카탈로그·관측 흐름, axe |
+| 오프라인 E2E | `e2e/offline.spec.ts` | localhost 밖 요청을 모두 끊고(`.env` 없는 빌드) 홈·관제·카탈로그·관측·이벤트가 오류 안내 없이 내용과 함께 뜨는지, 우주 기상이 스냅샷과 오프라인 안내로 보이는지, 그 화면의 axe 검사. `bun run test:offline` |
 
 E2E는 프로덕션 빌드(`bun run build`)를 대상으로 합니다. `4173` 포트에 서버가 떠 있으면 재사용합니다.
 

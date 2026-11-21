@@ -67,6 +67,8 @@ const approaches = computed(() =>
     }
   }),
 )
+// NOAA에 닿지 못해 저장소의 스냅샷을 보여 줄 때의 자료 날짜(UTC)
+const weatherSnapshotDate = computed(() => space.snapshotAt.value?.toISOString().slice(0, 10) ?? null)
 const snapshotDate = computed(() => neo.fetchedAt.value?.toISOString().slice(0, 10) ?? '—')
 </script>
 
@@ -81,7 +83,9 @@ const snapshotDate = computed(() => neo.fetchedAt.value?.toISOString().slice(0, 
           <p>{{ t('hazards.loadError') }}</p>
           <q-btn outline square no-caps :label="t('hazards.retry')" @click="space.refetch()" />
         </div>
-        <ul v-else class="hazards__tiles">
+        <template v-else>
+        <p v-if="weatherSnapshotDate" class="hazards__offline" role="status">{{ t('hazards.offline', { date: weatherSnapshotDate }) }}</p>
+        <ul class="hazards__tiles">
           <li v-for="scale in scales" :key="scale.key" class="hazards__tile">
             <span class="label-mono">{{ t(`hazards.scales.${scale.key}`) }}</span>
             <span class="hazards__value" :class="{ 'hazards__value--alert': scale.level > 0 }">
@@ -100,6 +104,7 @@ const snapshotDate = computed(() => neo.fetchedAt.value?.toISOString().slice(0, 
             <span class="hazards__note">{{ t('hazards.kpNote', { time: kp.time }) }}</span>
           </li>
         </ul>
+        </template>
       </section>
 
       <section class="hazards__neo" aria-labelledby="hazards-neo">
@@ -182,6 +187,13 @@ const snapshotDate = computed(() => neo.fetchedAt.value?.toISOString().slice(0, 
 }
 .hazards__state p {
   margin: 0 0 0.75rem;
+}
+.hazards__offline {
+  margin: 0;
+  padding: 0.625rem 1rem;
+  border-bottom: 1px solid var(--line);
+  color: var(--muted);
+  font: 500 0.75rem/1.5 var(--font-mono);
 }
 .hazards__tiles {
   display: grid;
